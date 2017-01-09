@@ -11,7 +11,7 @@
 ##Slides Release History
 
 ###1.0 (Jan 2017, written by 남택호)
-* Slide Download: [Box_Lab_v0.8.pdf](https://github.com/SmartX-Labs/Mini/raw/master/Lab-1.%20Box/Box_Lab_v1.0.pdf)
+* Slide Download: [Box_Lab_v1.0.pdf](https://github.com/SmartX-Labs/Mini/raw/master/Lab-1.%20Box/Box_Lab_v1.0.pdf)
 * Release Note
  * KVM을 활용한 박스 내부 구성시 사용되는 이미지 파일 링크 변경
  
