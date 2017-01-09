@@ -9,8 +9,12 @@
  * OpenvSwitch를 활용한 Virtual Machine, Container의 연결 및 연결 확인
 
 ##Slides Release History
-(아직 버전 관리에 미숙하여 적절한 버전명으로 보기 어려우나 향후 개선을 위하여 기존의 기록 그대로 남겨둡니다.)
 
+###1.0 (Jan 2017, written by 남택호)
+* Slide Download: [Box_Lab_v0.8.pdf](https://github.com/SmartX-Labs/Mini/raw/master/Lab-1.%20Box/Box_Lab_v1.0.pdf)
+* Release Note
+ * KVM을 활용한 박스 내부 구성시 사용되는 이미지 파일 링크 변경
+ 
 ###0.9 (June 2016, written by 남택호)
 * Slide Download: [Box_Lab_v0.9.pdf](https://github.com/SmartX-Labs/Mini/raw/master/Lab-1.%20Box/Box_Lab_v0.9.pdf)
 * PowerPoint File Download: [Box_Lab_v0.9.pptx](https://github.com/SmartX-Labs/Mini/raw/master/Lab-1.%20Box/Box_Lab_v0.9.pptx)
