@@ -9,6 +9,16 @@
  * OpenvSwitch를 활용한 Virtual Machine, Container의 연결 및 연결 확인
 
 ##Slides Release History
+###1.2 (April 2017, written by 남택호)
+* Slide Download: [Box_Lab_v1.2.pdf](https://github.com/SmartX-Labs/SmartX-mini/raw/master/Lab-1.%20Box/Box_Lab_v1.2.pdf)
+* Release Note
+ * KVM VM 생성 부팅 문제 해결, 슬라이드 검수 및 테스트 검증
+
+###1.1 (April 2017, written by 남택호)
+* Slide Download: [Box_Lab_v1.1.pdf](https://github.com/SmartX-Labs/SmartX-mini/raw/master/Lab-1.%20Box/Box_Lab_v1.1.pdf)
+* Release Note
+ * OS version update: 14.04 -> 16.04
+ * OS update 이후 발생한 miner한 network setting issue 정리
 
 ###1.0 (Jan 2017, written by 남택호)
 * Slide Download: [Box_Lab_v1.0.pdf](https://github.com/SmartX-Labs/Mini/raw/master/Lab-1.%20Box/Box_Lab_v1.0.pdf)
