@@ -1,4 +1,4 @@
-#Box Lab
+# Box Lab
 ![](https://raw.githubusercontent.com/SmartX-Labs/Mini/master/images/Lab1.Box.JPG)
 * Box Lab은 이후 진행할 SmartX Labs을 위한 Lab으로써, Box 내부에 가상 스위치 OpenvSwitch, 하이퍼바이저 KVM, 그리고 Docker Container 환경을 구축합니다. 또한 Box Lab은 구축한 환경에서 OpenvSwitch를 활용하여 KVM으로 생성한 VM과 Docker로 생성한 Container의 연결을 목표합니다.
 
