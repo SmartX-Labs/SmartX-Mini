@@ -9,6 +9,7 @@
  * OpenvSwitch를 활용한 Virtual Machine, Container의 연결 및 연결 확인
 
 ##Slides Release History
+
 ###1.2 (April 2017, written by 남택호)
 * Slide Download: [Box_Lab_v1.2.pdf](https://github.com/SmartX-Labs/SmartX-mini/raw/master/Lab-1.%20Box/Box_Lab_v1.2.pdf)
 * Release Note
