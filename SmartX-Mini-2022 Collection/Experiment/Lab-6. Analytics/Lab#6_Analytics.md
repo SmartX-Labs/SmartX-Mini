@@ -91,8 +91,8 @@ watch kubectl get svc -n istio-system
 
 ## Connect Jupyter hub
 
-### Check exposed port for Jupyter hub
-You can access Jupyter hub at this address (In Browser)
+### Check exposed port for Kubeflow
+You can access Kubeflow at this address (In Browser)
 > http://{nuc01_IP}:{PORT}
 
 Get {Port} by below command
@@ -100,3 +100,28 @@ Get {Port} by below command
 kubectl -n istio-system get svc istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}'
 ```
 
+### Deploy ML Container (MNIST)
+
+#### Assign NoteBook Server
+Open a web browser and enter the Kubeflow address
+![](img/kubeflow-main.png)
+![](img/new-server.png)
+
+Select or enter the options as below
+- Image: gcr.io/kubeflow-images-public/tensorflow-1.14.0-notebook-cpu:v0.7.0
+- CPU: 2
+- Memory: 2Gi
+
+![](img/kubeflow-assign.png)
+
+#### Run MNIST CNN Example
+Now, you will run the MNIST example code in sample notebook.
+Click kernel -> “Restart&Clear Output” button -> “Restart&Run All” button
+
+The training takes a few **minutes** (Wait!!!!!!!!)
+![](img/jupyter-1.png)
+![](img/jupyter-2.png)
+Check training results
+Your model has 99.04% accuracy!
+![](img/jupyter-3.png)
+Your Machine Learning model correctly identified the number in the images!
