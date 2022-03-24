@@ -125,3 +125,10 @@ Check training results
 Your model has 99.04% accuracy!
 ![](img/jupyter-3.png)
 Your Machine Learning model correctly identified the number in the images!
+
+### Lab Summary
+1. How to create ML/DL environment on a container-orchestrated cluster? (Kubeflow, …)
+2. How to operate desired ML training by testing selected ML code (i.e., neural networks) over the prepared training data?
+3. Do you understand the overall workflow for running ML/DL?
+
+> Thank You for Your Attention Any Questions? -> twkim@smartx.kr
