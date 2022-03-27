@@ -84,9 +84,9 @@ After install `flash`, clone repository from Github. You need to install `git-lf
 
 ```bash
 cd ~
-sudo apt-get install -y git
+sudo apt install -y git
 curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
-sudo apt-get install -y git-lfs
+sudo apt install -y git-lfs
 git lfs install
 git clone https://github.com/SmartX-Labs/SmartX-Mini.git
 cd ~/SmartX-Mini/SmartX-Mini-MOOC\ Collection/Experiment/Lab-2.\ Inter-Connect/
@@ -130,7 +130,7 @@ sudo fdisk -l
 Then flash HypriotOS to your MicroSD Card. This takes a while, wait for a moment.
 
 ```bash
-flash –u hypriotos-init.yaml –d /dev/sdc –f hypriotos-rpi-v1.9.0.img.zip
+flash –u hypriotos-init.yaml -d /dev/sdc –f hypriotos-rpi-v1.9.0.img.zip
 ```
 
 Insert the SD card back to your Raspberry PI and boot it up.
