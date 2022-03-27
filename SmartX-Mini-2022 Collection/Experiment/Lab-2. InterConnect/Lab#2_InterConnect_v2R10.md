@@ -19,7 +19,7 @@
 <!-- Physical Interconnect 이미지도 넣어야 하나? 근데 iperf나 관련된 확인하는 내용은 터미널 여는 내용 말고 다 빠졌던데 -->
 ![overview](img/overview.png)
 
-### Check `rc-local-service` Setting (In NUC)
+### Check `rc-local.service` Setting (In NUC)
 
 ```bash
 sudo touch /etc/rc.local
@@ -45,6 +45,18 @@ sudo systemctl status rc-local.service
 ```
 
 ![rc-local.service status](./img/rc-local.png)
+<!-- http://realtechtalk.com/Debian_Ubuntu_Mint_rclocal_service_startup_error_solution_rclocalservice_Failed_at_step_EXEC_spawning_etcrclocal_Exec_format_error-2242-articles -->
+If you get Exec format error, Open `/etc/rc.local` and check the first line is `#!/bin/sh -e` and the last line is `exit 0`.
+
+```bash
+sudo vim /etc/rc.local
+```
+
+```bash
+#!/bin/sh -e
+...
+exit 0
+```
 
 Reboot your NUC
 
