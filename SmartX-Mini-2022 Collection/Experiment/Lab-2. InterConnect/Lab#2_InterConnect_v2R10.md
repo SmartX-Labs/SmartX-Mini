@@ -82,9 +82,74 @@ docker attach [container_name]
 
 ### Raspberry PI OS Installation
 
-#### Download Required Package and File(In PI)
+Before we start, your Raspberry Pi must be ready with proper OS. In this lab, we will use “HypriotOS” Linux for it. Insert a Micro SD into your SD card reader and attach the reader to your NUC.
 
-#### Edit HypriotOS setting and flash SD card.(In PI)
+#### Download Required Package and File(In NUC)
+
+Issue the commands below to get “flash” script for the OS setup. Then, issue `flash` command to see if it’s installed correctly.
+
+```bash
+sudo apt update && sudo apt install -y pv curl python3-pip unzip hdparm
+sudo pip3 install awscli
+curl -O https://raw.githubusercontent.com/hypriot/flash/master/flash
+chmod +x flash
+sudo mv flash /usr/local/bin/flash
+```
+
+After install `flash`, clone repository from Github. You need to install `git-lfs` first because this repository contains large files.
+
+```bash
+cd ~
+sudo apt-get install -y git
+curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+sudo apt-get install -y git-lfs
+git lfs install
+git clone https://github.com/SmartX-Labs/SmartX-Mini.git
+cd ~/SmartX-Mini/SmartX-Mini-MOOC\ Collection/Experiment/Lab-2.\ Inter-Connect/
+```
+
+Next, you need to download HypriotOS from GitHub
+
+```bash
+wget https://github.com/hypriot/image-builder-rpi/releases/download/v1.9.0/hypriotos-rpi-v1.9.0.img.zip
+ls -alh # Check all files
+```
+
+#### Edit HypriotOS setting and flash SD card.(In NUC)
+
+Edit HypriotOS configuration file for your Raspberry Pi. Open the `hypriotos-init.yaml` file and edit its network section.
+
+```bash
+sudo vim hypriotos-init.yaml
+```
+
+```yaml
+…
+ # static IP configuration:
+      interface eth0
+      static ip_address=172.29.0.250/24 # Write your Raspberry Pi address
+      static routers=172.29.0.254 # Write your Gateway address
+      static domain_name_servers=8.8.8.8 8.8.4.4 # Write your given DNS server
+…
+```
+
+The assigned IP address will be automatically applied, when you’re initially booting your Raspberry Pi.
+
+To flash your OS to SD card, you need to know where your card is mounted.
+
+```bash
+sudo fdisk -l
+```
+
+![result of fdisk](./img/fdisk.png)
+
+Then flash HypriotOS to your MicroSD Card. This takes a while, wait for a moment.
+
+```bash
+flash –u hypriotos-init.yaml –d /dev/sdc –f hypriotos-rpi-v1.9.0.img.zip
+```
+
+Insert the SD card back to your Raspberry PI and boot it up.
 
 ### Raspberry PI network Configuration
 
@@ -94,9 +159,11 @@ docker attach [container_name]
 
 <!-- rdate 설치 추가할 것 -->
 <!-- sudo apt install -y rdate -->
-<!-- SSH 접속 가능하다 내용을 open-ssh 설치 이후로 이동 -->
+
+After install SSH server, you can access your PI from other computer with SSH.
+
 ```bash
-ssh pirate@[PI_IP]
+ssh pirate@[PI_IP] #ID:pirate PW: hypriot
 ```
 
 ### Hostname Preparation
@@ -142,7 +209,7 @@ Add 2 lines below the file.
 ```
 <!-- 예시 이미지 -->
 
-#### Verification for hostname preparation
+#### Verification for hostname preparation(In PI, NUC)
 
 ### Kafka Deployment(IN NUC)
 
