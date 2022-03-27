@@ -52,34 +52,6 @@ Reboot your NUC
 sudo reboot
 ```
 
-### Prepare 3 terminals on NUC
-
-<!-- 이게 왜 필요하지? iperf 내용 startmooc에만 남아있고 21년도 PPT에는 없던데-->
-
-We need 3 terminals.(Bare metal, VM, Contariner)
-
-Boot and Access to KVM on NUC
-
-```bash
-sudo kvm -m [memory_capacity] -name [vm_name] \
--smp cpus=[cpu],maxcpus=[max_cpu] \
--device virtio-net-pci,netdev=net0 \
--netdev tap,id=net0,ifname= [tap_name],script=no \
--boot d [img_name].img \
--daemonize
-```
-
-```bash
-vncviewr localhost:5
-```
-
-Access to Container on NUC
-
-```bash
-docker start [container_name]
-docker attach [container_name]
-```
-
 ### Raspberry PI OS Installation
 
 Before we start, your Raspberry Pi must be ready with proper OS. In this lab, we will use “HypriotOS” Linux for it. Insert a Micro SD into your SD card reader and attach the reader to your NUC.
