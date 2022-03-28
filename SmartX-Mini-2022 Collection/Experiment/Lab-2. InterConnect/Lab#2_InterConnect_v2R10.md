@@ -365,17 +365,105 @@ bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic resource # Che
 
 #### Install Net-SNMP installation
 
+```bash
+sudo apt update
+```
+
+Download Net-SNMP
+
+```bash
+sudo apt install -y snmp snmpd snmp-mibs-downloader openjdk-8-jdk
+```
+
+Modify configuration file. There is a line `#rocommunity public localhost`. Delete `#`.
+
+```bash
+sudo vi /etc/snmp/snmpd.conf
+```
+
+Restart `snmpd.service`.
+
+```bash
+sudo systemctl restart snmpd.service
+```
+
 #### Clone repository from GitHub
+
+```bash
+cd ~
+git clone https://github.com/SmartXBox/SmartX-mini.git
+```
+
+In this sections, we use `raspbian-flume`.
+
+```bash
+cd ~/Smartx-mini/raspbian-flume
+```
 
 #### Check Dockerfile
 
+Open Dockerfile and check it is correct.
+
+```dockerfile
+FROM balenalib/rpi-raspbian:stretch
+LABEL "maintainer"="Seungryong Kim <srkim@nm.gist.ac.kr>"
+
+#Update & Install wget, vim
+RUN sudo apt update
+RUN sudo apt install -y wget vim iputils-ping net-tools iproute2 dnsutils openjdk-8-jdk
+
+#Timezone
+RUN sudo cp /usr/share/zoneinfo/Asia/Seoul /etc/localtime
+
+#Install Flume
+RUN sudo wget --no-check-certificate http://www.apache.org/dist/flume/1.6.0/apache-flume-1.6.0-bin.tar.gz -O - | tar -zxv
+RUN mv apache-flume-1.6.0-bin /flume
+ADD plugins.d /flume/plugins.d
+ADD flume-conf.properties /flume/conf/
+
+#Working directory
+WORKDIR /flume
+```
+
 #### Build docker image
+
+Then build docker image with `docker build`. It takes long time.
+
+```bash
+sudo docker build --tag raspbian-flume .
+```
 
 #### Run flume on container
 
-### Consume message from brokers(IN NUC)
+After building image, run `flume`  container.
 
-<!-- 이미지 넣기 -->
+```bash
+sudo docker run -it --net=host --name flume raspbian-flume
+```
+
+In, `flume` container, check the configuration file, Modifying broker list. (Change default  value `nuc` to your own NUC's hostname in `/etc/hosts)
+
+```bash
+vi conf/flume-conf.properties
+```
+
+Then run flume on `flume` container.
+
+```bash
+bin/flume-ng agent --conf conf --conf-file conf/flume-conf.properties --name agent -Dflume.root.logger=INFO,console
+```
+
+If an error occurs, check the host of pi again.
+
+### Consume message from brokers(IN NUC, IN `consumer` container)
+
+Launch consumer script on the `consumer` container.
+
+```bash
+bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic resource --from-beginning
+```
+
+![consumer result](./img/consumer%20result.png)
 
 ## Review
 
