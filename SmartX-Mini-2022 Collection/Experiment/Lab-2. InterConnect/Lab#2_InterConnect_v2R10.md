@@ -139,11 +139,30 @@ Insert the SD card back to your Raspberry PI and boot it up.
 
 #### Check network setting(In PI)
 
+In PI, type `ifconfing` to check your network interface setting
+
+```bash
+ifconfig
+```
+
+Then check routing table
+
+```bash
+sudo apt update
+sudo apt install -y netstat
+netstat -rn
+```
+
 #### Install required packages(In PI)
 
-<!-- rdate 설치 추가할 것 -->
-<!-- sudo apt install -y rdate -->
+You need to install several packages in PI.
 
+```bash
+sudo apt update
+sudo apt install -y openssh-server git vim rdate
+```
+
+`rdate` sync your PI's time to network, and `openssh-server` enables ssh connections to your PI.
 After install SSH server, you can access your PI from other computer with SSH.
 
 ```bash
@@ -152,10 +171,12 @@ ssh pirate@[PI_IP] #ID:pirate PW: hypriot
 
 ### Hostname Preparation
 
-#### Hostname preparation for Kafka(In NUC)
-
 Every machine which communicate with themselves must know
 their own address. This information is stored in `/etc/hosts`.
+
+#### Hostname preparation for Kafka(In NUC)
+
+Open `/etc/hosts` in NUC.
 
 ```bash
 sudo vim /etc/hosts
@@ -167,7 +188,8 @@ Add 2 lines below the file.
 [NUC_IP] [NUC_HOSTNAME]
 [PI_IP] [PI_HOSTNAME]
 ```
-<!-- 예시 이미지 -->
+
+![/etc/hosts example](./img/hosts.png)
 
 To check your hostname, you can use  `hostname` command.
 
@@ -191,27 +213,153 @@ Add 2 lines below the file.
 [NUC_IP] [NUC_HOSTNAME]
 [PI_IP] [PI_HOSTNAME]
 ```
-<!-- 예시 이미지 -->
+
+When pi is rebooted, the information in `/etc/hosts` disappears.
 
 #### Verification for hostname preparation(In PI, NUC)
 
+For NUC,
+
+```bash
+sudo ping [Your NUC hostname]
+sudo ping [Your Raspberry PI hostname]
+```
+
+For Raspberry PI,
+
+```bash
+sudo ping <Your NUC hostname>
+sudo ping <Your Raspberry PI hostname>
+```
+
+If it was successful, We can be sure that NUC know its own hostname and Pi’s hostname and Pi also know its own hostname and NUC’s hostname.
+
 ### Kafka Deployment(IN NUC)
+
+We’ll use a one zookeeper, 3 brokers and one consumer containers which share host’s public IP address. Zookeeper container doesn’t have broker id. Each Broker has a unique id and port to interact each other. Consumer container just used to manage topic and check the data from brokers.
+
+| Function(container) Name | IP Address | Broker ID | Listening Port |
+|:------------------------:|:----------:|:---------:|:--------------:|
+|         zookeeper        |  Host's IP |     -     |      2181      |
+|          broker0         |  Host's IP |     0     |      9090      |
+|          broker1         |  Host's IP |     1     |      9091      |
+|          broker2         |  Host's IP |     2     |      9092      |
+|         consumer         |  Host's IP |     -     |        -       |
 
 #### Clone repository from GitHub
 
+```bash
+cd ~
+git clone https://github.com/SmartXBox/SmartX-mini.git
+```
+
+In this sections, we use `ubuntu-kafka`.
+
+```bash
+cd ~/Smartx-mini/ubuntu-kafka
+```
+
 #### Check Dockerfile
+
+Open `Dockerfile` and check it is correct.
+
+```dockerfile
+FROM ubuntu:14.04
+LABEL "maintainer"="Seungryong Kim <srkim@nm.gist.ac.kr>"
+
+#Update & Install wget
+RUN sudo apt-get update
+RUN sudo apt-get install -y wget vim iputils-ping net-tools iproute2 dnsutils openjdk-7-jdk
+
+#Install Kafka
+RUN sudo wget --no-check-certificate https://archive.apache.org/dist/kafka/0.8.2.0/kafka_2.10-0.8.2.0.tgz -O - | tar -zxv
+RUN sudo mv kafka_2.10-0.8.2.0 /kafka
+WORKDIR /kafka
+```
 
 #### Build docker image
 
+Then build docker image with `docker build`. It takes long time.
+
+```bash
+sudo docker build --tag ubuntu-kafka . #You should type '.'
+```
+
+It's good to know basic docker commands. For more detail, visit [docker official document](https://docs.docker.com/engine/reference/commandline/cli/).
+
+```bash
+docker --help #show docker instruction 
+docker ps # show list of container
+docker rm # remove docker container
+docker start [container_name] # start docker container
+docker stop [container_name] # stop docker container
+docker attach [container_name] # connect docker container
+```
+
 #### Place docker containers
 
-<!-- 슬라이드 28 세팅 여기로 -->
+After building `ubuntu-kafka` image, make, run and attach docker container
 
-#### Zookeeper configuration
+```bash
+docker run -it --net=host --name [container name] ubuntu-kafka
+```
 
-#### Broker configuration
+We need to run total 5 containers (`zookeeper`, `broker0`, `broker1`, `broker2`, `consumer`)
 
-#### Consumber topic configuration
+#### Zookeeper configuration(IN NUC, `zookeeper` container)
+
+In `zookeeper` container, Open zookeeper properties file.
+
+```bash
+vi config/zookeeper.properties
+```
+
+Check the client port is `2181`
+
+Execute zookeeper first, leave zookeeper running and open a new terminal for next tasks.
+
+```bash
+bin/zookeeper-server-start.sh config/zookeeper.properties 
+```
+
+#### Broker configuration(IN NUC, `broker0`, `broker1`, `broker2` containers)
+
+Open server properties file and change proper broker id and port (they must be unique to each other) 
+
+```bash
+vi config.server.properties
+```
+
+| Function(container) Name | IP Address | Broker ID | Listening Port |
+|:------------------------:|:----------:|:---------:|:--------------:|
+|          broker0         |  Host's IP |     0     |      9090      |
+|          broker1         |  Host's IP |     1     |      9091      |
+|          broker2         |  Host's IP |     2     |      9092      |
+
+![broker setting](./img/broker%20setting.png)
+
+Execute Kafka brokers.
+
+```bash
+bin/kafka-server-start.sh config/server.properties 
+```
+
+Repeat this in 3 broker containers.(`broker0`, `broker1`, `broker2`)
+
+#### Consumer topic configuration(IN NUC, `consumer` container)
+
+Create topic named `resource` in cosumer.
+
+```bash
+bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 3 --topic resource
+```
+
+We can check topics.
+
+```bash
+bin/kafka-topics.sh --list --zookeeper localhost:2181 # list all topic of zookeeper in localhost:2181
+bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic resource # Check existence of topic `resource` of zookeeper in localhost:2181
+```
 
 ### Flume on Raspberry PI(IN PI)
 
@@ -225,7 +373,7 @@ Add 2 lines below the file.
 
 #### Run flume on container
 
-### Consume message from brokers
+### Consume message from brokers(IN NUC)
 
 <!-- 이미지 넣기 -->
 
