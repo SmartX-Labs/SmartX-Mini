@@ -2,22 +2,22 @@
 
 ## Objective
 
-The main part of interConnect Lab is to connect one box with another box which connect computer systems with each other in 2 ways. (Physical interconnect, Data interconnect)
+The main part of interConnect Lab is to connect one box with another box which connects computer systems in 2 ways. (Physical interconnect, Data interconnect)
 
-- Physical Interconnect: Connection between boxes via network.
+- Physical Interconnect: Connection between boxes via the network.
 - Data Interconnect: By using physical Interconnect, connect data between various functions.
 
 ## Concept
 
 ### Raspberry PI
 
-Raspberry PI is small embedded computer that is designed by Raspberry Pi Foundation. In this lecture, we will use Pi2.
+Raspberry PI is a small, embedded computer designed by Raspberry Pi Foundation. It has different HW and properties. For example, It doesn't have HW real-time clock. So, after booting, the time of PI is initialized. In this lecture, we will use Pi2.
 
 ### Apache Kafka
 
 ![Kafka Overview](./img/kafka.png)
 
-Apache Kafka is a messaging system with unique design and functionality.
+Apache Kafka is a messaging system with a unique design and functionality.
 
 - Topics: maintains feeds of messages in categories
 - Producer: processes that publish messages to a Kafka topic
@@ -28,12 +28,12 @@ Apache Kafka is a messaging system with unique design and functionality.
 
 A suite of software for using and deploying the SNMP Protocol.
 
-- Manager : polls agents on the network, correlates and displays information
-- Agent : collects and stores information, responds to manager requests for information, generates traps
+- Manager: polls agents on the network, correlates, and displays information
+- Agent: collects and stores information, responds to manager requests for information, generates traps
 
 ![Net-SNMP](./img/NetSNMP.png)
 
-The SNMP(Simple Network Management Protocol) is used in network management systems to monitor network-attached devices, which include routers, switches, servers, workstations, printers, modem racks and more.
+The SNMP(Simple Network Management Protocol) is used in network management systems to monitor network-attached devices, which include routers, switches, servers, workstations, printers, modem racks, and more.
 
 ![SNMP](./img/SNMP.png)
 
@@ -45,11 +45,11 @@ A distributed, reliable, and available service for efficiently collecting, aggre
 
 - Source: Consumes events having a specific format
 - Channel: Holds the event until consumed
-- Sink: Removes an event from the channel and puts it into on external repository or another source
+- Sink: Removes an event from the channel and puts it into an external repository or another source
 
 ### Docker
 
-"Docker” is containerization technology that enables the creation and use of Linux® containers. Based on containerization, you can used it for Application deployment.
+"Docker” is a containerization technology that enables the creation and use of Linux® containers. Based on containerization, you can use it for Application deployment.
 
 ![docker](./img/docker.png)
 
@@ -74,7 +74,7 @@ WantedBy=multi-user.target
 ...
 ```
 
-Apply setting and check `rc-local.service` status
+Apply the setting and check the `rc-local.service` status
 
 ```bash
 sudo systemctl enable rc-local.service
@@ -104,11 +104,18 @@ sudo reboot
 
 ### Raspberry PI OS Installation
 
-Before we start, your Raspberry Pi must be ready with proper OS. In this lab, we will use “HypriotOS” Linux for it. Insert a Micro SD into your SD card reader and attach the reader to your NUC.
+Before we start, your Raspberry Pi must be ready with the proper OS. In this lab, we will use “HypriotOS” Linux for it. Insert a Micro SD into your SD card reader and attach the reader to your NUC.
+
+> When you deal with the SD card, be sure that PI is shut down. Ejecting an SD card when PI is booted on is one of the main causes of SD card corruption which results in a fatal error.
+> If you want to unmount your SD card safely, turn off PI with the `poweroff` command.
+>
+> ```bash
+> sudo poweroff # It requires superuser permission.
+> ```
 
 #### Download Required Package and File(In NUC)
 
-Issue the commands below to get “flash” script for the OS setup. Then, issue `flash` command to see if it’s installed correctly.
+Type the commands below to get the “flash” script for the OS setup. Then, type the `flash` command to see if it’s installed correctly.
 
 ```bash
 sudo apt update && sudo apt install -y pv curl python3-pip unzip hdparm
@@ -118,7 +125,7 @@ chmod +x flash
 sudo mv flash /usr/local/bin/flash
 ```
 
-After install `flash`, clone repository from Github. You need to install `git-lfs` first because this repository contains large files.
+After installing `flash`, clone the repository from Github. You need to install `git-lfs` first because this repository contains large files.
 
 ```bash
 cd ~
@@ -139,7 +146,7 @@ ls -alh # Check all files
 
 #### Edit HypriotOS setting and flash SD card.(In NUC)
 
-Edit HypriotOS configuration file for your Raspberry Pi. Open the `hypriotos-init.yaml` file and edit its network section.
+To modify the HypriotOS configuration file for your Raspberry Pi, open the `hypriotos-init.yaml` file and edit its network section.
 
 ```bash
 sudo vim hypriotos-init.yaml
@@ -155,9 +162,9 @@ sudo vim hypriotos-init.yaml
 …
 ```
 
-The assigned IP address will be automatically applied, when you’re initially booting your Raspberry Pi.
+The assigned IP address will be automatically applied when you’re initially booting your Raspberry Pi.
 
-To flash your OS to SD card, you need to know where your card is mounted.
+To flash your OS to an SD card, you need to know where your card is mounted.
 
 ```bash
 sudo fdisk -l
@@ -171,7 +178,7 @@ Then flash HypriotOS to your MicroSD Card. This takes a while, wait for a moment
 flash –u hypriotos-init.yaml -d /dev/sdc –f hypriotos-rpi-v1.9.0.img.zip
 ```
 
-Insert the SD card back to your Raspberry PI and boot it up.
+Insert the SD card back into your Raspberry PI and boot it up.
 
 ### Raspberry PI network Configuration
 
@@ -183,11 +190,9 @@ In PI, type `ifconfing` to check your network interface setting
 ifconfig
 ```
 
-Then check routing table
+Then check the routing table
 
 ```bash
-sudo apt update
-sudo apt install -y netstat
 netstat -rn
 ```
 
@@ -200,17 +205,22 @@ sudo apt update
 sudo apt install -y openssh-server git vim rdate
 ```
 
-`rdate` sync your PI's time to network, and `openssh-server` enables ssh connections to your PI.
-After install SSH server, you can access your PI from other computer with SSH.
+`rdate` sync your PI's time to network. If PI's time(using the `date` command) is incorrect, type the command below.
 
 ```bash
-ssh pirate@[PI_IP] #ID:pirate PW: hypriot
+rdate -s time.bora.net
+```
+
+`openssh-server` enables ssh connections to your PI.
+After installing the SSH server, you can access your PI from another computer with SSH.
+
+```bash
+ssh pirate@[PI_IP] #ID: pirate PW: hypriot
 ```
 
 ### Hostname Preparation
 
-Every machine which communicate with themselves must know
-their own address. This information is stored in `/etc/hosts`.
+Every machine in a network that communicates with itself must know its address. This information is stored in `/etc/hosts`.
 
 #### Hostname preparation for Kafka(In NUC)
 
@@ -229,13 +239,11 @@ Add 2 lines below the file.
 
 ![/etc/hosts example](./img/hosts.png)
 
-To check your hostname, you can use  `hostname` command.
+To check your hostname, you can use  the `hostname` command.
 
 ```bash
 hostname
 ```
-
-<!-- 이 /etc/hosts도 재부팅 하면 사라지나 PI처럼? -->
 
 #### Hostname preparation for Kafka(In PI)
 
@@ -266,15 +274,15 @@ sudo ping [Your Raspberry PI hostname]
 For Raspberry PI,
 
 ```bash
-sudo ping <Your NUC hostname>
-sudo ping <Your Raspberry PI hostname>
+sudo ping [Your NUC hostname]
+sudo ping [Your Raspberry PI hostname]
 ```
 
-If it was successful, We can be sure that NUC know its own hostname and Pi’s hostname and Pi also know its own hostname and NUC’s hostname.
+If it was successful, We can be sure that NUC knows its hostname and Pi’s hostname and Pi also know its hostname and NUC’s hostname.
 
 ### Kafka Deployment(IN NUC)
 
-We’ll use a one zookeeper, 3 brokers and one consumer containers which share host’s public IP address. Zookeeper container doesn’t have broker id. Each Broker has a unique id and port to interact each other. Consumer container just used to manage topic and check the data from brokers.
+We’ll use one zookeeper, 3 brokers, and one consumer containers that share the host’s public IP address. The zookeeper container doesn’t have a broker id. Each Broker has a unique id and port to interact with each other. The consumer container is just used to manage topics and check the data from brokers.
 
 | Function(container) Name | IP Address | Broker ID | Listening Port |
 |:------------------------:|:----------:|:---------:|:--------------:|
@@ -291,7 +299,7 @@ cd ~
 git clone https://github.com/SmartXBox/SmartX-mini.git
 ```
 
-In this sections, we use `ubuntu-kafka`.
+In this section, we use `ubuntu-kafka`.
 
 ```bash
 cd ~/Smartx-mini/ubuntu-kafka
@@ -317,7 +325,7 @@ WORKDIR /kafka
 
 #### Build docker image
 
-Then build docker image with `docker build`. It takes long time.
+Then build docker image with `docker build`. It takes a long time.
 
 ```bash
 sudo docker build --tag ubuntu-kafka . #You should type '.'
@@ -336,7 +344,7 @@ docker attach [container_name] # connect docker container
 
 #### Place docker containers
 
-After building `ubuntu-kafka` image, make, run and attach docker container
+After building the `ubuntu-kafka` image, make, run and attach the docker container
 
 ```bash
 docker run -it --net=host --name [container name] ubuntu-kafka
@@ -346,7 +354,7 @@ We need to run total 5 containers (`zookeeper`, `broker0`, `broker1`, `broker2`,
 
 #### Zookeeper configuration(IN NUC, `zookeeper` container)
 
-In `zookeeper` container, Open zookeeper properties file.
+In the `zookeeper` container, Open the zookeeper properties file.
 
 ```bash
 vi config/zookeeper.properties
@@ -354,7 +362,7 @@ vi config/zookeeper.properties
 
 Check the client port is `2181`
 
-Execute zookeeper first, leave zookeeper running and open a new terminal for next tasks.
+Execute the zookeeper first, leave the zookeeper running and open a new terminal for the next tasks.
 
 ```bash
 bin/zookeeper-server-start.sh config/zookeeper.properties 
@@ -365,7 +373,7 @@ bin/zookeeper-server-start.sh config/zookeeper.properties
 Open server properties file and change proper broker id and port (they must be unique to each other) 
 
 ```bash
-vi config.server.properties
+vi config/server.properties
 ```
 
 | Function(container) Name | IP Address | Broker ID | Listening Port |
@@ -382,11 +390,11 @@ Execute Kafka brokers.
 bin/kafka-server-start.sh config/server.properties 
 ```
 
-Repeat this in 3 broker containers.(`broker0`, `broker1`, `broker2`)
+Repeat this in 3 broker containers. (`broker0`, `broker1`, `broker2`)
 
 #### Consumer topic configuration(IN NUC, `consumer` container)
 
-Create topic named `resource` in cosumer.
+Create a topic named `resource` in consumer.
 
 ```bash
 bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 3 --topic resource
@@ -413,7 +421,7 @@ Download Net-SNMP
 sudo apt install -y snmp snmpd snmp-mibs-downloader openjdk-8-jdk
 ```
 
-Modify configuration file. There is a line `#rocommunity public localhost`. Delete `#`.
+Modify the configuration file. There is a line `#rocommunity public localhost`. Delete `#`.
 
 ```bash
 sudo vi /etc/snmp/snmpd.conf
@@ -432,7 +440,7 @@ cd ~
 git clone https://github.com/SmartXBox/SmartX-mini.git
 ```
 
-In this sections, we use `raspbian-flume`.
+In this section, we use `raspbian-flume`.
 
 ```bash
 cd ~/Smartx-mini/raspbian-flume
@@ -440,7 +448,7 @@ cd ~/Smartx-mini/raspbian-flume
 
 #### Check Dockerfile
 
-Open Dockerfile and check it is correct.
+Open `Dockerfile` and check it is correct.
 
 ```dockerfile
 FROM balenalib/rpi-raspbian:stretch
@@ -465,7 +473,7 @@ WORKDIR /flume
 
 #### Build docker image
 
-Then build docker image with `docker build`. It takes long time.
+Then build docker image with `docker build`. It takes a longer time than NUC.
 
 ```bash
 sudo docker build --tag raspbian-flume .
@@ -473,13 +481,13 @@ sudo docker build --tag raspbian-flume .
 
 #### Run flume on container
 
-After building image, run `flume`  container.
+After building the image, run the `flume`  container.
 
 ```bash
 sudo docker run -it --net=host --name flume raspbian-flume
 ```
 
-In, `flume` container, check the configuration file, Modifying broker list. (Change default  value `nuc` to your own NUC's hostname in `/etc/hosts)
+In, the `flume` container, check the configuration file, Modifying the broker list. (Change default  value `nuc` to your own NUC's hostname in `/etc/hosts)
 
 ```bash
 vi conf/flume-conf.properties
