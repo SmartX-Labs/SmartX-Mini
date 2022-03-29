@@ -1,22 +1,60 @@
-# 2. InterConnenct Lab
+# 2. InterConnect Lab
 
 ## Objective
+
+The main part of interConnect Lab is to connect one box with another box which connect computer systems with each other in 2 ways. (Physical interconnect, Data interconnect)
+
+- Physical Interconnect: Connection between boxes via network.
+- Data Interconnect: By using physical Interconnect, connect data between various functions.
 
 ## Concept
 
 ### Raspberry PI
 
+Raspberry PI is small embedded computer that is designed by Raspberry Pi Foundation. In this lecture, we will use Pi2.
+
 ### Apache Kafka
+
+![Kafka Overview](./img/kafka.png)
+
+Apache Kafka is a messaging system with unique design and functionality.
+
+- Topics: maintains feeds of messages in categories
+- Producer: processes that publish messages to a Kafka topic
+- Consumer: processes that subscribe to topics and process the feed of published messages
+- Broker: run as a cluster comprised of one or more servers
 
 ### Net-SNMP
 
+A suite of software for using and deploying the SNMP Protocol.
+
+- Manager : polls agents on the network, correlates and displays information
+- Agent : collects and stores information, responds to manager requests for information, generates traps
+
+![Net-SNMP](./img/NetSNMP.png)
+
+The SNMP(Simple Network Management Protocol) is used in network management systems to monitor network-attached devices, which include routers, switches, servers, workstations, printers, modem racks and more.
+
+![SNMP](./img/SNMP.png)
+
 ### Apache-Flume
+
+![Apache Flume](./img/flume.png)
+
+A distributed, reliable, and available service for efficiently collecting, aggregating, and moving large amounts of log data with many customizable sources, which runs asynchronously. Flume Agents consists of three concepts.
+
+- Source: Consumes events having a specific format
+- Channel: Holds the event until consumed
+- Sink: Removes an event from the channel and puts it into on external repository or another source
 
 ### Docker
 
+"Docker” is containerization technology that enables the creation and use of Linux® containers. Based on containerization, you can used it for Application deployment.
+
+![docker](./img/docker.png)
+
 ## Practice
 
-<!-- Physical Interconnect 이미지도 넣어야 하나? 근데 iperf나 관련된 확인하는 내용은 터미널 여는 내용 말고 다 빠졌던데 -->
 ![overview](img/overview.png)
 
 ### Check `rc-local.service` Setting (In NUC)
