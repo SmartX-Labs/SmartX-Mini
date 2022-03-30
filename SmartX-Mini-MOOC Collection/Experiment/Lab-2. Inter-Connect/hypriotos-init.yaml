@@ -22,6 +22,8 @@ users:
 
 package_upgrade: false
 
+timezone: Asia/Seoul
+
 # Static IP address
 write_files:
   - content: |
