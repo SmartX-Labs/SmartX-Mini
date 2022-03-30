@@ -57,51 +57,6 @@ A distributed, reliable, and available service for efficiently collecting, aggre
 
 ![overview](img/overview.png)
 
-### Check `rc-local.service` Setting (In NUC)
-
-```bash
-sudo touch /etc/rc.local
-sudo chmod +x /etc/rc.local
-sudo vi /lib/systemd/system/rc-local.service
-```
-
-Add below lines in `rc-local.service`
-
-```text
-...
-[Install]
-WantedBy=multi-user.target
-...
-```
-
-Apply the setting and check the `rc-local.service` status
-
-```bash
-sudo systemctl enable rc-local.service
-sudo systemctl start rc-local.service
-sudo systemctl status rc-local.service
-```
-
-![rc-local.service status](./img/rc-local.png)
-<!-- http://realtechtalk.com/Debian_Ubuntu_Mint_rclocal_service_startup_error_solution_rclocalservice_Failed_at_step_EXEC_spawning_etcrclocal_Exec_format_error-2242-articles -->
-If you get Exec format error, Open `/etc/rc.local` and check the first line is `#!/bin/sh -e` and the last line is `exit 0`.
-
-```bash
-sudo vim /etc/rc.local
-```
-
-```bash
-#!/bin/sh -e
-...
-exit 0
-```
-
-Reboot your NUC
-
-```bash
-sudo reboot
-```
-
 ### Raspberry PI OS Installation
 
 Before we start, your Raspberry Pi must be ready with the proper OS. In this lab, we will use “HypriotOS” Linux for it. Insert a Micro SD into your SD card reader and attach the reader to your NUC.
@@ -202,20 +157,53 @@ You need to install several packages in PI.
 
 ```bash
 sudo apt update
-sudo apt install -y openssh-server git vim rdate
+sudo apt install -y git vim rdate openssh-server
 ```
 
-`rdate` sync your PI's time to network. If PI's time(using the `date` command) is incorrect, type the command below.
+The `rdate` sync your PI's time to network. We will handle it in The next section
 
-```bash
-rdate -s time.bora.net
-```
-
-`openssh-server` enables ssh connections to your PI.
-After installing the SSH server, you can access your PI from another computer with SSH.
+After installing `openssh-server`, you can access your PI from other boxes via SSH.
 
 ```bash
 ssh pirate@[PI_IP] #ID: pirate PW: hypriot
+```
+
+If you see this error, then type the command in the error message, It is caused by different ssh keys with the same IP, such as different boxes with the same IP.
+
+![ssh key error](./img/ssh_duplicated.png)
+
+```bash
+ssh-keygen -f "home/$(whoami)/.ssh/know_hosts" -R "[PI_IP_ADDRESS]"
+```
+
+### Check `crontab` Setting to sync clock (In PI)
+
+The clock of Raspberry PI only remains 17 minutes after power off. In this section, we will use `crontab` run every boot.
+
+```bash
+sudo crontab -e
+```
+
+Choose editor you want, and insert code.
+
+```
+@reboot sleep 60 && rdate -s time.bora.net
+```
+
+In 60 seconds after booting, `rdate` sync clock to `time.bora.net`.
+
+<!-- 시각이 맞춰지는데 60초 정도 걸리기 때문에 별로 쓰고 싶지는 않았는데, 부팅 마지막에 실행되는 `rc.local` 의 경우, After=network-online.target(네트워크가 다 켜진 다음 rc.local 실행)을 지정해도 DNS 에러가 뜨고(부팅 후에 같은 커맨드 쓰면 안 뜸), crontab 같은 경우에도 저 60초 정도 기다리지 않으면 DNS 에러가 발생했습니다. 60초는 짧긴 하지만 그래도 이 사이에 시계가 정확해야 하는 일 실행해서 오류가 난다면 아래 수동으로 시간 맞추는 커맨드를 입력하라 합시다.-->
+
+Reboot your PI.
+
+```bash
+sudo reboot
+```
+
+If the clock is still wrong, you can manually sync the clock.
+
+```bash
+sudo rdate -s time.bora.net
 ```
 
 ### Hostname Preparation
