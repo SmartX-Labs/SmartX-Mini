@@ -91,4 +91,9 @@ python3 ~/SmartX-mini/ubuntu-kafkatodb/broker_to_influxdb.py
 
 <img width="450" alt="image" src="https://user-images.githubusercontent.com/82452337/160812960-9810fa2c-733e-4cbf-8e1c-a627323aff65.png">
 
+## Lab Summary
+
+With Tower Lab, you have experimented role of Monitor Tower.
+
+Visibility Center function to enable ‘distributed monitoring’ over remote Boxes and to store ‘monitoring information’ to TSDB(Time Series Database).
 
