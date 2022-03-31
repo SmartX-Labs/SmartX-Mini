@@ -28,19 +28,25 @@ Node.js is an open-source, cross-platform, back-end JavaScript runtime environme
 
 Run a Docker Container
 
-`$ sudo docker run -it --net=host --name=webserver lshyeung/smartx_webserver`
+```bash
+sudo docker run -it --net=host --name=webserver lshyeung/smartx_webserver
+```
 
 On container
 
-`# apt-get update`
+```bash
+apt-get update
 
-`# apt-get install vim`
+apt-get install vim
+```
 
 ### 1-2 Docker Container for Node.js Web Server: Server code (NUC)
 
 Open Server code and change NUC IP
 
-`#vi ~/SmartX-mini/IoT-labs/webserver.js`
+```bash
+vi ~/SmartX-mini/IoT-labs/webserver.js
+```
 
 <img width="418" alt="image" src="https://user-images.githubusercontent.com/63437430/160828580-7201f53f-e66a-40d3-8682-ca237476b20a.png">
 
@@ -48,33 +54,43 @@ Open Server code and change NUC IP
 
 Download package from GitHub
 
-`$ git clone https://github.com/adafruit/Adafruit_python_DHT.git`
+```bash
+git clone https://github.com/adafruit/Adafruit_python_DHT.git
+```
 
 Install package
 
-`$ cd Adafruit_python_DHT`
+```bash
+cd Adafruit_python_DHT
 
-`$ sudo apt-get update`
+sudo apt-get update
 
-`$ sudo apt-get install python3-pip`
+sudo apt-get install python3-pip
 
-`$ sudo python3 -m pip install --upgrade pip setuptools wheel`
+sudo python3 -m pip install --upgrade pip setuptools wheel
 
-`$ sudo python3 setup.py install`
+sudo python3 setup.py install
+```
 
 If you have error while build package.
 
-`$ sudo apt install -y build-essential python3-dev`
+```bash
+sudo apt install -y build-essential python3-dev
+```
 
 ### 2–2 Temperature / Humidity Sensor test on Raspberry PI: Sensor test (PI)
 
 Move to example directory
 
-`$ cd ~/Adafruit_python_DHT/examples`
+```bash
+cd ~/Adafruit_python_DHT/examples
+```
 
 Modify test code (Change python to python 3)
 
-`$ sudo vi AdafruitDHT.py`
+```bash
+sudo vi AdafruitDHT.py
+```
 
 ```python
 #!/usr/bin/python
@@ -100,15 +116,19 @@ Execute test code
 
 Install dependencies at RPi
 
-`$ sudo apt-get update`
+```bash
+sudo apt-get update
 
-`$ sudo apt-get install python3-numpy`
+sudo apt-get install python3-numpy
 
-`$ sudo apt-get install mercurial`
+sudo apt-get install mercurial
+```
 
 Open Sensor Data Capture code and Change IP Address
 
-`$ vi ~/SmartX-mini/IoT-Labs/RPI_capture.py`
+```bash
+vi ~/SmartX-mini/IoT-Labs/RPI_capture.py
+```
 
 <img width="472" alt="image" src="https://user-images.githubusercontent.com/63437430/160829267-f2198912-a27d-4ee3-9b44-e5af753aff6d.png">
 
@@ -116,7 +136,9 @@ Open Sensor Data Capture code and Change IP Address
 
 Open Sensor Data Capture code and Change IP Address
 
-`$ vi ~/SmartX-mini/IoT-Labs/RPI_transfer.py`
+```bash
+vi ~/SmartX-mini/IoT-Labs/RPI_transfer.py
+```
 
 <img width="498" alt="image" src="https://user-images.githubusercontent.com/63437430/160829383-8053b56c-a4ea-42d1-b4d1-220502b7754a.png">
 
@@ -124,20 +146,24 @@ Open Sensor Data Capture code and Change IP Address
 
 At the Docker container in NUC (Webserver)
 
-`$ cd ~/SmartX-mini/IoT-labs`
+```bash
+cd ~/SmartX-mini/IoT-labs
 
-`$ nodejs webserver.js`
+nodejs webserver.js
+```
 
 At the Laptop (Tower)
 Open Web browser and go to `http://<NUC_IP>`
 
 At the Rpi (Sensor Data Capture and Transfer)
 
-`$ cd ~/SmartX-mini/IoT-labs`
+```bash
+cd ~/SmartX-mini/IoT-labs
 
-`$ chmod +x process.sh`
+chmod +x process.sh
 
-`$ sudo ./process.sh`
+sudo ./process.sh
+```
 
 <img width="490" alt="image" src="https://user-images.githubusercontent.com/63437430/161033216-2c5035de-e827-4f05-a095-f912c2772777.png">
 
