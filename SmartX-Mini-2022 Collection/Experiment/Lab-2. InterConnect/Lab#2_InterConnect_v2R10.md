@@ -186,7 +186,7 @@ sudo crontab -e
 
 Choose editor you want, and insert code.
 
-```
+```bash
 @reboot sleep 60 && rdate -s time.bora.net
 ```
 
