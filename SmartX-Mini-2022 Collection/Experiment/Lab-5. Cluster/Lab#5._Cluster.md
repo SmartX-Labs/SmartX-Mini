@@ -223,7 +223,8 @@ sudo wipefs --all /dev/<partition>
 # For All NUCs
 sudo apt-get update && sudo apt-get install -y apt-transport-https curl ipvsadm wget
 
-cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list deb http://apt.kubernetes.io/ kubernetes-xenial main
+cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
 
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
