@@ -17,7 +17,7 @@ Raspberry PI is a small, embedded computer designed by Raspberry Pi Foundation. 
 
 ![Kafka Overview](./img/kafka.png)
 
-Apache Kafka is a messaging system with a unique design and functionality.
+A messaging systems are designed for better and more convenient, reliable message transfer than end-to-end way. Apache Kafka is a messaging system with a unique design and functionality. It is a high-performance, distributed, fault-tolerant, and reliable messaging system.
 
 - Topics: maintains feeds of messages in categories
 - Producer: processes that publish messages to a Kafka topic
