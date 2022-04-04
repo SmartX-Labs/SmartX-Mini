@@ -45,7 +45,7 @@ Box Lab의 목적은 베어 메탈에 os를 직접 설치해보고 이 안에 �
 ### 1. NUC: OS Installation
 
 OS : Ubuntu Desktop 20.04 LTS(64bit)
-Download Site : https://releases.ubuntu.com/20.04/
+Download Site : <https://releases.ubuntu.com/20.04/>
 Installed on NUC
 
 #### Updates and other software
@@ -100,53 +100,52 @@ Installed on NUC
 
   0. Update & Upgrade
 
-     ```
-     $ sudo apt update
-     $ sudo apt upgrade
+     ```bash
+     sudo apt update
+     sudo apt upgrade
      ```
 
   1. Install net-tools & ifupdown
 
-     ```
-     $ sudo apt install net-tools ifupdown
-     $ ifconfig -a
+     ```bash
+     sudo apt install net-tools ifupdown
+     ifconfig -a
      ```
 
 ![Network Configuration](./img/ifconfig.png)
 
 2. Install openvswitch-switch & make br0 bridge
 
-   ```
-   $ sudo apt intall openvswitch-switch
-   $ sudo ovs-vsctl add-br br0
-   $ sudo ovs-vsctl show
+   ```bash
+   sudo apt intall openvswitch-switch
+   sudo ovs-vsctl add-br br0
+   sudo ovs-vsctl show
    ```
 
 ![Ovs Vsctl Show](./img/ovs_vsctl_show.png)
 
 - Disable netplan
 
-  ```
-  $sudo su
-  #systemctl stop systemd-networkd.socket systemd-networkd networkd-dispatcher systemd-networkd-wait-online
-
-  #systemctl disable systemd-networkd.socket systemd-networkd networkd-dispatcher systemd-networkd-wait-online
-  #systemctl mask systemd-networkd.socket systemd-networkd networkd-dispatcher systemd-networkd-wait-online
-  #apt-get --assume-yes purge nplan netplan.io
-  #exit
+  ```bash
+  sudo su # Enter superuser mod
+  systemctl stop systemd-networkd.socket systemd-networkd networkd-dispatcher systemd-networkd-wait-online
+  systemctl disable systemd-networkd.socket systemd-networkd networkd-dispatcher systemd-networkd-wait-online
+  systemctl mask systemd-networkd.socket systemd-networkd networkd-dispatcher systemd-networkd-wait-online
+  apt-get --assume-yes purge nplan netplan.io
+  exit # Exit superuser mod
   ```
 
   ![SSH](./img/ssh.png)
 
-  ```
-  $ sudo apt update
-  $ sudo apt -y install net-tools ssh
+  ```bash
+  sudo apt update
+  sudo apt -y install net-tools ssh
   ```
 
 - eno1 interface
 
-  ```
-  $ sudo vi /etc/systemd/resolved.conf
+  ```bash
+  sudo vi /etc/systemd/resolved.conf
   ```
 
   > DNS 주소를 명시해주세요
@@ -161,11 +160,11 @@ Installed on NUC
 
   Open /etc/network/interfaces
 
-  ```
-  $ sudo vi /etc/network/interfaces
+  ```bash
+  sudo vi /etc/network/interfaces
   ```
 
-  Configurate the network interface vport_vFunction is a tap interface and attach it to your VM.
+  Configure the network interface `vport_vFunction` is a tap interface and attach it to your VM.
 
   > auto lo  
   > iface lo inet loopback
@@ -186,9 +185,9 @@ Installed on NUC
   > up ip link set dev vport_vFunction up  
   > post-down ip link del dev vport_vFunction
 
-  ```
-  $ sudo systemctl restart systemd-resolved.service
-  $ sudo ifup eno1
+  ```bash
+  sudo systemctl restart systemd-resolved.service
+  sudo ifup eno1
   ```
 
   We will make VM attaching vport_vFunction. You can think this tap as a NIC of VM.
@@ -198,28 +197,28 @@ Installed on NUC
 
   Restrart the whole interfaces 1
 
-  ```
-  $ sudo su
-  # systemctl unmask networking
-  # systemctl enable networking
-  # systemctl restart networking
+  ```bash
+  sudo su
+  systemctl unmask networking
+  systemctl enable networking
+  systemctl restart networking
   ```
 
   add port ‘eno1’ and ‘vport_vFunction’ to ‘br0’
 
-  ```
-  $ sudo ovs-vsctl add-port br0 eno1
-  $ sudo ovs-vsctl add-port br0 vport_vFunction
-  $ sudo ovs-vsctl show
+  ```bash
+  sudo ovs-vsctl add-port br0 eno1
+  sudo ovs-vsctl add-port br0 vport_vFunction
+  sudo ovs-vsctl show
   ```
 
   Restrart the whole interfaces 2
 
-  ```
-  # systemctl unmask networking
-  # systemctl enable networking
-  # systemctl restart networking
-  # exit
+  ```bash
+  systemctl unmask networking
+  systemctl enable networking
+  systemctl restart networking
+  exit
   ```
 
 ### 3. NUC: Making VM with KVM
@@ -228,12 +227,12 @@ Installed on NUC
 
   Install dependency & download Ubuntu 20.04 64bit server image.
 
-  ```
-  $ sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
-  //upgrade KVM
-  //qemu is open-source emulator
+  ```bash
+  sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
+  # upgrade KVM
+  # qemu is open-source emulator
 
-  $ wget http://old-releases.ubuntu.com/releases/focal/ubuntu-20.04-beta-live-server-amd64.iso
+  wget http://old-releases.ubuntu.com/releases/focal/ubuntu-20.04-beta-live-server-amd64.iso
   ```
 
   Now we are ready to make VM. So, continue the setting.
@@ -242,64 +241,67 @@ Installed on NUC
 
   To Make a VM image, command format is
 
-  $ sudo qemu-img create [img_name].img -f qcow2 [storage_capacity]
-
+  ```bash
+  sudo qemu-img create [img_name].img -f qcow2 [storage_capacity]
   ```
-  $ sudo qemu-img create vFunction20.img -f qcow2 10G
+
+  ```bash
+  sudo qemu-img create vFunction20.img -f qcow2 10G
   ```
 
   Boot VM image from Ubuntu iso file (띄어쓰기 주의!)
 
-  $ sudo kvm -m [memory_capacity] -name [vm_name] \
-   -smp cpus=[#cpu],maxcpus= [#maxcpu] \
-   -device virtio-net-pci,netdev=net0 \
-   -netdev tap,id=net0,ifname= [tap_name],script=no \
-   -boot d [img_name].img \
-   -cdrom ubuntu-20.04-beta-live-server-amd64.iso -vnc :[#] \
-   -daemonize -monitor telnet:127.0.0.1:3010,server,nowait,ipv4
-
+  ```bash
+  sudo kvm -m [memory_capacity] -name [vm_name] \
+  -smp cpus=[cpu_numbers],maxcpus= [maxcpu_numbers] \
+  -device virtio-net-pci,netdev=net0 \
+  -netdev tap,id=net0,ifname= [tap_name],script=no \
+  -boot d [img_name].img \
+  -cdrom ubuntu-20.04-beta-live-server-amd64.iso -vnc :[port_number] \
+  -daemonize -monitor telnet:127.0.0.1:3010,server,nowait,ipv4
   ```
-  $ sudo kvm -m 1024 -name tt -smp cpus=2,maxcpus=2 -device virtio-net-pci,netdev=net0 -netdev tap,id=net0,ifname=vport_vFunction,script=no -boot d vFunction20.img -cdrom ubuntu-20.04-beta-live-server-amd64.iso -vnc :5 -daemonize -monitor telnet:127.0.0.1:3010,server,nowait,ipv4
+
+  ```bash
+  sudo kvm -m 1024 -name tt -smp cpus=2,maxcpus=2 -device virtio-net-pci,netdev=net0 -netdev tap,id=net0,ifname=vport_vFunction,script=no -boot d vFunction20.img -cdrom ubuntu-20.04-beta-live-server-amd64.iso -vnc :5 -daemonize -monitor telnet:127.0.0.1:3010,server,nowait,ipv4
   ```
 
   Configure SNAT with iptables for VM network
 
-  ```
-  $ sudo iptables –A FORWARD –i eno1 –j ACCEPT
-  $ sudo iptables –A FORWARD –o eno1 –j ACCEPT
-  $ sudo iptables –t nat –A POSTROUTING –s 192.168.100.0/24 –o eno1 –j SNAT --to <Your ip address>
+  ```bash
+  sudo iptables –A FORWARD –i eno1 –j ACCEPT
+  sudo iptables –A FORWARD –o eno1 –j ACCEPT
+  sudo iptables –t nat –A POSTROUTING –s 192.168.100.0/24 –o eno1 –j SNAT --to <Your ip address>
   ```
 
-  ```
-  $ vi /etc/sysctl.conf
+  ```bash
+  vi /etc/sysctl.conf
   ```
 
   remove annotation sign
 
   > #net.ipv4.ip_forward=1  
-  > -->  
+  →  
   > net.ipv4.ip_forward=1
 
-  ```
-  $ sysctl –p
+  ```bash
+  sysctl –p
   ```
 
 - Install Ubuntu VM (control with ‘Enter key’ and ‘Arrow keys’)
 
   Install VNC viewer and see inside of VM
 
-  ```
-  $ sudo apt-get install tigervnc-viewer
-  $ vncviewer localhost:5
+  ```bash
+  sudo apt-get install tigervnc-viewer
+  vncviewer localhost:5
   ```
 
 ![Install Ubuntu](./img/install_ubuntu.png)
 
 - VM network configuration (control with ‘Enter key’ and ‘Arrow keys’)
 
-> select network device -> Edit IPv4  
-> IPv4 Method -> Manual  
-> 설정
+> select network device → Edit IPv4  
+> IPv4 Method → Manual  
 >
 > subnet: 203.237.53.0/24  
 > Address: <your vm ip>  
@@ -312,31 +314,34 @@ Installed on NUC
 
   When ‘installation completed’ message is shown, terminate the VM
 
-  ```
-  $ sudo killall -9 qemu-system-x86_64
+  ```bash
+  sudo killall -9 qemu-system-x86_64
   ```
 
   boot VM again (mac should be different from others).
 
   command format is
 
-  > $sudo kvm -m [memory_capacity] -name [vm_name] \
-  > -smp cpus=[#cpu],maxcpus= [#maxcpu] \
-  > -device virtio-net-pci,netdev=net0 \
-  > -netdev tap,id=net0,ifname= [tap_name],script=no \
-  > -boot d [img_name].img \
-  > -daemonize
-
+  ```bash
+  sudo kvm -m [memory_capacity] -name [vm_name] \
+  -smp cpus=[cpu_numbers],maxcpus= [maxcpu_numbers] \
+  -device virtio-net-pci,netdev=net0 \
+  -netdev tap,id=net0,ifname= [tap_name],script=no \
+  -boot d [img_name].img \
+  -cdrom ubuntu-20.04-beta-live-server-amd64.iso -vnc :[port_number] \
+  -daemonize -monitor telnet:127.0.0.1:3010,server,nowait,ipv4
   ```
-  $ sudo kvm -m 1024 -name tt -smp cpus=2,maxcpus=2 -device virtio-net-pci,netdev=net0 -netdev tap,id=net0,ifname=vport_vFunction,script=no -boot d vFunction20.img -vnc :5 -daemonize
+
+  ```bash
+  sudo kvm -m 1024 -name tt -smp cpus=2,maxcpus=2 -device virtio-net-pci,netdev=net0 -netdev tap,id=net0,ifname=vport_vFunction,script=no -boot d vFunction20.img -cdrom ubuntu-20.04-beta-live-server-amd64.iso -vnc :5 -daemonize -monitor telnet:127.0.0.1:3010,server,nowait,ipv4
   ```
 
 ### 4. OVS connects with KVM
 
 - Check situation
 
-  ```
-  $ ovs-vsctl show
+  ```bash
+  ovs-vsctl show
   ```
 
   ![Ovs Vsctl](./img/ovs-vsctl.png)
@@ -345,57 +350,58 @@ Installed on NUC
 
 - Don’t forget to install ssh in VM
 
+  ```bash
+  sudo apt update
+  sudo apt install -y net-tools ssh
   ```
-  $ sudo apt update
-  $ sudo apt -y install net-tools ssh
-  ```
-
-```
 
 
-```
-
-Docker is a set of platform as a service (PaaS) products that use OS-level virtualization to deliver software in packages called containers. The service has both free and premium tiers. The software that hosts the containers is called Docker Engine. It was first started in 2013 and is developed by Docker, Inc.
 
 ### 6. Install docker
+
+Docker is a set of platform as a service (PaaS) products that use OS-level virtualization to deliver software in packages called containers. The service has both free and premium tiers. The software that hosts the containers is called Docker Engine. It was first started in 2013 and is developed by Docker, Inc.
 
 Set up the repository
 
 Install packages to allow apt to use a repository over HTTPS
 
-```
-$ sudo apt-get update
-$ sudo apt-get install -y ca-certificates curl gnupg lsb-release
+```bash
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl gnupg lsb-release
 ```
 
 Add Docker's official GPG key
 
-```
-$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+```bash
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 ```
 
 Add the Docker apt repository
 
-```
-$ echo \
+```bash
+echo \
 "deb [arch=$(dpkg --print-architecture)
 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-$(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 ```
 
 Install Docker CE
 
+```bash
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io
 ```
-$ sudo apt-get update
-$ sudo apt-get install docker-ce docker-ce-cli containerd.io
+
 Create /etc/docker
-$ sudo mkdir –p /etc/docker
+
+```bash
+sudo mkdir –p /etc/docker
 ```
 
 Set up the Docker daemon
 
-```
-$ cat <<EOF | sudo tee /etc/docker/daemon.json {
+```bash
+cat <<EOF | sudo tee /etc/docker/daemon.json {
 "exec-opts": ["native.cgroupdriver=systemd"], "log-driver": "json-file",
 "log-opts": {
 "max-size": "100m" },
@@ -405,58 +411,63 @@ EOF
 
 Create /etc/systemd/system/docker.service.d
 
-```
-$ sudo mkdir -p /etc/systemd/system/docker.service.d
-$ sudo systemctl daemon-reload
-$ sudo systemctl enable docker
-$ sudo systemctl restart docker
-$ sudo systemctl restart docker.socket
+```bash
+sudo mkdir -p /etc/systemd/system/docker.service.d
+sudo systemctl daemon-reload
+sudo systemctl enable docker
+sudo systemctl restart docker
+sudo systemctl restart docker.socket
 ```
 
 ### 7. Check docker installation
 
-```
-$ sudo docker run hello-world
+```bash
+sudo docker run hello-world
 ```
 
-> if it doesn’t work, please try several times.
-> Nevertheless, if you are not successful, try running the last 4 lines of page 38 again.
+If it doesn’t work, please try several times. Nevertheless, if you are not successful, try running from the installing `docker-ce`, `docker-ce-cli`, `containerd.io`
 
 ![1](./img/1.png)
 
 ### 8. Make Container
 
-```
-$sudo docker run -it --net=none --name [container_name] ubuntu /bin/bash > docker run –it --net=none --name c1 ubuntu /bin/bash
+```bash
+sudo docker run -it --net=none --name [container_name] ubuntu /bin/bash > docker run –it --net=none --name c1 ubuntu /bin/bash
 ```
 
 ### 9. Connect docker container
 
 Install OVS-docker utility in host machine (Not inside of Docker container)
 
-```
-$sudo docker start [container_name]
-$sudo ovs-docker del-port br0 veno1 [container_name]
-$sudo ovs-docker add-port br0 veno1 [container_name] --ipaddress=---your docker ip---/24 \ --gateway=---gateway ip---
+```bash
+sudo docker start [container_name]
+sudo ovs-docker del-port br0 veno1 [container_name]
+sudo ovs-docker add-port br0 veno1 [container_name] --ipaddress=[docker_container_IP]/24 \ --gateway=[gateway_IP]
 ```
 
 Enter to docker container
 
+```bash
+sudo docker attach [container_name] 
 ```
-$sudo docker attach [container_name] #apt update
-#apt install net-tools
-#apt install iputils-ping
+
+In container,
+
+```bash
+apt update
+apt install net-tools
+apt install iputils-ping
 ```
 
 ### 10. Keep Docker network configuration
 
 Modify /etc/rc.local
 
-```
-$sudo vi /etc/rc.local
+```bash
+sudo vi /etc/rc.local
 ```
 
-```
+```bash
 #!/bin/bash
 docker start [container_name]
 ovs-docker del-port br0 veno1 [containerName]
@@ -467,16 +478,16 @@ ovs-docker add-port br0 veno1 [container_name] --ipaddress=---your docker ip---/
 
 Check connectivity with ping command
 
-```
-$ovs-docker add-port br0 eth0 docker1 —ipaddress=210.125.84.70/24 --gateway=210.125.84.1 $docker attach docker1
+```bash
+ovs-docker add-port br0 eth0 docker1 —ipaddress=210.125.84.70/24 --gateway=210.125.84.1 $docker attach docker1
 ```
 
 ![2](./img/2.png)
 
 Do ping test with NUC
 
-```
-$ping [NUC IP address]
+```bash
+ping [NUC IP address]
 ```
 
 > Do above command in both container and KVM VM
