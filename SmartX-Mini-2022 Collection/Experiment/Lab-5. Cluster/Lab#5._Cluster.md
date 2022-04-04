@@ -87,14 +87,21 @@ sudo hostname nuc01
 sudo hostname nuc02
 # From NUC 3 :
 sudo hostname nuc03
+```
 
-# For All NUCs
+For All NUCs
+
+```shell
 sudo vi /etc/hosts
-# Append the following context into /etc/hosts :
-	127.0.0.1	localhost
-	<IP Address of NUC 1>  nuc01
-	<IP Address of NUC 2>  nuc02
-	<IP Address of NUC 3>  nuc03
+```
+
+Append the following context into /etc/hosts :
+
+```text
+ 127.0.0.1 localhost
+ <IP Address of NUC 1>  nuc01
+ <IP Address of NUC 2>  nuc02
+ <IP Address of NUC 3>  nuc03
 ```
 
 ### Check Connectivity
@@ -113,11 +120,9 @@ ping nuc01
 ping nuc02
 ```
 
-
-
 ## Preparations for Clustering
 
-### Docker Intall : Prerequisite for Kubernetes
+### Docker Install : Prerequisite for Kubernetes
 
 - Install packages to allow apt to use a repository over HTTPS 
 
@@ -250,7 +255,7 @@ sudo rm -rf /var/lib/rook
 sudo kubeadm init --ignore-preflight-errors=all
 ```
 
-- **Copy  the commnad for joining Kubernetes Nodes(NUC2, NUC3)** 
+- **Copy  the commnad for joining Kubernetes Nodes(NUC2, NUC3)**
 
 ![commnad](img/9.png)
 
@@ -317,7 +322,7 @@ kubectl create clusterrolebinding permissive-binding \
 
 ### Install ROOK Storage
 
-```shell 
+```shell
 # For NUC1
 cd $HOME
 git clone --single-branch --branch release-1.2 https://github.com/rook/rook.git
