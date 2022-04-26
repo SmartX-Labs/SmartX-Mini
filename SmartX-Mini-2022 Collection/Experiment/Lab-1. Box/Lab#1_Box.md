@@ -1,16 +1,19 @@
-# 1. Box Lab
+# Lab 1 - Box Lab
 
-## Objective
+## 0. Objective
 
 ![Final Goal](./img/final_goal.png)
 
-Box Lab의 목적은 베어 메탈에 os를 직접 설치해보고 이 안에 가상 머신과 컨테이너를 띄우고 가상 스위치로 서로를 연결시켜보는 것입니다.
+Box Lab에서는 \*베어 메탈에 os를 직접 설치해보고  
+이 안에 가상 머신과 컨테이너를 띄운 뒤 가상 스위치로 서로를 연결시켜보는 것입니다.
+
+\*베어 메탈: 하드웨어 상에 어떤 소프트웨어도 설치되어 있지 않은 상태
 
 ![Objective](./img/objective.png)
 
 세부적인 구조를 보면 다음과 같습니다.
 
-## Theory
+## 1. Theory
 
 ![VM Container](./img/vm_container.png)
 
@@ -40,19 +43,19 @@ Box Lab의 목적은 베어 메탈에 os를 직접 설치해보고 이 안에 �
   Software-based switches (running with the power of CPUs) are known to be more flexible/upgradable and benefited of virtualization (memory overcommit, page sharing, …)
   VMs (similarly containers) have logical (virtual) NIC with virtual Ethernet ports so that they can be plugged into the virtual interface (port) of virtual switches.
 
-## Practice
+## 2. Practice
 
-### 1. NUC: OS Installation
+### 2-1. NUC: OS Installation
 
 OS : Ubuntu Desktop 20.04 LTS(64bit)
 Download Site : <https://releases.ubuntu.com/20.04/>
 Installed on NUC
 
-#### Updates and other software
+#### 2-1-1. Updates and other software
 
 - Select ‘Minimal installation’
 
-#### Installation type
+#### 2-1-2. Installation type
 
 - Select ‘Something else’
 - On /dev/sda or /dev/nvme0n1
@@ -83,11 +86,11 @@ Installed on NUC
 
   우측 상단의 Wired Connection GUI 이용
 
-### 2. NUC: Network Configuration
+### 2-2. NUC: Network Configuration
 
 - ‘Temporary’ Network Configuration using GUI
 
-![Network Configuration](./img/network_configuration.png)
+  ![Network Configuration](./img/network_configuration.png)
 
 - Click the LAN configuration icon.
   <img src="./img/network_setting1.png" />
@@ -112,7 +115,7 @@ Installed on NUC
      ifconfig -a
      ```
 
-![Network Configuration](./img/ifconfig.png)
+     ![Network Configuration](./img/ifconfig.png)
 
 2. Install openvswitch-switch & make br0 bridge
 
@@ -122,7 +125,7 @@ Installed on NUC
    sudo ovs-vsctl show
    ```
 
-![Ovs Vsctl Show](./img/ovs_vsctl_show.png)
+   ![Ovs Vsctl Show](./img/ovs_vsctl_show.png)
 
 - Disable netplan
 
@@ -221,7 +224,7 @@ Installed on NUC
   exit
   ```
 
-### 3. NUC: Making VM with KVM
+### 2-3. NUC: Making VM with KVM
 
 - Install dependency to upgrade KVM
 
@@ -280,7 +283,7 @@ Installed on NUC
   remove annotation sign
 
   > #net.ipv4.ip_forward=1  
-  →  
+  > →  
   > net.ipv4.ip_forward=1
 
   ```bash
@@ -296,19 +299,19 @@ Installed on NUC
   vncviewer localhost:5
   ```
 
-![Install Ubuntu](./img/install_ubuntu.png)
+  ![Install Ubuntu](./img/install_ubuntu.png)
 
 - VM network configuration (control with ‘Enter key’ and ‘Arrow keys’)
 
-> select network device → Edit IPv4  
-> IPv4 Method → Manual  
->
-> subnet: 203.237.53.0/24  
-> Address: <your vm ip>  
-> Gateway: <gateway ip>  
-> Name Servers: 8.8.8.8
+  > select network device → Edit IPv4  
+  > IPv4 Method → Manual
+  >
+  > subnet: 203.237.53.0/24  
+  > Address: <your vm ip>  
+  > Gateway: <gateway ip>  
+  > Name Servers: 8.8.8.8
 
-![Ubuntu Network](./img/ubuntu_network.png)
+  ![Ubuntu Network](./img/ubuntu_network.png)
 
 - Installation Completed (control with ‘Enter key’ and ‘Arrow keys’)
 
@@ -336,7 +339,7 @@ Installed on NUC
   sudo kvm -m 1024 -name tt -smp cpus=2,maxcpus=2 -device virtio-net-pci,netdev=net0 -netdev tap,id=net0,ifname=vport_vFunction,script=no -boot d vFunction20.img -cdrom ubuntu-20.04-beta-live-server-amd64.iso -vnc :5 -daemonize -monitor telnet:127.0.0.1:3010,server,nowait,ipv4
   ```
 
-### 4. OVS connects with KVM
+### 2-4. OVS connects with KVM
 
 - Check situation
 
@@ -346,7 +349,7 @@ Installed on NUC
 
   ![Ovs Vsctl](./img/ovs-vsctl.png)
 
-### 5. NUC: Installing ssh in VM
+### 2-5. NUC: Installing ssh in VM
 
 - Don’t forget to install ssh in VM
 
@@ -355,9 +358,7 @@ Installed on NUC
   sudo apt install -y net-tools ssh
   ```
 
-
-
-### 6. Install docker
+### 2-6. Install docker
 
 Docker is a set of platform as a service (PaaS) products that use OS-level virtualization to deliver software in packages called containers. The service has both free and premium tiers. The software that hosts the containers is called Docker Engine. It was first started in 2013 and is developed by Docker, Inc.
 
@@ -419,7 +420,7 @@ sudo systemctl restart docker
 sudo systemctl restart docker.socket
 ```
 
-### 7. Check docker installation
+### 2-7. Check docker installation
 
 ```bash
 sudo docker run hello-world
@@ -429,13 +430,17 @@ If it doesn’t work, please try several times. Nevertheless, if you are not suc
 
 ![1](./img/1.png)
 
-### 8. Make Container
+### 2-8. Make Container
 
 ```bash
-sudo docker run -it --net=none --name [container_name] ubuntu /bin/bash > docker run –it --net=none --name c1 ubuntu /bin/bash
+sudo docker run -it --net=none --name [container_name] ubuntu /bin/bash
 ```
 
-### 9. Connect docker container
+```bash
+sudo docker run –it --net=none --name c1 ubuntu /bin/bash
+```
+
+### 2-9. Connect docker container
 
 Install OVS-docker utility in host machine (Not inside of Docker container)
 
@@ -448,7 +453,7 @@ sudo ovs-docker add-port br0 veno1 [container_name] --ipaddress=[docker_containe
 Enter to docker container
 
 ```bash
-sudo docker attach [container_name] 
+sudo docker attach [container_name]
 ```
 
 In container,
@@ -459,7 +464,7 @@ apt install net-tools
 apt install iputils-ping
 ```
 
-### 10. Keep Docker network configuration
+### 2-10. Keep Docker network configuration
 
 Modify /etc/rc.local
 
@@ -474,7 +479,7 @@ ovs-docker del-port br0 veno1 [containerName]
 ovs-docker add-port br0 veno1 [container_name] --ipaddress=---your docker ip---/24 —gateway=---gateway ip---
 ```
 
-### 11. Check connectivity: VM & Container
+### 2-11. Check connectivity: VM & Container
 
 Check connectivity with ping command
 
