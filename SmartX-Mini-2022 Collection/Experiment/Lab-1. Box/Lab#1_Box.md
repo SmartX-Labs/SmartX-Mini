@@ -169,60 +169,62 @@ Installed on NUC
 
   Configure the network interface `vport_vFunction` is a tap interface and attach it to your VM.
 
-  > auto lo  
-  > iface lo inet loopback
-  >
-  > auto br0  
-  > iface br0 inet static  
-  > address <your nuc ip>  
-  > netmask 255.255.255.0  
-  > gateway <gateway ip>  
-  > dns-nameservers 8.8.8.8
-  >
-  > auto eno1  
-  > iface eno1 inet manual
-  >
-  > auto vport_vFunction  
-  > iface vport_vFunction inet manual  
-  > pre-up ip tuntap add vport_vFunction mode tap  
-  > up ip link set dev vport_vFunction up  
-  > post-down ip link del dev vport_vFunction
+  ```text
+  auto lo
+  iface lo inet loopback
+
+  auto br0
+  iface br0 inet static
+      address <your nuc ip>
+      netmask 255.255.255.0
+      gateway <gateway ip>
+      dns-nameservers 8.8.8.8
+
+  auto eno1
+  iface eno1 inet manual
+
+  auto vport_vFunction
+  iface vport_vFunction inet manual
+      pre-up ip tuntap add vport_vFunction mode tap
+      up ip link set dev vport_vFunction up
+      post-down ip link del dev vport_vFunction
+  ```
 
   ```bash
   sudo systemctl restart systemd-resolved.service
   sudo ifup eno1
   ```
 
-  We will make VM attaching vport_vFunction. You can think this tap as a NIC of VM.
-  Below is the figure you configurated so far
+We will make VM attaching vport_vFunction. You can think this tap as a NIC of VM.
+Below is the figure you configurated so far
 
-  ![Vport VFunction](./img/vport_vFunction.png)
+![Vport VFunction](./img/vport_vFunction.png)
 
-  Restrart the whole interfaces 1
+Restrart the whole interfaces 1
 
-  ```bash
-  sudo su
-  systemctl unmask networking
-  systemctl enable networking
-  systemctl restart networking
-  ```
+```bash
+sudo su
+systemctl unmask networking
+systemctl enable networking
+systemctl restart networking
+```
 
-  add port ‘eno1’ and ‘vport_vFunction’ to ‘br0’
+add port ‘eno1’ and ‘vport_vFunction’ to ‘br0’
 
-  ```bash
-  sudo ovs-vsctl add-port br0 eno1
-  sudo ovs-vsctl add-port br0 vport_vFunction
-  sudo ovs-vsctl show
-  ```
+```bash
+sudo ovs-vsctl add-port br0 eno1
+sudo ovs-vsctl add-port br0 vport_vFunction
+sudo ovs-vsctl show
+```
 
-  Restrart the whole interfaces 2
+Restrart the whole interfaces 2
 
-  ```bash
-  systemctl unmask networking
-  systemctl enable networking
-  systemctl restart networking
-  exit
-  ```
+```bash
+systemctl unmask networking
+systemctl enable networking
+systemctl restart networking
+exit
+```
 
 ### 2-3. NUC: Making VM with KVM
 
@@ -389,8 +391,11 @@ signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docke
 Install Docker CE
 
 ```bash
-sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd.io
+# For All NUCs
+sudo apt-get update && sudo apt-get install -y --allow-downgrades \
+          containerd.io=1.2.13-2 \
+          docker-ce=5:19.03.11~3-0~ubuntu-$(lsb_release -cs) \
+          docker-ce-cli=5:19.03.11~3-0~ubuntu-$(lsb_release -cs)
 ```
 
 Create /etc/docker
@@ -440,6 +445,9 @@ sudo docker run -it --net=none --name [container_name] ubuntu /bin/bash
 sudo docker run –it --net=none --name c1 ubuntu /bin/bash
 ```
 
+※ ctrl + p, q: detach docker container  
+※ docker attach [container_name]: get into docker container console
+
 ### 2-9. Connect docker container
 
 Install OVS-docker utility in host machine (Not inside of Docker container)
@@ -466,6 +474,10 @@ apt install iputils-ping
 
 ### 2-10. Keep Docker network configuration
 
+Whenever NUC is rebooted,
+network configuration of Docker container is initialized
+by executing commands in rc.local
+
 Modify /etc/rc.local
 
 ```bash
@@ -476,7 +488,7 @@ sudo vi /etc/rc.local
 #!/bin/bash
 docker start [container_name]
 ovs-docker del-port br0 veno1 [containerName]
-ovs-docker add-port br0 veno1 [container_name] --ipaddress=---your docker ip---/24 —gateway=---gateway ip---
+ovs-docker add-port br0 veno1 [container_name] --ipaddress=---your docker ip---/24 -—gateway=---gateway ip---
 ```
 
 ### 2-11. Check connectivity: VM & Container
@@ -484,7 +496,8 @@ ovs-docker add-port br0 veno1 [container_name] --ipaddress=---your docker ip---/
 Check connectivity with ping command
 
 ```bash
-ovs-docker add-port br0 eth0 docker1 —ipaddress=210.125.84.70/24 --gateway=210.125.84.1 $docker attach docker1
+ovs-docker add-port br0 eth0 docker1 -—ipaddress=---your docker ip---/24 --gateway=---gateway ip---
+docker attach docker1
 ```
 
 ![2](./img/2.png)
