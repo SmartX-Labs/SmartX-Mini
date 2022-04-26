@@ -1,6 +1,6 @@
-# 4. IoT Lab
+# Lab#4. IoT Lab
 
-## Concept
+## 0. Concept
 
 <img width="916" alt="image" src="https://user-images.githubusercontent.com/63437430/161034315-b201ae9e-463e-44d3-a02f-4796a90f6ee4.png">
 
@@ -8,13 +8,13 @@
 - NUC Box for IoT-Cloud Hub
 - Tower Box for IoT-Cloud Service Visualization
 
-### Node.js
+### 0-1. Node.js
 
 Node.js is an open-source, cross-platform, back-end JavaScript runtime environment that runs on the V8 engine and executes JavaScript code outside a web browser. Node.js lets developers use JavaScript to write command line tools and for server-side scripting—running scripts server-side to produce dynamic web page content before the page is sent to the user's web browser. Consequently, Node.js represents a "JavaScript everywhere" paradigm, unifying web-application development around a single programming language, rather than different languages for server-side and client-side scripts.
 
 ---
 
-## Preparation
+## 1. Preparation
 
 <img width="846" alt="image" src="https://user-images.githubusercontent.com/63437430/160827300-04a1b986-7b04-452b-a78f-15d7293bb20b.png">
 
@@ -22,9 +22,9 @@ Node.js is an open-source, cross-platform, back-end JavaScript runtime environme
 
 ---
 
-## Practice
+## 2. Practice
 
-### 1-1 Docker Container for Node.js Web Server: Run Container (NUC)
+### 2-1. Docker Container for Node.js Web Server: Run Container (NUC)
 
 Run a Docker Container
 
@@ -40,7 +40,7 @@ apt-get update
 apt-get install vim
 ```
 
-### 1-2 Docker Container for Node.js Web Server: Server code (NUC)
+### 2-2. Docker Container for Node.js Web Server: Server code (NUC)
 
 Open Server code and change NUC IP
 
@@ -50,7 +50,9 @@ vi ~/SmartX-mini/IoT-labs/webserver.js
 
 <img width="418" alt="image" src="https://user-images.githubusercontent.com/63437430/160828580-7201f53f-e66a-40d3-8682-ca237476b20a.png">
 
-### 2–1 Temperature / Humidity Sensor test on Raspberry PI: Install package (PI)
+### 2-3. Temperature / Humidity Sensor test on Raspberry PI:
+
+#### 2–3-1. Install package (PI)
 
 Download package from GitHub
 
@@ -78,7 +80,7 @@ If you have error while build package.
 sudo apt install -y build-essential python3-dev
 ```
 
-### 2–2 Temperature / Humidity Sensor test on Raspberry PI: Sensor test (PI)
+#### 2–3-2. TemSensor test (PI)
 
 Move to example directory
 
@@ -112,7 +114,9 @@ Execute test code
 
 <img width="498" alt="image" src="https://user-images.githubusercontent.com/63437430/160829118-04bae048-2cf3-4c3f-8cd9-4b9295b019d0.png">
 
-### 3–1 Sensor Data Capture and Transfer: Sensor Data capture code (PI)
+### 2-4. Sensor Data Capture and Transfer
+
+#### 2-4-1. Sensor Data capture code (PI)
 
 Install dependencies at RPi
 
@@ -132,7 +136,7 @@ vi ~/SmartX-mini/IoT-Labs/RPI_capture.py
 
 <img width="472" alt="image" src="https://user-images.githubusercontent.com/63437430/160829267-f2198912-a27d-4ee3-9b44-e5af753aff6d.png">
 
-### 3–2 Sensor Data Capture and Transfer: Sensor Data transfer code (PI)
+#### 2-4-2. Sensor Data transfer code (PI)
 
 Open Sensor Data Capture code and Change IP Address
 
@@ -142,7 +146,7 @@ vi ~/SmartX-mini/IoT-Labs/RPI_transfer.py
 
 <img width="498" alt="image" src="https://user-images.githubusercontent.com/63437430/160829383-8053b56c-a4ea-42d1-b4d1-220502b7754a.png">
 
-### 4 Execute IoT Web service
+### 2-5. Execute IoT Web service
 
 At the Docker container in NUC (Webserver)
 
@@ -169,7 +173,7 @@ sudo ./process.sh
 
 ---
 
-## Lab Summary
+## 3. Lab Summary
 
 An example-based realization of container-based IoT-Cloud services that can sense and actuate distributed IoT devices (i.e., Boxes).
 

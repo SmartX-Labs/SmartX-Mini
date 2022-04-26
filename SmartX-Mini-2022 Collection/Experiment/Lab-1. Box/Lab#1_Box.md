@@ -1,4 +1,4 @@
-# Lab 1 - Box Lab
+# Lab#1. Box Lab
 
 ## 0. Objective
 

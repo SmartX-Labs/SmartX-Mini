@@ -1,6 +1,6 @@
 # Lab#5. Cluster Lab
 
-## Objective
+## 0. Objective
 
 - In Lab1 Box Lab, we deployed virtual machine and docker container for deploy isolated applications in specific enviornment 
 - Kubernetes can automate deployment, scaling and management applications that containerized by docker. It is called container orchestrator.
@@ -10,37 +10,37 @@
 - On this cluster, we will install distributed storage system called ceph. 
   - With similar concept with docker - kubernetes, Rook is open source cloud-native Ceph strogae orchestrator for K8S.
 
-## Concept
+## 1. Concept
 
-### Docker Containers
+### 1-1. Docker Containers
 
 ![Docker Containers](img/1.png)
 
 - **Docker** is an open platform for building, shipping and running distributed applications. It gives programmers, development teams and operations engineers the common toolbox they need to take advantage of the distributed and networked nature of modern applications.
 
-### Container Orchestration
+### 1-2. Container Orchestration
 
 ![Container Orchestration](img/2.png)
 
 - **Container orchestration** refers to the process of organizing the work of individual components and application layers.
 - **Container orchestration engines** all allow users to control when containers start and stop, group them into clusters, and coordinate all of the processes that compose an application. Container orchestration tools allow users to guide container deployment and automate updates, health monitoring, and failover procedures.
 
-### Kubernetes
+### 1-3. Kubernetes
 
 ![](img/3.png)
 
 - **Kubernetes** is an open-source system for automating deployment, scaling, and management of containerized applications.
 
-#### **Kubernetes** **Features**
+#### 1-3-1. **Kubernetes** **Features**
 
 - **Horizontal scaling**: Scale your application up and down with a simple command, with a UI, or automatically based on CPU usage.
 - **Self-healing:** Restarts containers that fail, replaces and reschedules containers when nodes die, kills containers that don't respond to your user-defined health check, and doesn't advertise them to clients until they are ready to serve.
 - **Service discovery and load balancing:** No need to modify your application to use an unfamiliar service discovery mechanism. Kubernetes gives containers their own IP addresses and a single DNS name for a set of containers, and can load-balance across them. 
 - **Storage Orchestration:** Automatically mount the storage system of your choice, whether from local storage, a public cloud provider 
 
-### Ceph and Rook
+### 1-4. Ceph and Rook
 
-#### Ceph
+#### 1-4-1. Ceph
 
 ![Ceph](img/4.png)
 
@@ -50,22 +50,22 @@
 
   A Ceph Storage Cluster requires at least one Ceph Monitor, Ceph Manager, and Ceph OSD (Object Storage Daemon). The Ceph Metadata Server is also required when running Ceph Filesystem clients.
 
-#### Rook
+#### 1-4-2. Rook
 
 ![Rook](img/5.png)
 
 - **Rook** is an open source cloud-native **Ceph** **storage orchestrator** for Kubernetes, providing the platform, framework, and support for a diverse set of storage solutions to natively integrate with cloud-native environments.
 - Rook turns storage software into self-managing, self-scaling, and self-healing storage services. It does this by automating deployment, bootstrapping, configuration, provisioning, scaling, upgrading, migration, disaster recovery, monitoring, and resource management. Rook uses the facilities provided by the underlying cloud-native container management, scheduling and orchestration platform to perform its duties.
 
-## Practice
+## 2. Practice
 
 ![Rook](img/6.png)
 
-## Lab Preparation
+### 2-1. Lab Preparation
 
 ![Lab Preparation](img/7.png)
 
-### For NUC1
+#### 2-1-1. For NUC1
 
 ``` shell
 # In new terminal
@@ -78,7 +78,7 @@ ssh <nuc3 name>@<nuc3 IP address>
 
 ```
 
-### For All NUCs
+#### 2-1-2. For All NUCs
 
 ```shell
 # From NUC 1 :
@@ -104,7 +104,7 @@ Append the following context into /etc/hosts :
  <IP Address of NUC 3>  nuc03
 ```
 
-### Check Connectivity
+#### 2-1-3. Check Connectivity
 
 ```shell
 # From NUC1
@@ -120,9 +120,9 @@ ping nuc01
 ping nuc02
 ```
 
-## Preparations for Clustering
+### 2-2. Preparations for Clustering
 
-### Docker Install : Prerequisite for Kubernetes
+#### 2-2-1. Docker Install : Prerequisite for Kubernetes
 
 - Install packages to allow apt to use a repository over HTTPS 
 
@@ -191,14 +191,14 @@ sudo systemctl restart docker.socket
 
 ```
 
-### xfprogs Install : Prerequisite for ROOK
+#### 2-2-2. xfprogs Install : Prerequisite for ROOK
 
 ```shell
 # For All NUCs
 sudo apt-get install xfsprogs
 ```
 
-## Kubernets Installation(For All NUCs)
+### 2-3. Kubernets Installation(For All NUCs)
 
 ![Kubernets Installation](img/8.png)
 
@@ -206,7 +206,7 @@ sudo apt-get install xfsprogs
 - NUC 2 : Worker 1
 - NUC 3 : Worker 2
 
-### Swapoff
+#### 2-3-1. Swapoff
 
 ```shell
 # For All NUCs
@@ -215,14 +215,14 @@ sudo sed -e '/\/swapfile/s/^/#/g' -i /etc/fstab
 sudo sed -e '/\/swap\.img/s/^/#/g' -i /etc/fstab
 ```
 
-### Initialization patition for installing Ceph
+#### 2-3-2. Initialization patition for installing Ceph
 
 ```shell
 # For All NUCs
 sudo wipefs --all /dev/<partition>
 ```
 
-### Install Kubernetes
+#### 2-3-3. Install Kubernetes
 
 ```shell
 # For All NUCs
@@ -237,9 +237,9 @@ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
 sudo apt-get update && sudo apt-get install -y --allow-downgrades kubelet=1.14.1-00 kubeadm=1.14.1-00 kubectl=1.14.1-00 kubernetes-cni=0.7.5-00
 ```
 
-## Kubernetes Configuration
+### 2-4. Kubernetes Configuration
 
-### Kubernetes Master Setting(For NUC1)
+#### 2-4-1. Kubernetes Master Setting(For NUC1)
 
 ```shell
 # For NUC1
@@ -269,7 +269,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 kubectl taint nodes --all node-role.kubernetes.io/master-
 ```
 
-### Kubernetes Worker Setting(For NUC2, NUC3)
+#### 2-4-2. Kubernetes Worker Setting(For NUC2, NUC3)
 
 ```shell
 # For NUC2, NUC3
@@ -285,14 +285,14 @@ sudo rm -rf /var/lib/rook
 sudo kubeadm join <NUC1 IP>:6443 --token <YOUR TOKEN> --discovery-token-ca-cert-hash <YOUR HASH> --ignore-preflight-errors=all
 ```
 
-### Check Nodes at NUC1
+#### 2-4-3. Check Nodes at NUC1
 
 ````shell
 # For NUC1
 Kubectl get node
 ````
 
-## Kubenetes Network Plugin Installation
+### 2-5. Kubenetes Network Plugin Installation
 
 ```shell
 # For NUC1
@@ -307,9 +307,9 @@ kubectl get po -n kube-system -o wide
 
 ![Kubenetes Network Plugin Installation](img/10.png)
 
-## ROOK Installation
+### 2-6. ROOK Installation
 
-### Remove RBAC
+#### 2-6-1. Remove RBAC
 
 ```shell
 # For NUC1
@@ -320,7 +320,7 @@ kubectl create clusterrolebinding permissive-binding \
 --group=system:serviceaccounts
 ```
 
-### Install ROOK Storage
+#### 2-6-2. Install ROOK Storage
 
 ```shell
 # For NUC1
@@ -332,7 +332,7 @@ kubectl create -f operator.yaml
 kubectl create -f cluster-test.yaml
 ```
 
-### Check rook-ceph-pod
+#### 2-6-3. Check rook-ceph-pod
 
 ```shell
 watch kubectl get pod -n rook-ceph
@@ -340,7 +340,7 @@ watch kubectl get pod -n rook-ceph
 
 ![Check rook-ceph-pod](img/11.png)
 
-### Install & Execute ToolBox
+#### 2-6-4. Install & Execute ToolBox
 
 ```shell
 # For NUC1
@@ -357,16 +357,16 @@ watch ceph status
 exit
 ```
 
-### Add StorageClass
+#### 2-6-5. Add StorageClass
 
 ```shell
 # For NUC1
 kubectl apply -f csi/rbd/storageclass-test.yaml
 ```
 
-## WordPress Installation
+### 2-7. WordPress Installation
 
-### Deploy WordPress on the Cluster
+#### 2-7-1. Deploy WordPress on the Cluster
 
 ![Deploy WordPress on the Cluster](img/12.png)
 
@@ -380,7 +380,7 @@ kubectl create -f $HOME/rook/cluster/examples/kubernetes/wordpress.yaml
 watch kubectl get pod
 ```
 
-### Access Wordpress Web
+#### 2-7-2. Access Wordpress Web
 
 ![Access Wordpress Web](img/13.png)
 
