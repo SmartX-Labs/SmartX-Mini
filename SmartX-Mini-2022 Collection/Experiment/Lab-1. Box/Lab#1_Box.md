@@ -382,10 +382,10 @@ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o 
 Add the Docker apt repository
 
 ```bash
+# For All NUCs
 echo \
-"deb [arch=$(dpkg --print-architecture)
-signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 ```
 
 Install Docker CE
@@ -407,11 +407,15 @@ sudo mkdir –p /etc/docker
 Set up the Docker daemon
 
 ```bash
-cat <<EOF | sudo tee /etc/docker/daemon.json {
-"exec-opts": ["native.cgroupdriver=systemd"], "log-driver": "json-file",
-"log-opts": {
-"max-size": "100m" },
-"storage-driver": "overlay2" }
+cat <<EOF | sudo tee /etc/docker/daemon.json
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2"
+}
 EOF
 ```
 
