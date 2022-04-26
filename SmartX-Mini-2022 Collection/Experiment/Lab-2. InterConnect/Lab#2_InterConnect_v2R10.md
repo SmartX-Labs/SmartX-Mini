@@ -1,19 +1,19 @@
-# 2. InterConnect Lab
+# Lab#2. InterConnect Lab
 
-## Objective
+## 0. Objective
 
 The main part of interConnect Lab is to connect one box with another box which connects computer systems in 2 ways. (Physical interconnect, Data interconnect)
 
 - Physical Interconnect: Connection between boxes via the network.
 - Data Interconnect: By using physical Interconnect, connect data between various functions.
 
-## Concept
+## 1. Concept
 
-### Raspberry PI
+### 1-1. Raspberry PI
 
 Raspberry PI is a small, embedded computer designed by Raspberry Pi Foundation. It has different HW and properties. For example, It doesn't have HW real-time clock. So, after booting, the time of PI is initialized. In this lecture, we will use Pi2.
 
-### Apache Kafka
+### 1-2. Apache Kafka
 
 ![Kafka Overview](./img/kafka.png)
 
@@ -24,7 +24,7 @@ A messaging systems are designed for better and more convenient, reliable messag
 - Consumer: processes that subscribe to topics and process the feed of published messages
 - Broker: run as a cluster comprised of one or more servers
 
-### Net-SNMP
+### 1-3. Net-SNMP
 
 A suite of software for using and deploying the SNMP Protocol.
 
@@ -37,7 +37,7 @@ The SNMP(Simple Network Management Protocol) is used in network management syste
 
 ![SNMP](./img/SNMP.png)
 
-### Apache-Flume
+### 1-4. Apache-Flume
 
 ![Apache Flume](./img/flume.png)
 
@@ -47,17 +47,17 @@ A distributed, reliable, and available service for efficiently collecting, aggre
 - Channel: Holds the event until consumed
 - Sink: Removes an event from the channel and puts it into an external repository or another source
 
-### Docker
+### 1-5. Docker
 
 "Docker” is a containerization technology that enables the creation and use of Linux® containers. Based on containerization, you can use it for Application deployment.
 
 ![docker](./img/docker.png)
 
-## Practice
+## 2. Practice
 
 ![overview](img/overview.png)
 
-### Raspberry PI OS Installation
+### 2-1. Raspberry PI OS Installation
 
 Before we start, your Raspberry Pi must be ready with the proper OS. In this lab, we will use “HypriotOS” Linux for it. Insert a Micro SD into your SD card reader and attach the reader to your NUC.
 
@@ -68,7 +68,7 @@ Before we start, your Raspberry Pi must be ready with the proper OS. In this lab
 > sudo poweroff # It requires superuser permission.
 > ```
 
-#### Download Required Package and File(In NUC)
+#### 2-1-1. Download Required Package and File(In NUC)
 
 Type the commands below to get the “flash” script for the OS setup. Then, type the `flash` command to see if it’s installed correctly.
 
@@ -99,7 +99,7 @@ wget https://github.com/hypriot/image-builder-rpi/releases/download/v1.9.0/hypri
 ls -alh # Check all files
 ```
 
-#### Edit HypriotOS setting and flash SD card.(In NUC)
+#### 2-1-2. Edit HypriotOS setting and flash SD card.(In NUC)
 
 To modify the HypriotOS configuration file for your Raspberry Pi, open the `hypriotos-init.yaml` file and edit its network section.
 
@@ -135,9 +135,9 @@ flash –u hypriotos-init.yaml -d /dev/sdc –f hypriotos-rpi-v1.9.0.img.zip
 
 Insert the SD card back into your Raspberry PI and boot it up.
 
-### Raspberry PI network Configuration
+### 2-2. Raspberry PI network Configuration
 
-#### Check network setting(In PI)
+#### 2-2-1. Check network setting(In PI)
 
 In PI, type `ifconfing` to check your network interface setting
 
@@ -151,7 +151,7 @@ Then check the routing table
 netstat -rn
 ```
 
-#### Install required packages(In PI)
+#### 2-2-2. Install required packages(In PI)
 
 You need to install several packages in PI.
 
@@ -176,7 +176,7 @@ If you see this error, then type the command in the error message, It is caused 
 ssh-keygen -f "home/$(whoami)/.ssh/know_hosts" -R "[PI_IP_ADDRESS]"
 ```
 
-### Check `crontab` Setting to sync clock (In PI)
+### 2-3. Check `crontab` Setting to sync clock (In PI)
 
 The clock of Raspberry PI only remains 17 minutes after power off. In this section, we will use `crontab` run every boot.
 
@@ -206,11 +206,11 @@ If the clock is still wrong, you can manually sync the clock.
 sudo rdate -s time.bora.net
 ```
 
-### Hostname Preparation
+### 2-4. Hostname Preparation
 
 Every machine in a network that communicates with itself must know its address. This information is stored in `/etc/hosts`.
 
-#### Hostname preparation for Kafka(In NUC)
+#### 2-4-1. Hostname preparation for Kafka(In NUC)
 
 Open `/etc/hosts` in NUC.
 
@@ -233,7 +233,7 @@ To check your hostname, you can use  the `hostname` command.
 hostname
 ```
 
-#### Hostname preparation for Kafka(In PI)
+#### 2-4-2. Hostname preparation for Kafka(In PI)
 
 Repeat the same job in Raspberry PI.
 
@@ -250,7 +250,7 @@ Add 2 lines below the file.
 
 When pi is rebooted, the information in `/etc/hosts` disappears.
 
-#### Verification for hostname preparation(In PI, NUC)
+#### 2-4-3. Verification for hostname preparation(In PI, NUC)
 
 For NUC,
 
@@ -268,7 +268,7 @@ sudo ping [Your Raspberry PI hostname]
 
 If it was successful, We can be sure that NUC knows its hostname and Pi’s hostname and Pi also know its hostname and NUC’s hostname.
 
-### Kafka Deployment(IN NUC)
+### 2-5. Kafka Deployment(IN NUC)
 
 We’ll use one zookeeper, 3 brokers, and one consumer containers that share the host’s public IP address. The zookeeper container doesn’t have a broker id. Each Broker has a unique id and port to interact with each other. The consumer container is just used to manage topics and check the data from brokers.
 
@@ -280,7 +280,7 @@ We’ll use one zookeeper, 3 brokers, and one consumer containers that share the
 |          broker2         |  Host's IP |     2     |      9092      |
 |         consumer         |  Host's IP |     -     |        -       |
 
-#### Clone repository from GitHub
+#### 2-5-1. Clone repository from GitHub
 
 ```bash
 cd ~
@@ -293,7 +293,7 @@ In this section, we use `ubuntu-kafka`.
 cd ~/Smartx-mini/ubuntu-kafka
 ```
 
-#### Check Dockerfile
+#### 2-5-2. Check Dockerfile
 
 Open `Dockerfile` and check it is correct.
 
@@ -311,7 +311,7 @@ RUN sudo mv kafka_2.10-0.8.2.0 /kafka
 WORKDIR /kafka
 ```
 
-#### Build docker image
+#### 2-5-3. Build docker image
 
 Then build docker image with `docker build`. It takes a long time.
 
@@ -330,7 +330,7 @@ docker stop [container_name] # stop docker container
 docker attach [container_name] # connect docker container
 ```
 
-#### Place docker containers
+#### 2-5-4. Place docker containers
 
 After building the `ubuntu-kafka` image, make, run and attach the docker container
 
@@ -340,7 +340,7 @@ docker run -it --net=host --name [container name] ubuntu-kafka
 
 We need to run total 5 containers (`zookeeper`, `broker0`, `broker1`, `broker2`, `consumer`)
 
-#### Zookeeper configuration(IN NUC, `zookeeper` container)
+#### 2-5-5. Zookeeper configuration(IN NUC, `zookeeper` container)
 
 In the `zookeeper` container, Open the zookeeper properties file.
 
@@ -356,7 +356,7 @@ Execute the zookeeper first, leave the zookeeper running and open a new terminal
 bin/zookeeper-server-start.sh config/zookeeper.properties 
 ```
 
-#### Broker configuration(IN NUC, `broker0`, `broker1`, `broker2` containers)
+#### 2-5-6. Broker configuration(IN NUC, `broker0`, `broker1`, `broker2` containers)
 
 Open server properties file and change proper broker id and port (they must be unique to each other) 
 
@@ -380,7 +380,7 @@ bin/kafka-server-start.sh config/server.properties
 
 Repeat this in 3 broker containers. (`broker0`, `broker1`, `broker2`)
 
-#### Consumer topic configuration(IN NUC, `consumer` container)
+#### 2-5-7. Consumer topic configuration(IN NUC, `consumer` container)
 
 Create a topic named `resource` in consumer.
 
@@ -395,9 +395,9 @@ bin/kafka-topics.sh --list --zookeeper localhost:2181 # list all topic of zookee
 bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic resource # Check existence of topic `resource` of zookeeper in localhost:2181
 ```
 
-### Flume on Raspberry PI(IN PI)
+### 2-6. Flume on Raspberry PI(IN PI)
 
-#### Install Net-SNMP installation
+#### 2-6-1. Install Net-SNMP installation
 
 ```bash
 sudo apt update
@@ -421,7 +421,7 @@ Restart `snmpd.service`.
 sudo systemctl restart snmpd.service
 ```
 
-#### Clone repository from GitHub
+#### 2-6-2. Clone repository from GitHub
 
 ```bash
 cd ~
@@ -434,7 +434,7 @@ In this section, we use `raspbian-flume`.
 cd ~/Smartx-mini/raspbian-flume
 ```
 
-#### Check Dockerfile
+#### 2-6-3. Check Dockerfile
 
 Open `Dockerfile` and check it is correct.
 
@@ -459,7 +459,7 @@ ADD flume-conf.properties /flume/conf/
 WORKDIR /flume
 ```
 
-#### Build docker image
+#### 2-6-4. Build docker image
 
 Then build docker image with `docker build`. It takes a longer time than NUC.
 
@@ -467,7 +467,7 @@ Then build docker image with `docker build`. It takes a longer time than NUC.
 sudo docker build --tag raspbian-flume .
 ```
 
-#### Run flume on container
+#### 2-6-5. Run flume on container
 
 After building the image, run the `flume`  container.
 
@@ -489,7 +489,7 @@ bin/flume-ng agent --conf conf --conf-file conf/flume-conf.properties --name age
 
 If an error occurs, check the host of pi again.
 
-### Consume message from brokers(IN NUC, IN `consumer` container)
+### 2-7. Consume message from brokers(IN NUC, IN `consumer` container)
 
 Launch consumer script on the `consumer` container.
 
@@ -499,9 +499,9 @@ bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic resource --from
 
 ![consumer result](./img/consumer%20result.png)
 
-## Review
+## 3. Review
 
-### Lab Summary
+### 3-1. Lab Summary
 
 1. How to physically inter-connect two kinds of Boxes? (NUC and Raspberry PI)
 2. How to inter-connect data transfer (via Kafka messaging) between functions located in different boxes?
