@@ -459,7 +459,7 @@ Install OVS-docker utility in host machine (Not inside of Docker container)
 ```bash
 sudo docker start [container_name]
 sudo ovs-docker del-port br0 veno1 [container_name]
-sudo ovs-docker add-port br0 veno1 [container_name] --ipaddress=[docker_container_IP]/24 \ --gateway=[gateway_IP]
+sudo ovs-docker add-port br0 veno1 [container_name] --ipaddress=[docker_container_IP]/24 --gateway=[gateway_IP]
 ```
 
 Enter to docker container
