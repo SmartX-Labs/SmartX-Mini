@@ -120,7 +120,7 @@ Installed on NUC
 2. Install openvswitch-switch & make br0 bridge
 
    ```bash
-   sudo apt intall openvswitch-switch
+   sudo apt install openvswitch-switch
    sudo ovs-vsctl add-br br0
    sudo ovs-vsctl show
    ```
@@ -138,24 +138,18 @@ Installed on NUC
   exit # Exit superuser mod
   ```
 
-  ![SSH](./img/ssh.png)
-
-  ```bash
-  sudo apt update
-  sudo apt -y install net-tools ssh
-  ```
-
 - eno1 interface
 
   ```bash
   sudo vi /etc/systemd/resolved.conf
   ```
 
-  > DNS 주소를 명시해주세요
-  >
+  DNS 왼편에 있는 주석표시 /# 을 제거해주고  
+  DNS 주소를 명시해주세요
+
   > …
   >
-  > DNS = 8.8.8.8 8.8.4.4
+  > DNS=203.237.32.100 203.237.32.101
   >
   > …
 
@@ -169,6 +163,9 @@ Installed on NUC
 
   Configure the network interface `vport_vFunction` is a tap interface and attach it to your VM.
 
+  !!!들여쓰기는 Tab 한번입니다!!!  
+  < !!!괄호 안에 현재 nuc의 ip와 gateway ip를 입력해주세요!!! >
+
   ```text
   auto lo
   iface lo inet loopback
@@ -178,7 +175,7 @@ Installed on NUC
       address <your nuc ip>
       netmask 255.255.255.0
       gateway <gateway ip>
-      dns-nameservers 8.8.8.8
+      dns-nameservers 203.237.32.100
 
   auto eno1
   iface eno1 inet manual
@@ -196,17 +193,15 @@ Installed on NUC
   ```
 
 We will make VM attaching vport_vFunction. You can think this tap as a NIC of VM.
-Below is the figure you configurated so far
-
-![Vport VFunction](./img/vport_vFunction.png)
 
 Restrart the whole interfaces 1
 
 ```bash
-sudo su
+sudo su # Enter superuser mod
 systemctl unmask networking
 systemctl enable networking
 systemctl restart networking
+exit # Exit superuser mod
 ```
 
 add port ‘eno1’ and ‘vport_vFunction’ to ‘br0’
@@ -217,13 +212,18 @@ sudo ovs-vsctl add-port br0 vport_vFunction
 sudo ovs-vsctl show
 ```
 
+Below is the figure you configurated so far
+
+![Vport VFunction](./img/vport_vFunction.png)
+
 Restrart the whole interfaces 2
 
 ```bash
+sudo su # Enter superuser mod
 systemctl unmask networking
 systemctl enable networking
 systemctl restart networking
-exit
+exit # Exit superuser mod
 ```
 
 ### 2-3. NUC: Making VM with KVM
@@ -244,11 +244,7 @@ exit
 
 - Prepare for Ubuntu VM
 
-  To Make a VM image, command format is
-
-  ```bash
-  sudo qemu-img create [img_name].img -f qcow2 [storage_capacity]
-  ```
+  To Make a VM image, enter this command
 
   ```bash
   sudo qemu-img create vFunction20.img -f qcow2 10G
@@ -257,39 +253,30 @@ exit
   Boot VM image from Ubuntu iso file (띄어쓰기 주의!)
 
   ```bash
-  sudo kvm -m [memory_capacity] -name [vm_name] \
-  -smp cpus=[cpu_numbers],maxcpus= [maxcpu_numbers] \
-  -device virtio-net-pci,netdev=net0 \
-  -netdev tap,id=net0,ifname= [tap_name],script=no \
-  -boot d [img_name].img \
-  -cdrom ubuntu-20.04-beta-live-server-amd64.iso -vnc :[port_number] \
-  -daemonize -monitor telnet:127.0.0.1:3010,server,nowait,ipv4
-  ```
-
-  ```bash
   sudo kvm -m 1024 -name tt -smp cpus=2,maxcpus=2 -device virtio-net-pci,netdev=net0 -netdev tap,id=net0,ifname=vport_vFunction,script=no -boot d vFunction20.img -cdrom ubuntu-20.04-beta-live-server-amd64.iso -vnc :5 -daemonize -monitor telnet:127.0.0.1:3010,server,nowait,ipv4
   ```
 
-  Configure SNAT with iptables for VM network
+  Configure SNAT with iptables for VM network  
+  < 괄호 안에 IP 주소를 써주세요! >
 
   ```bash
-  sudo iptables –A FORWARD –i eno1 –j ACCEPT
-  sudo iptables –A FORWARD –o eno1 –j ACCEPT
-  sudo iptables –t nat –A POSTROUTING –s 192.168.100.0/24 –o eno1 –j SNAT --to <Your ip address>
+  sudo iptables -A FORWARD -i eno1 -j ACCEPT
+  sudo iptables -A FORWARD -o eno1 -j ACCEPT
+  sudo iptables -t nat -A POSTROUTING -s 192.168.100.0/24 -o eno1 -j SNAT --to <Your ip address>
   ```
 
   ```bash
-  vi /etc/sysctl.conf
+  sudo vi /etc/sysctl.conf
   ```
 
-  remove annotation sign
+  remove annotation sign ( '#' )
 
   > #net.ipv4.ip_forward=1  
   > →  
   > net.ipv4.ip_forward=1
 
   ```bash
-  sysctl –p
+  sudo sysctl -p
   ```
 
 - Install Ubuntu VM (control with ‘Enter key’ and ‘Arrow keys’)
@@ -298,6 +285,11 @@ exit
 
   ```bash
   sudo apt-get install tigervnc-viewer
+  ```
+
+  turn on this vm
+
+  ```bash
   vncviewer localhost:5
   ```
 
@@ -305,15 +297,17 @@ exit
 
 - VM network configuration (control with ‘Enter key’ and ‘Arrow keys’)
 
+  ![Ubuntu Network](./img/ubuntu_network.png)
+
   > select network device → Edit IPv4  
   > IPv4 Method → Manual
   >
-  > subnet: 203.237.53.0/24  
-  > Address: <your vm ip>  
-  > Gateway: <gateway ip>  
-  > Name Servers: 8.8.8.8
+  > subnet: 172.29.0.0/24  
+  > Address: < your VM IP >  
+  > Gateway: 172.29.0.254  
+  > Name Servers: 203.237.32.100
 
-  ![Ubuntu Network](./img/ubuntu_network.png)
+  search domains는 공백으로 남겨주세요!
 
 - Installation Completed (control with ‘Enter key’ and ‘Arrow keys’)
 
@@ -325,20 +319,8 @@ exit
 
   boot VM again (mac should be different from others).
 
-  command format is
-
   ```bash
-  sudo kvm -m [memory_capacity] -name [vm_name] \
-  -smp cpus=[cpu_numbers],maxcpus= [maxcpu_numbers] \
-  -device virtio-net-pci,netdev=net0 \
-  -netdev tap,id=net0,ifname= [tap_name],script=no \
-  -boot d [img_name].img \
-  -cdrom ubuntu-20.04-beta-live-server-amd64.iso -vnc :[port_number] \
-  -daemonize -monitor telnet:127.0.0.1:3010,server,nowait,ipv4
-  ```
-
-  ```bash
-  sudo kvm -m 1024 -name tt -smp cpus=2,maxcpus=2 -device virtio-net-pci,netdev=net0 -netdev tap,id=net0,ifname=vport_vFunction,script=no -boot d vFunction20.img -cdrom ubuntu-20.04-beta-live-server-amd64.iso -vnc :5 -daemonize -monitor telnet:127.0.0.1:3010,server,nowait,ipv4
+  sudo kvm -m 1024 -name tt -smp cpus=2,maxcpus=2 -device virtio-net-pci,netdev=net0 -netdev tap,id=net0,ifname=vport_vFunction,script=no -boot d vFunction20.img
   ```
 
 ### 2-4. OVS connects with KVM
@@ -357,8 +339,10 @@ exit
 
   ```bash
   sudo apt update
-  sudo apt install -y net-tools ssh
+  sudo apt -y install ssh
   ```
+
+  ssh로도 vm에 원격 접속할 수 있지만, 이 lab에서는 다루지 않겠습니다.
 
 ### 2-6. Install docker
 
@@ -383,7 +367,7 @@ Add the Docker apt repository
 
 ```bash
 # For All NUCs
-echo \
+ echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
   $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 ```
@@ -401,7 +385,7 @@ sudo apt-get update && sudo apt-get install -y --allow-downgrades \
 Create /etc/docker
 
 ```bash
-sudo mkdir –p /etc/docker
+sudo mkdir -p /etc/docker
 ```
 
 Set up the Docker daemon
@@ -425,8 +409,8 @@ Create /etc/systemd/system/docker.service.d
 sudo mkdir -p /etc/systemd/system/docker.service.d
 sudo systemctl daemon-reload
 sudo systemctl enable docker
-sudo systemctl restart docker
-sudo systemctl restart docker.socket
+sudo systemctl start docker
+sudo systemctl start docker.socket
 ```
 
 ### 2-7. Check docker installation
@@ -441,12 +425,10 @@ If it doesn’t work, please try several times. Nevertheless, if you are not suc
 
 ### 2-8. Make Container
 
-```bash
-sudo docker run -it --net=none --name [container_name] ubuntu /bin/bash
-```
+Make a container named 'c1'
 
 ```bash
-sudo docker run –it --net=none --name c1 ubuntu /bin/bash
+sudo docker run -dit --net=none --name c1 ubuntu:20.04 /bin/bash
 ```
 
 ※ ctrl + p, q: detach docker container  
@@ -457,15 +439,15 @@ sudo docker run –it --net=none --name c1 ubuntu /bin/bash
 Install OVS-docker utility in host machine (Not inside of Docker container)
 
 ```bash
-sudo docker start [container_name]
-sudo ovs-docker del-port br0 veno1 [container_name]
-sudo ovs-docker add-port br0 veno1 [container_name] --ipaddress=[docker_container_IP]/24 --gateway=[gateway_IP]
+sudo docker start c1
+sudo ovs-docker del-port br0 veno1 c1
+sudo ovs-docker add-port br0 veno1 c1 --ipaddress=[docker_container_IP]/24 --gateway=[gateway_IP]
 ```
 
 Enter to docker container
 
 ```bash
-sudo docker attach [container_name]
+sudo docker attach c1
 ```
 
 In container,
@@ -478,40 +460,21 @@ apt install iputils-ping
 
 ### 2-10. Keep Docker network configuration
 
-Whenever NUC is rebooted,
-network configuration of Docker container is initialized
-by executing commands in rc.local
-
-Modify /etc/rc.local
-
-```bash
-sudo vi /etc/rc.local
-```
-
-```bash
-#!/bin/bash
-docker start [container_name]
-ovs-docker del-port br0 veno1 [containerName]
-ovs-docker add-port br0 veno1 [container_name] --ipaddress=---your docker ip---/24 -—gateway=---gateway ip---
-```
+Whenever NUC is rebooted, network configuration of Docker container is initialized by executing commands in rc.local
 
 ### 2-11. Check connectivity: VM & Container
 
 Check connectivity with ping command
 
 ```bash
-ovs-docker add-port br0 eth0 docker1 -—ipaddress=---your docker ip---/24 --gateway=---gateway ip---
+ovs-docker add-port br0 eth0 docker1 -—ipaddress=<your docker ip>/24 --gateway=<gateway ip>
 docker attach docker1
 ```
 
-![2](./img/2.png)
-
-Do ping test with NUC
+Do ping test with VM and Container
 
 ```bash
-ping [NUC IP address]
+ping <VM IP address>
 ```
 
 > Do above command in both container and KVM VM
-
-![3](./img/3.png)
