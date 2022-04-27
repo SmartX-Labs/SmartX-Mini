@@ -372,11 +372,17 @@ Add the Docker apt repository
   $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 ```
 
-Install Docker CE
+Update APT repos.
 
 ```bash
 # For All NUCs
-sudo apt-get update && sudo apt-get install -y --allow-downgrades \
+sudo apt-get update
+```
+
+Install Docker
+
+```bash
+sudo apt-get install -y --allow-downgrades \
           containerd.io=1.2.13-2 \
           docker-ce=5:19.03.11~3-0~ubuntu-$(lsb_release -cs) \
           docker-ce-cli=5:19.03.11~3-0~ubuntu-$(lsb_release -cs)
@@ -443,6 +449,7 @@ Install OVS-docker utility in host machine (Not inside of Docker container)
 sudo docker start c1
 sudo ovs-docker del-port br0 veno1 c1
 sudo ovs-docker add-port br0 veno1 c1 --ipaddress=[docker_container_IP]/24 --gateway=[gateway_IP]
+# 여러분에게 알려드린 gateway IP와 docker container IP를 넣어서 진행해주세요.
 ```
 
 Enter to docker container
