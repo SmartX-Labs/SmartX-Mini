@@ -475,7 +475,6 @@ Whenever NUC is rebooted, network configuration of Docker container is initializ
 Check connectivity with ping command
 
 ```bash
-ovs-docker add-port br0 eth0 c1 -—ipaddress=<your docker ip>/24 --gateway=<gateway ip>
 docker attach c1
 ```
 
