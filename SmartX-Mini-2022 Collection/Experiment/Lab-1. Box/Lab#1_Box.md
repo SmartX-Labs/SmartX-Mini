@@ -428,10 +428,11 @@ If it doesn’t work, please try several times. Nevertheless, if you are not suc
 Make a container named 'c1'
 
 ```bash
-sudo docker run -dit --net=none --name c1 ubuntu:20.04 /bin/bash
+sudo docker run -it --net=none --name c1 ubuntu:20.04 /bin/bash
 ```
 
-※ ctrl + p, q: detach docker container  
+Press ctrl + p, q to detach docker container.
+
 ※ docker attach [container_name]: get into docker container console
 
 ### 2-9. Connect docker container
