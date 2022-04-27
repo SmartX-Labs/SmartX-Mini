@@ -164,7 +164,7 @@ Installed on NUC
   Configure the network interface `vport_vFunction` is a tap interface and attach it to your VM.
 
   !!!들여쓰기는 Tab 한번입니다!!!  
-  < !!!괄호 안에 현재 nuc의 ip와 gateway ip를 입력해주세요!!! >
+  `<your nuc ip>`에 현재 nuc의 ip와 `<gateway ip>`에 gateway ip를 입력해주세요.
 
   ```text
   auto lo
@@ -257,7 +257,7 @@ exit # Exit superuser mod
   ```
 
   Configure SNAT with iptables for VM network  
-  < 괄호 안에 IP 주소를 써주세요! >
+  `<Your ip address>` 부분을 IP 주소를 써주세요!
 
   ```bash
   sudo iptables -A FORWARD -i eno1 -j ACCEPT
@@ -468,8 +468,8 @@ Whenever NUC is rebooted, network configuration of Docker container is initializ
 Check connectivity with ping command
 
 ```bash
-ovs-docker add-port br0 eth0 docker1 -—ipaddress=<your docker ip>/24 --gateway=<gateway ip>
-docker attach docker1
+ovs-docker add-port br0 eth0 c1 -—ipaddress=<your docker ip>/24 --gateway=<gateway ip>
+docker attach c1
 ```
 
 Do ping test with VM and Container
