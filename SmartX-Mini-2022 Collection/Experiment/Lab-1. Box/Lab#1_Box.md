@@ -237,7 +237,7 @@ exit # Exit superuser mod
   # upgrade KVM
   # qemu is open-source emulator
 
-  wget http://old-releases.ubuntu.com/releases/focal/ubuntu-20.04-beta-live-server-amd64.iso
+  wget https://ftp.lanet.kr/ubuntu-releases/20.04.4/ubuntu-20.04.4-live-server-amd64.iso
   ```
   
 
@@ -254,7 +254,7 @@ exit # Exit superuser mod
   Boot VM image from Ubuntu iso file (띄어쓰기 주의!)
 
   ```bash
-  sudo kvm -m 1024 -name tt -smp cpus=2,maxcpus=2 -device virtio-net-pci,netdev=net0 -netdev tap,id=net0,ifname=vport_vFunction,script=no -boot d vFunction20.img -cdrom ubuntu-20.04-beta-live-server-amd64.iso -vnc :5 -daemonize -monitor telnet:127.0.0.1:3010,server,nowait,ipv4
+  sudo kvm -m 1024 -name tt -smp cpus=2,maxcpus=2 -device virtio-net-pci,netdev=net0 -netdev tap,id=net0,ifname=vport_vFunction,script=no -boot d vFunction20.img -cdrom ubuntu-20.04.4-live-server-amd64.iso -vnc :5 -daemonize -monitor telnet:127.0.0.1:3010,server,nowait,ipv4
   ```
 
 
@@ -325,15 +325,6 @@ exit # Exit superuser mod
   ```bash
   sudo kvm -m 1024 -name tt -smp cpus=2,maxcpus=2 -device virtio-net-pci,netdev=net0 -netdev tap,id=net0,ifname=vport_vFunction,script=no -boot d vFunction20.img
   ```
-  
-  if failed to install vm
-  
-  ```bash
-  wget https://ftp.lanet.kr/ubuntu-releases/20.04.4/ubuntu-20.04.4-live-server-amd64.iso
-  
-  sudo kvm -m 1024 -name tt -smp cpus=2,maxcpus=2 -device virtio-net-pci,netdev=net0 -netdev tap,id=net0,ifname=vport_vFunction,script=no -boot d vFunction20.img -cdrom ubuntu-20.04.4-live-server-amd64.iso -vnc :5 -daemonize -monitor telnet:127.0.0.1:3010,server,nowait,ipv4
-  ```
-  
 
 ### 2-4. OVS connects with KVM
 
