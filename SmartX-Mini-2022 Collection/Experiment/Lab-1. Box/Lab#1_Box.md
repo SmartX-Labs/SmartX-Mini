@@ -239,6 +239,7 @@ exit # Exit superuser mod
 
   wget http://old-releases.ubuntu.com/releases/focal/ubuntu-20.04-beta-live-server-amd64.iso
   ```
+  
 
   Now we are ready to make VM. So, continue the setting.
 
@@ -256,6 +257,8 @@ exit # Exit superuser mod
   sudo kvm -m 1024 -name tt -smp cpus=2,maxcpus=2 -device virtio-net-pci,netdev=net0 -netdev tap,id=net0,ifname=vport_vFunction,script=no -boot d vFunction20.img -cdrom ubuntu-20.04-beta-live-server-amd64.iso -vnc :5 -daemonize -monitor telnet:127.0.0.1:3010,server,nowait,ipv4
   ```
 
+
+  
   Configure SNAT with iptables for VM network  
   `<Your ip address>` 부분을 IP 주소를 써주세요!
 
@@ -322,6 +325,15 @@ exit # Exit superuser mod
   ```bash
   sudo kvm -m 1024 -name tt -smp cpus=2,maxcpus=2 -device virtio-net-pci,netdev=net0 -netdev tap,id=net0,ifname=vport_vFunction,script=no -boot d vFunction20.img
   ```
+  
+  if failed to install vm
+  
+  ```bash
+  wget https://ftp.lanet.kr/ubuntu-releases/20.04.4/ubuntu-20.04.4-live-server-amd64.iso
+  
+  sudo kvm -m 1024 -name tt -smp cpus=2,maxcpus=2 -device virtio-net-pci,netdev=net0 -netdev tap,id=net0,ifname=vport_vFunction,script=no -boot d vFunction20.img -cdrom ubuntu-20.04.4-live-server-amd64.iso -vnc :5 -daemonize -monitor telnet:127.0.0.1:3010,server,nowait,ipv4
+  ```
+  
 
 ### 2-4. OVS connects with KVM
 
