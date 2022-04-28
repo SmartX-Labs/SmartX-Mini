@@ -45,6 +45,9 @@ Box Lab에서는 \*베어 메탈에 os를 직접 설치해보고
 
 ## 2. Practice
 
+> When mouse is hover on the code block, copy button is appeared right side of block. You can easily copy whole code using copy button.
+> ![copy button](img/copy.png)
+
 ### 2-1. NUC: OS Installation
 
 OS : Ubuntu Desktop 20.04 LTS(64bit)
