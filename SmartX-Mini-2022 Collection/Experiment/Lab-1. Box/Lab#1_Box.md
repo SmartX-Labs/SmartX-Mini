@@ -169,6 +169,8 @@ Installed on NUC
   !!!들여쓰기는 Tab 한번입니다!!!  
   `<your nuc ip>`에 현재 nuc의 ip와 `<gateway ip>`에 gateway ip를 입력해주세요.
 
+  If your NUC has tow ethernet ports, there is no port named `eno1`. Check which port(`enp88s0` ro `enp89s0`) is connected to ethernet by `ifconfig` command.
+
   ```text
   auto lo
   iface lo inet loopback
