@@ -338,12 +338,12 @@ sudo docker build --tag ubuntu-kafka . #You should type '.'
 It's good to know basic docker commands. For more detail, visit [docker official document](https://docs.docker.com/engine/reference/commandline/cli/).
 
 ```bash
-docker --help #show docker instruction 
-docker ps # show list of container
-docker rm # remove docker container
-docker start [container_name] # start docker container
-docker stop [container_name] # stop docker container
-docker attach [container_name] # connect docker container
+sudo docker --help #show docker instruction 
+sudo docker ps # show list of container
+sudo docker rm # remove docker container
+sudo docker start [container_name] # start docker container
+sudo docker stop [container_name] # stop docker container
+sudo docker attach [container_name] # connect docker container
 ```
 
 #### 2-5-4. Place docker containers
@@ -351,7 +351,7 @@ docker attach [container_name] # connect docker container
 After building the `ubuntu-kafka` image, make, run and attach the docker container
 
 ```bash
-docker run -it --net=host --name [container name] ubuntu-kafka
+sudo docker run -it --net=host --name [container name] ubuntu-kafka
 ```
 
 We need to run total 5 containers (`zookeeper`, `broker0`, `broker1`, `broker2`, `consumer`)
@@ -361,7 +361,7 @@ We need to run total 5 containers (`zookeeper`, `broker0`, `broker1`, `broker2`,
 In the `zookeeper` container, Open the zookeeper properties file.
 
 ```bash
-vi config/zookeeper.properties
+sudo vi config/zookeeper.properties
 ```
 
 Check the client port is `2181`
@@ -377,7 +377,7 @@ bin/zookeeper-server-start.sh config/zookeeper.properties
 Open server properties file and change proper broker id and port (they must be unique to each other) 
 
 ```bash
-vi config/server.properties
+sudo vi config/server.properties
 ```
 
 | Function(container) Name | IP Address | Broker ID | Listening Port |
@@ -494,7 +494,7 @@ sudo docker run -it --net=host --name flume raspbian-flume
 In, the `flume` container, check the configuration file, Modifying the broker list. (Change default  value `nuc` to your own NUC's hostname in `/etc/hosts)
 
 ```bash
-vi conf/flume-conf.properties
+sudo vi conf/flume-conf.properties
 ```
 
 Then run flume on `flume` container.
