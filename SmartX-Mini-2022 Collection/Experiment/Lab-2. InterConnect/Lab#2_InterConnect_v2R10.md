@@ -57,6 +57,22 @@ A distributed, reliable, and available service for efficiently collecting, aggre
 
 ![overview](img/overview.png)
 
+> If you have a problem with the internet connection even the box can send a ping to the gateway. You can fix this problem by editing `etc/resolv.conf`. Open `/etc/resolv.conf`
+>
+> ```bash
+> sudo vim /etc/resolv.conf 
+> ```
+>
+> Add name server like below.
+>
+> ```text
+> ...
+> # operation for /etc/resolv.conf
+> nameserver 203.237.32.100
+> ```
+>
+> After every boot, the content of `/etc/resolv.conf` is gone, you should do the above steps again.
+
 ### 2-1. Raspberry PI OS Installation
 
 Before we start, your Raspberry Pi must be ready with the proper OS. In this lab, we will use “HypriotOS” Linux for it. Insert a Micro SD into your SD card reader and attach the reader to your NUC.
