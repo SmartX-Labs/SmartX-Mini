@@ -133,8 +133,8 @@ sudo vim hypriotos-init.yaml
 …
  # static IP configuration:
       interface eth0
-      static ip_address=172.29.0.250/24 # Write your Raspberry Pi address
-      static routers=172.29.0.254 # Write your Gateway address
+      static ip_address=<Your Raspberry PI IP>/24
+      static routers=172.29.0.254
       static domain_name_servers=203.237.32.100 203.237.32.101 # Write your given DNS server
 …
 ```
