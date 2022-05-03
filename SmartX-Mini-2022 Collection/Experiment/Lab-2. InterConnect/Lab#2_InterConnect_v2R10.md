@@ -321,7 +321,7 @@ git clone https://github.com/SmartXBox/SmartX-mini.git
 In this section, we use `ubuntu-kafka`.
 
 ```bash
-cd ~/Smartx-mini/ubuntu-kafka
+cd ~/SmartX-mini/ubuntu-kafka
 ```
 
 #### 2-5-2. Check Dockerfile
