@@ -481,8 +481,8 @@ RUN sudo apt install -y wget vim iputils-ping net-tools iproute2 dnsutils openjd
 RUN sudo cp /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
 #Install Flume
-RUN sudo wget --no-check-certificate http://www.apache.org/dist/flume/1.9.0/apache-flume-1.9.0-bin.tar.gz -O - | tar -zxv
-RUN mv apache-flume-1.9.0-bin /flume
+RUN sudo wget --no-check-certificate http://archive.apache.org/dist/flume/1.6.0/apache-flume-1.6.0-bin.tar.gz -O - | tar -zxv
+RUN mv apache-flume-1.6.0-bin /flume
 ADD plugins.d /flume/plugins.d
 ADD flume-conf.properties /flume/conf/
 
