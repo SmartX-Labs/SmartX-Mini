@@ -52,7 +52,7 @@ vi ~/SmartX-mini/IoT-labs/webserver.js
 
 ### 2-3. Temperature / Humidity Sensor test on Raspberry PI:
 
-#### 2–3-1. Install package (PI)
+#### 2-3-1. Install package (PI)
 
 Download package from GitHub
 
@@ -80,7 +80,7 @@ If you have error while build package.
 sudo apt install -y build-essential python3-dev
 ```
 
-#### 2–3-2. TemSensor test (PI)
+#### 2-3-2. TemSensor test (PI)
 
 Move to example directory
 
