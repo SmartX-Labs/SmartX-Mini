@@ -135,7 +135,7 @@ sudo vim hypriotos-init.yaml
 
 The assigned IP address will be automatically applied when you’re initially booting your Raspberry Pi.
 
-To flash your OS to an SD card, you need to know where your card is mounted.
+To flash your OS to an SD card, you need to know where your card is mounted. Find the partition that have similar volume value with your SD cards. If your SD is a 32GB card, It has value about 29.83 GiB.
 
 ```bash
 sudo fdisk -l
@@ -146,7 +146,7 @@ sudo fdisk -l
 Then flash HypriotOS to your MicroSD Card. This takes a while, wait for a moment.
 
 ```bash
-flash -u hypriotos-init.yaml -d /dev/sdc -f hypriotos-rpi-v1.9.0.img.zip
+flash -u hypriotos-init.yaml -d <Your SD Card Directory> -f hypriotos-rpi-v1.9.0.img.zip
 ```
 
 Insert the SD card back into your Raspberry PI and boot it up.
