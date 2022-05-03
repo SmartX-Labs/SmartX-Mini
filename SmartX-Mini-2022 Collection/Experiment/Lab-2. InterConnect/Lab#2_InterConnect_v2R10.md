@@ -508,9 +508,12 @@ sudo docker run -it --net=host --name flume raspbian-flume
 
 In, the `flume` container, check the configuration file, Modifying the broker list. (Change default  value `nuc` to your own NUC's hostname in `/etc/hosts)
 
+broker list를 보시면 기본값인 nuc으로 적혀있는데, 이를 전부 자신이 정해준 hostname으로 바꿔주시면 됩니다.
+
 ```bash
 sudo vi conf/flume-conf.properties
 ```
+
 
 Then run flume on `flume` container.
 
