@@ -75,6 +75,12 @@ A distributed, reliable, and available service for efficiently collecting, aggre
 
 ### 2-1. Raspberry PI OS Installation
 
+> You should turn off your VM used in Box Lab to prevent IP conflict.
+>
+> ```bash
+> sudo killall -9 qemu-system-x86_64
+> ```
+
 Before we start, your Raspberry Pi must be ready with the proper OS. In this lab, we will use “HypriotOS” Linux for it. Insert a Micro SD into your SD card reader and attach the reader to your NUC.
 
 > When you deal with the SD card, be sure that PI is shut down. Ejecting an SD card when PI is booted on is one of the main causes of SD card corruption which results in a fatal error.
