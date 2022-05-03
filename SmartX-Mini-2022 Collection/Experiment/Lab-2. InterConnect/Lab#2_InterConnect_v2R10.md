@@ -75,6 +75,12 @@ A distributed, reliable, and available service for efficiently collecting, aggre
 
 ### 2-1. Raspberry PI OS Installation
 
+> You should turn off your VM used in Box Lab to prevent IP conflict.
+>
+> ```bash
+> sudo killall -9 qemu-system-x86_64
+> ```
+
 Before we start, your Raspberry Pi must be ready with the proper OS. In this lab, we will use “HypriotOS” Linux for it. Insert a Micro SD into your SD card reader and attach the reader to your NUC.
 
 > When you deal with the SD card, be sure that PI is shut down. Ejecting an SD card when PI is booted on is one of the main causes of SD card corruption which results in a fatal error.
@@ -135,7 +141,7 @@ sudo vim hypriotos-init.yaml
 
 The assigned IP address will be automatically applied when you’re initially booting your Raspberry Pi.
 
-To flash your OS to an SD card, you need to know where your card is mounted.
+To flash your OS to an SD card, you need to know where your card is mounted. Find the partition that have similar volume value with your SD cards. If your SD is a 32GB card, It has value about 29.83 GiB.
 
 ```bash
 sudo fdisk -l
@@ -146,7 +152,7 @@ sudo fdisk -l
 Then flash HypriotOS to your MicroSD Card. This takes a while, wait for a moment.
 
 ```bash
-flash -u hypriotos-init.yaml -d /dev/sdc -f hypriotos-rpi-v1.9.0.img.zip
+flash -u hypriotos-init.yaml -d <Your SD Card Directory> -f hypriotos-rpi-v1.9.0.img.zip
 ```
 
 Insert the SD card back into your Raspberry PI and boot it up.
@@ -178,19 +184,23 @@ sudo apt install -y git vim rdate openssh-server
 
 The `rdate` sync your PI's time to network. We will handle it in The next section
 
+#### 2-2-3. Access PI via SSH in NUC(In NUC)
+
 After installing `openssh-server`, you can access your PI from other boxes via SSH.
 
 ```bash
 ssh pirate@[PI_IP] #ID: pirate PW: hypriot
 ```
 
-If you see this error, then type the command in the error message, It is caused by different ssh keys with the same IP, such as different boxes with the same IP.
+Now you can type command to PI in NUC terminal.
 
-![ssh key error](./img/ssh_duplicated.png)
-
-```bash
-ssh-keygen -f "home/$(whoami)/.ssh/know_hosts" -R "[PI_IP_ADDRESS]"
-```
+> If you see this error, then type the command in the error message, It is caused by different ssh keys with the same IP, such as different boxes with the same IP.
+>
+> ![ssh key error](./img/ssh_duplicated.png)
+>
+> ```bash
+> ssh-keygen -f "home/$(whoami)/.ssh/know_hosts" -R "[PI_IP_ADDRESS]"
+> ```
 
 ### 2-3. Check `crontab` Setting to sync clock (In PI)
 
