@@ -184,19 +184,23 @@ sudo apt install -y git vim rdate openssh-server
 
 The `rdate` sync your PI's time to network. We will handle it in The next section
 
+#### 2-2-3. Access PI via SSH in NUC(In NUC)
+
 After installing `openssh-server`, you can access your PI from other boxes via SSH.
 
 ```bash
 ssh pirate@[PI_IP] #ID: pirate PW: hypriot
 ```
 
-If you see this error, then type the command in the error message, It is caused by different ssh keys with the same IP, such as different boxes with the same IP.
+Now you can type command to PI in NUC terminal.
 
-![ssh key error](./img/ssh_duplicated.png)
-
-```bash
-ssh-keygen -f "home/$(whoami)/.ssh/know_hosts" -R "[PI_IP_ADDRESS]"
-```
+> If you see this error, then type the command in the error message, It is caused by different ssh keys with the same IP, such as different boxes with the same IP.
+>
+> ![ssh key error](./img/ssh_duplicated.png)
+>
+> ```bash
+> ssh-keygen -f "home/$(whoami)/.ssh/know_hosts" -R "[PI_IP_ADDRESS]"
+> ```
 
 ### 2-3. Check `crontab` Setting to sync clock (In PI)
 
