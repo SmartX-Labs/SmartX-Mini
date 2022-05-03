@@ -129,7 +129,7 @@ sudo vim hypriotos-init.yaml
       interface eth0
       static ip_address=172.29.0.250/24 # Write your Raspberry Pi address
       static routers=172.29.0.254 # Write your Gateway address
-      static domain_name_servers=8.8.8.8 8.8.4.4 # Write your given DNS server
+      static domain_name_servers=203.237.32.100 203.237.32.101 # Write your given DNS server
 …
 ```
 
@@ -146,7 +146,7 @@ sudo fdisk -l
 Then flash HypriotOS to your MicroSD Card. This takes a while, wait for a moment.
 
 ```bash
-flash –u hypriotos-init.yaml -d /dev/sdc –f hypriotos-rpi-v1.9.0.img.zip
+flash -u hypriotos-init.yaml -d /dev/sdc -f hypriotos-rpi-v1.9.0.img.zip
 ```
 
 Insert the SD card back into your Raspberry PI and boot it up.
@@ -228,6 +228,12 @@ Every machine in a network that communicates with itself must know its address. 
 
 #### 2-4-1. Hostname preparation for Kafka(In NUC)
 
+To check your hostname, you can use  the `hostname` command.
+
+```bash
+hostname
+```
+
 Open `/etc/hosts` in NUC.
 
 ```bash
@@ -241,12 +247,11 @@ Add 2 lines below the file.
 [PI_IP] [PI_HOSTNAME]
 ```
 
-![/etc/hosts example](./img/hosts.png)
+For example,
 
-To check your hostname, you can use  the `hostname` command.
-
-```bash
-hostname
+```text
+172.29.0.XX nuc
+172.29.0.XX pi
 ```
 
 #### 2-4-2. Hostname preparation for Kafka(In PI)
