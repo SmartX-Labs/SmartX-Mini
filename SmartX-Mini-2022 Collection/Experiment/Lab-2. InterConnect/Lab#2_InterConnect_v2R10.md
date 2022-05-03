@@ -462,7 +462,7 @@ git clone https://github.com/SmartXBox/SmartX-mini.git
 In this section, we use `raspbian-flume`.
 
 ```bash
-cd ~/Smartx-mini/raspbian-flume
+cd ~/SmartX-mini/raspbian-flume
 ```
 
 #### 2-6-3. Check Dockerfile
