@@ -155,7 +155,7 @@ Then flash HypriotOS to your MicroSD Card. This takes a while, wait for a moment
 flash -u hypriotos-init.yaml -d <Your SD Card Directory> -f hypriotos-rpi-v1.9.0.img.zip
 ```
 
-Insert the SD card back into your Raspberry PI and boot it up.
+Insert the SD card back into your Raspberry PI and boot it up. Initial user is `pirate`, and password is `hypriot`.
 
 ### 2-2. Raspberry PI network Configuration
 
