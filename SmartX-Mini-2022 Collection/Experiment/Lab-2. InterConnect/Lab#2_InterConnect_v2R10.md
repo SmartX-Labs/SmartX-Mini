@@ -389,7 +389,7 @@ bin/zookeeper-server-start.sh config/zookeeper.properties
 
 #### 2-5-6. Broker configuration(IN NUC, `broker0`, `broker1`, `broker2` containers)
 
-Open server properties file and change proper broker id and port (they must be unique to each other) 
+Open server properties file and change proper broker id and port. They must be unique to each other.
 
 ```bash
 sudo vi config/server.properties
@@ -506,14 +506,17 @@ After building the image, run the `flume`  container.
 sudo docker run -it --net=host --name flume raspbian-flume
 ```
 
-In, the `flume` container, check the configuration file, Modifying the broker list. (Change default  value `nuc` to your own NUC's hostname in `/etc/hosts)
-
-broker list를 보시면 기본값인 nuc으로 적혀있는데, 이를 전부 자신이 정해준 hostname으로 바꿔주시면 됩니다.
+In, the `flume` container, check the configuration file, and modify the broker list. (Change default  value `nuc` to your own NUC's hostname in `/etc/hosts`)
 
 ```bash
 sudo vi conf/flume-conf.properties
 ```
 
+```text
+...
+agent.sinks.sink1.brokerList = <Your NUC hostname>:9090,<Your NUC hostname>:9091,<Your NUC hostname>:9092
+...
+```
 
 Then run flume on `flume` container.
 
