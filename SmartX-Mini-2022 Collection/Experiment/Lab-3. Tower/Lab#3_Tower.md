@@ -73,6 +73,7 @@ In this file, change `<NUC_IP>` into your actual NUC IP.
 
 Before this, you need to check Kafka brokers are running, and there exists the topic named `resource`.
 
+you can check by excuting this command on consumer container
 ```bash
 bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic resource # Check existence of topic `resource` of zookeeper in localhost:2181
 ```
