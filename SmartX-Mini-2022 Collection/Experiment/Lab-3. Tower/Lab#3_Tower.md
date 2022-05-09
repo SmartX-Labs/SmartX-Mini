@@ -33,31 +33,31 @@ It is simple to use and includes templates and libraries to allow you to rapidly
 
 ## 1. Practice
 
-### 1-1. Make and Run InfluxDB Container
+### 1-1. Make and Run InfluxDB Container ( in NUC )
 
 ```bash
 sudo docker run -d --name=influxdb --net=host influxdb:1.7
 ```
 
-### 1-2. Make and run Chronograf container
+### 1-2. Make and run Chronograf container ( in NUC )
 
 ```bash
 sudo docker run -p 8888:8888 --net=host chronograf --influxdb-url=http://<NUC IP>:8086
 ```
 
-### 1-3. Install python-pip
+### 1-3. Install python-pip ( in NUC )
 
 ```bash
 sudo apt-get install -y libcurl4 openssl curl python3-pip
 ```
 
-### 1-4. Install python packages
+### 1-4. Install python packages ( in NUC )
 
 ```bash
 sudo pip install requests kafka-python influxdb msgpack
 ```
 
-### 1-5. Modify `broker_to_influxdb.py` code
+### 1-5. Modify `broker_to_influxdb.py` code ( in NUC )
 
 ```bash
 vi ~/SmartX-mini/ubuntu-kafkatodb/broker_to_influxdb.py
@@ -71,22 +71,40 @@ In this file, change `<NUC_IP>` into your actual NUC IP.
 
 ### 1-6. Run `broker_to_influxdb.py` python code
 
-Before this, you need to check Kafka brokers are running, and there exists the topic named `resource`.
+Before this, you need to check the following,
 
-you can check by excuting this command on consumer container
+#### 1-6-1. Kafka zookeeper and brokers in NUC are running
+- Start zookeeper,brokers container (excute below command in NUC terminal.)
 ```bash
-bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic resource # Check existence of topic `resource` of zookeeper in localhost:2181
+sudo docker start zookeeper broker0 broker1 broker2
+```
+- Run zookeeper (excute below command in zookeeper container.)  
+```bash
+bin/zookeeper-server-start.sh config/zookeeper.properties
+```
+- Run brokers (excute below command in each broker container.)
+```bash
+bin/kafka-server-start.sh config/server.properties
+```
+#### 1-6-2. Flume container in PI is running 
+- Start flume container (excute below command in PI terminal.)
+```bash
+sudo docker start flume
+sudo docker attach flume
+```
+- Run flume (excute below command in flume container.)
+```bash
+bin/flume-ng agent --conf conf --conf-file conf/flume-conf.properties --name agent -Dflume.root.logger=INFO,console
 ```
 
-Run `broker_to_influxdb.py`.
-
+#### 1-6-3. Run `broker_to_influxdb.py`. (excute below commands in NUC terminal.)
 ````bash
 sudo sysctl -w fs.file-max=100000
 ulimit -S -n 2048
 python3 ~/SmartX-mini/ubuntu-kafkatodb/broker_to_influxdb.py
 ````
 
-### 1-7. Open your web browser and connect to Chronograf Dashboard
+### 1-7. Open your web browser and connect to Chronograf Dashboard ( in NUC )
 
 > ( http:// "YOUR NUC IP" :8888 )
 
