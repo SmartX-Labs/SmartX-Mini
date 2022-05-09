@@ -88,14 +88,16 @@ bin/kafka-server-start.sh config/server.properties
 ```
 #### 1-6-2. Flume container in PI is running
 When pi is rebooted, the information in /etc/hosts disappears.
+
 So, you need to rewrite "IP and hostname info" in /etc/hosts.
 ```bash
 sudo vim /etc/hosts
 ```
-Add 2 lines below the file.
-
+Add 2 lines in the file(/etc/hosts).
+```
 [NUC_IP] [NUC_HOSTNAME]
 [PI_IP] [PI_HOSTNAME]
+```
 
 - Start flume container (excute below command in PI terminal.)
 ```bash
