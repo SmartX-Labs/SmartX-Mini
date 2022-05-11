@@ -1,34 +1,34 @@
-# 6. Analytics Lab
+# Lab#6. Analytics Lab
 
-## Objective
+## 0. Objective
 
 Deploy `Machine Learning` workflows on Kubernetes Cluster with `Kubeflow` project. Then, we can run a Sample ML code `MNIST` on Jupyter Notebook that served by kubeflow.
 
 The minimum specification of the latest version of 'kubeflow' exceeds that of NUC. Therefore, we will install a version of *0.7* that meets the specifications.
 
-## Concept
+## 1. Concept
 
-### Kubeflow
+### 1-1. Kubeflow
 
 ![Kubeflow](img/kubeflow.png)
 The [**Kubeflow**](https://www.kubeflow.org/) project is dedicated to making deployments of machine learning (ML) workflows on Kubernetes simple, portable and scalable. Our goal is not to recreate other services, but to provide a straightforward way to deploy best-of-breed open-source systems for ML to diverse infrastructures. Anywhere you are running Kubernetes, you should be able to run Kubeflow.
 
-### TensorFlow & Jupyter Notebook
+### 1-2. TensorFlow & Jupyter Notebook
 
 ![Tensorflow-JupyterNotebook](img/tensorflow-jupyter.png)
 [**TensorFlow**](https://github.com/tensorflow/tensorflow) is an open-source machine learning library for research and production. TensorFlow offers APIs for beginners and experts to develop for desktop, mobile, web, and cloud.
 **Jupyter Notebook** is an open-source web application that allows you to create and share documents that contain live code, equations, visualizations and narrative text. Uses include: data cleaning and transformation, numerical simulation, statistical modeling, data visualization, machine learning, and much more.
 
-### MNIST
+### 1-3. MNIST
 
 ![MNIST](img/mnist.png)
 The **MNIST** database (Modified National Institute of Standards and Technology database) is a large database of handwritten digits that is commonly used for training various image processing systems.[1][2] The database is also widely used for training and testing in the field of machine learning.
 
-## Practice
+## 2. Practice
 
 ![overview](img/overview.png)
 
-### Check Docker K8s version
+### 2-1. Check Docker K8s version
 
 ![docker-k8s-version](img/docker-k8s-version.png)
 
@@ -37,7 +37,7 @@ The **MNIST** database (Modified National Institute of Standards and Technology 
 - kubeadm: `v1.14.1`
 - kubectl: `v1.14.1`
 
-### Check K8s Cluster status
+### 2-2. Check K8s Cluster status
 
 ```bash
 kubectl get nodes
@@ -52,15 +52,15 @@ kubectl get pods -n rook-ceph
 ![pods-status.png](img/pods-status.png)
 Check Rook are running healthy on your cluster.
 
-### Kubeflow Set-up
+### 2-2. Kubeflow Set-up
 
-#### Set Rook Storageclass to default for kubeflow
+#### 2-2-1. Set Rook Storageclass to default for kubeflow
 
 ```bash
 kubectl patch storageclass rook-ceph-block -p '{"metadata":{"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 ```
 
-#### Check StorageClass
+#### 2-2-2. Check StorageClass
 
 ```bash
 kubectl get storageclass
@@ -68,7 +68,7 @@ kubectl get storageclass
 
 ![storage class status](img/storagclass.png)
 
-### Kubeflow Install
+### 2-3. Kubeflow Install
 
 ```bash
 # Configuration
@@ -93,7 +93,7 @@ kfctl apply -V -f $CONFIG_URI
 popd
 ```
 
-### Monitor kubeflow installation
+### 2-4. Monitor kubeflow installation
 
 ```bash
 watch kubectl get pod -n kubeflow
@@ -106,9 +106,9 @@ watch kubectl get svc -n istio-system
 
 `ctrl + c` for stop watching
 
-## Connect Jupyter hub
+### 2-5. Connect Jupyter hub
 
-### Check exposed port for Kubeflow
+#### 2-5-1. Check exposed port for Kubeflow
 
 You can access Kubeflow at this address (In Browser)
 
@@ -120,9 +120,9 @@ Get {Port} by below command
 kubectl -n istio-system get svc istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}'
 ```
 
-### Deploy ML Container (MNIST)
+### 2-6. Deploy ML Container (MNIST)
 
-#### Assign NoteBook Server
+#### 2-6-1. Assign NoteBook Server
 
 Open a web browser and enter the Kubeflow address
 ![Main Page of Kubeflow](img/kubeflow-main.png)
@@ -136,7 +136,7 @@ Select or enter the options as below
 
 ![assign resources to cluster](img/kubeflow-assign.png)
 
-#### Run MNIST CNN Example
+#### 2-6-2. Run MNIST CNN Example
 
 Now, you will run the MNIST exam
 ple code in sample notebook.
@@ -152,7 +152,7 @@ Check training results. Your model has 99.04% accuracy!
 ![Result of model prediction](img/jupyter-3.png)
 Your Machine Learning model correctly identified the number in the images!
 
-### Lab Summary
+## 3. Lab Summary
 
 1. How to create ML/DL environment on a container-orchestrated cluster? (Kubeflow, …)
 2. How to operate desired ML training by testing selected ML code (i.e., neural networks) over the prepared training data?
