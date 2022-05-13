@@ -111,7 +111,7 @@ sudo vi AdafruitDHT.py
 Execute test code
 
 ```bash
-$ sudo ./AdafruitDHT.py 11 4
+sudo ./AdafruitDHT.py 11 4
 ```
 
 <img width="498" alt="image" src="https://user-images.githubusercontent.com/63437430/160829118-04bae048-2cf3-4c3f-8cd9-4b9295b019d0.png">
