@@ -29,7 +29,7 @@ Node.js is an open-source, cross-platform, back-end JavaScript runtime environme
 Run a Docker Container
 
 ```bash
-sudo docker run -it --net=host --name=webserver lshyeung/smartx_webserver
+sudo docker run -it --net=host --dns=203.237.32.100 --name=webserver lshyeung/smartx_webserver
 ```
 
 On container
