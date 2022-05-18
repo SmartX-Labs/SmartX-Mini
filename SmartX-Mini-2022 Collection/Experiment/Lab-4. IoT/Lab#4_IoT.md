@@ -45,7 +45,7 @@ apt-get install vim
 Open Server code and change NUC IP
 
 ```bash
-vi /SmartX-mini/IoT-labs/webserver.js
+vi SmartX-Mini/IoT-labs/webserver.js
 ```
 
 <img width="418" alt="image" src="https://user-images.githubusercontent.com/63437430/160828580-7201f53f-e66a-40d3-8682-ca237476b20a.png">
