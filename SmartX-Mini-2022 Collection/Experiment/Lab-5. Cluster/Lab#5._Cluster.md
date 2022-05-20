@@ -251,13 +251,21 @@ sudo ipvsadm --clear
 
 ## Cleanup Rook Configuration
 sudo rm -rf /var/lib/rook
+```
 
-## Join NUC2, NUC3 to Kuberentes Master Node (NUC1)
-# ---- Paste the command you copied at Kubernetes Master Setting(For NUC1) ---- #
+#### 2-4-3. Worker Join
+
+![commnad](img/9.png)
+
+```shell
+## NUC1에 NUC2, NUC3를 추가하여 클러스터를 구성합니다. 
+# 빨간 칸 안에 있는 명령어를 복사하고, 앞에 sudo를 붙여서 입력합니다. #
 sudo kubeadm join <NUC1 IP>:6443 --token <YOUR TOKEN> --discovery-token-ca-cert-hash <YOUR HASH> --ignore-preflight-errors=all
 ```
 
-#### 2-4-3. Check Nodes at NUC1
+
+
+#### 2-4-4. Check Nodes at NUC1
 
 ````shell
 # For NUC1
@@ -321,8 +329,8 @@ cd $HOME/rook/cluster/examples/kubernetes/ceph
 kubectl create -f toolbox.yaml
 kubectl -n rook-ceph  rollout status deploy/rook-ceph-tools
 ## Execution
-kubectl -n rook-ceph exec -it $(kubectl -n rook-ceph get pod -l “app=rook-ceph-tools”\
-   -o jsonpath=‘{.items[0].metadata.name}’) bash
+kubectl -n rook-ceph exec -it $(kubectl -n rook-ceph get pod -l "app=rook-ceph-tools"\
+   -o jsonpath='{.items[0].metadata.name}') bash
    
 ## Check ceph Status in the toolbox
 watch ceph status
