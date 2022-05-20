@@ -138,7 +138,7 @@ docker version
 sudo apt-get install xfsprogs
 ```
 
-#### 2-2-3. Use SSH to Connect
+#### 2-2-2. Use SSH to Connect
 
 - Connect NUC1 <-> NUC2
 - Connect NUC1 <-> NUC3
@@ -187,14 +187,7 @@ sudo sed -e '/\/swapfile/s/^/#/g' -i /etc/fstab
 sudo sed -e '/\/swap\.img/s/^/#/g' -i /etc/fstab
 ```
 
-#### 2-3-2. Initialization patition for installing Ceph
-
-```shell
-# For All NUCs
-sudo wipefs --all /dev/<partition>
-```
-
-#### 2-3-3. Install Kubernetes
+#### 2-3-2. Install Kubernetes
 
 ```shell
 # For All NUCs
@@ -227,7 +220,7 @@ sudo rm -rf /var/lib/rook
 sudo kubeadm init --ignore-preflight-errors=all
 ```
 
-- **Copy  the commnad for joining Kubernetes Nodes(NUC2, NUC3)**
+- **Copy  the command for joining Kubernetes Nodes(NUC2, NUC3)**
 
 ![commnad](img/9.png)
 
@@ -269,7 +262,7 @@ sudo kubeadm join <NUC1 IP>:6443 --token <YOUR TOKEN> --discovery-token-ca-cert-
 
 ````shell
 # For NUC1
-Kubectl get node
+kubectl get node
 ````
 
 ### 2-5. Kubenetes Network Plugin Installation
