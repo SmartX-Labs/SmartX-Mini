@@ -29,7 +29,7 @@ Node.js is an open-source, cross-platform, back-end JavaScript runtime environme
 Run a Docker Container
 
 ```bash
-sudo docker run -it --net=host --name=webserver lshyeung/smartx_webserver
+sudo docker run -it --net=host --dns=203.237.32.100 --name=webserver lshyeung/smartx_webserver
 ```
 
 On container
@@ -45,7 +45,7 @@ apt-get install vim
 Open Server code and change NUC IP
 
 ```bash
-vi ~/SmartX-mini/IoT-labs/webserver.js
+vi SmartX-Mini/IoT-labs/webserver.js
 ```
 
 <img width="418" alt="image" src="https://user-images.githubusercontent.com/63437430/160828580-7201f53f-e66a-40d3-8682-ca237476b20a.png">
@@ -110,7 +110,9 @@ sudo vi AdafruitDHT.py
 
 Execute test code
 
-`$ sudo ./AdafruitDHT.py 11 4`
+```bash
+sudo ./AdafruitDHT.py 11 4
+```
 
 <img width="498" alt="image" src="https://user-images.githubusercontent.com/63437430/160829118-04bae048-2cf3-4c3f-8cd9-4b9295b019d0.png">
 
@@ -131,7 +133,7 @@ sudo apt-get install mercurial
 Open Sensor Data Capture code and Change IP Address
 
 ```bash
-vi ~/SmartX-mini/IoT-Labs/RPI_capture.py
+vi ~/SmartX-mini/IoT-labs/RPI_capture.py
 ```
 
 <img width="472" alt="image" src="https://user-images.githubusercontent.com/63437430/160829267-f2198912-a27d-4ee3-9b44-e5af753aff6d.png">
@@ -141,7 +143,7 @@ vi ~/SmartX-mini/IoT-Labs/RPI_capture.py
 Open Sensor Data Capture code and Change IP Address
 
 ```bash
-vi ~/SmartX-mini/IoT-Labs/RPI_transfer.py
+vi ~/SmartX-mini/IoT-labs/RPI_transfer.py
 ```
 
 <img width="498" alt="image" src="https://user-images.githubusercontent.com/63437430/160829383-8053b56c-a4ea-42d1-b4d1-220502b7754a.png">
@@ -151,7 +153,7 @@ vi ~/SmartX-mini/IoT-Labs/RPI_transfer.py
 At the Docker container in NUC (Webserver)
 
 ```bash
-cd ~/SmartX-mini/IoT-labs
+cd /SmartX-Mini/IoT-labs
 
 nodejs webserver.js
 ```
