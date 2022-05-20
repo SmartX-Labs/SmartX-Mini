@@ -107,88 +107,28 @@ Append the following context into /etc/hosts :
 #### 2-1-3. Check Connectivity
 
 ```shell
-# From NUC1
+# From NUC 1
 ping nuc02
 ping nuc03
 
-# From NUC2
+# From NUC 2
 ping nuc01
 ping nuc03
 
-# From NUC3
+# From NUC 3
 ping nuc01
 ping nuc02
 ```
 
 ### 2-2. Preparations for Clustering
 
-#### 2-2-1. Docker Install : Prerequisite for Kubernetes
+#### 2-2-1. Docker Version Check : Prerequisite for Kubernetes
 
-- Install packages to allow apt to use a repository over HTTPS 
-
-```shell
-# For All NUCs
-sudo apt-get update
-sudo apt-get install \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release
-```
-
-- Add Docker's official GPG key
+- Check Docker Version : 19.03.11
 
 ```shell
 # For All NUCs
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-```
-
-- Add the Docker apt repository
-
-```shell
-# For All NUCs
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-```
-
-- Install Docker CE
-
-```shell
-# For All NUCs
-sudo apt-get update && sudo apt-get install -y --allow-downgrades \
-          containerd.io=1.2.13-2 \
-          docker-ce=5:19.03.11~3-0~ubuntu-$(lsb_release -cs) \
-          docker-ce-cli=5:19.03.11~3-0~ubuntu-$(lsb_release -cs)
-```
-
-- Set up the Docker daemon
-
-```shell
-# For All NUCs
-cat <<EOF | sudo tee /etc/docker/daemon.json
-{
-  "exec-opts": ["native.cgroupdriver=systemd"],
-  "log-driver": "json-file",
-  "log-opts": {
-    "max-size": "100m"
-  },
-  "storage-driver": "overlay2"
-}
-EOF
-```
-
-- Create ` /etc/systemd/system/docker.service.d `
-
-```shell
-# For All NUCs
-sudo mkdir -p /etc/systemd/system/docker.service.d 
-
-sudo systemctl daemon-reload 
-sudo systemctl enable docker 
-sudo systemctl restart docker 
-sudo systemctl restart docker.socket
-
+docker version
 ```
 
 #### 2-2-2. xfprogs Install : Prerequisite for ROOK
@@ -197,6 +137,38 @@ sudo systemctl restart docker.socket
 # For All NUCs
 sudo apt-get install xfsprogs
 ```
+
+#### 2-2-2. Use SSH to Connect
+
+- Connect NUC1 <-> NUC2
+- Connect NUC1 <-> NUC3
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+지금부터 NUC2, NUC3 학생은 NUC1 학생의 자리로 갑니다!!!!!
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+```shell
+# From NUC1
+ssh <NUC2 hostname>@nuc02
+ssh <NUC3 hostname>@nuc03
+```
+
+- NUC1 학생의 자리에서, NUC2, NUC3를 원격접속하여 아래 과정을 실행할 예정입니다. 
+- 인원수로 인해 NUC4를 할당받은 학생 역시 NUC1 자리로 갑니다.
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+- From NUC1 : NUC1의 터미널에서 실행합니다. 
+- From NUC2 : NUC2의 터미널에서 실행합니다. 
+- From NUC3 : NUC3의 터미널에서 실행합니다. 
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 ### 2-3. Kubernets Installation(For All NUCs)
 
@@ -215,14 +187,7 @@ sudo sed -e '/\/swapfile/s/^/#/g' -i /etc/fstab
 sudo sed -e '/\/swap\.img/s/^/#/g' -i /etc/fstab
 ```
 
-#### 2-3-2. Initialization patition for installing Ceph
-
-```shell
-# For All NUCs
-sudo wipefs --all /dev/<partition>
-```
-
-#### 2-3-3. Install Kubernetes
+#### 2-3-2. Install Kubernetes
 
 ```shell
 # For All NUCs
@@ -255,7 +220,7 @@ sudo rm -rf /var/lib/rook
 sudo kubeadm init --ignore-preflight-errors=all
 ```
 
-- **Copy  the commnad for joining Kubernetes Nodes(NUC2, NUC3)**
+- **Copy  the command for joining Kubernetes Nodes(NUC2, NUC3)**
 
 ![commnad](img/9.png)
 
@@ -279,17 +244,25 @@ sudo ipvsadm --clear
 
 ## Cleanup Rook Configuration
 sudo rm -rf /var/lib/rook
+```
 
-## Join NUC2, NUC3 to Kuberentes Master Node (NUC1)
-# ---- Paste the command you copied at Kubernetes Master Setting(For NUC1) ---- #
+#### 2-4-3. Worker Join
+
+![commnad](img/9.png)
+
+```shell
+## NUC1에 NUC2, NUC3를 추가하여 클러스터를 구성합니다. 
+# 빨간 칸 안에 있는 명령어를 복사하고, 앞에 sudo를 붙여서 입력합니다. #
 sudo kubeadm join <NUC1 IP>:6443 --token <YOUR TOKEN> --discovery-token-ca-cert-hash <YOUR HASH> --ignore-preflight-errors=all
 ```
 
-#### 2-4-3. Check Nodes at NUC1
+
+
+#### 2-4-4. Check Nodes at NUC1
 
 ````shell
 # For NUC1
-Kubectl get node
+kubectl get node
 ````
 
 ### 2-5. Kubenetes Network Plugin Installation
@@ -349,8 +322,8 @@ cd $HOME/rook/cluster/examples/kubernetes/ceph
 kubectl create -f toolbox.yaml
 kubectl -n rook-ceph  rollout status deploy/rook-ceph-tools
 ## Execution
-kubectl -n rook-ceph exec -it $(kubectl -n rook-ceph get pod -l “app=rook-ceph-tools”\
-   -o jsonpath=‘{.items[0].metadata.name}’) bash
+kubectl -n rook-ceph exec -it $(kubectl -n rook-ceph get pod -l "app=rook-ceph-tools"\
+   -o jsonpath='{.items[0].metadata.name}') bash
    
 ## Check ceph Status in the toolbox
 watch ceph status
