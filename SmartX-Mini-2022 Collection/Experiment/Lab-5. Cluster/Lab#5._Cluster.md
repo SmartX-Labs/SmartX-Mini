@@ -65,29 +65,7 @@
 
 ![Lab Preparation](img/7.png)
 
-#### 2-1-1. For All NUCs
-
-<<<<<<< HEAD
-- 호스트네임을 변경해줍니다.
-=======
-예시)  
-<img width="116" alt="스크린샷 2022-05-24 오후 1 12 53" src="https://user-images.githubusercontent.com/65757344/169947428-3d028493-cf5e-4463-a9ea-d04f3bd56b99.png">  
-**username은 netcs**이고  
-hostname은 nuc01입니다!!!  
-
-``` shell
-# In new terminal
-ssh <nuc2 username>@<nuc2 IP address>
->  <nuc2 username>@<nuc2 IP address>’s password : <nuc2 pw>
-
-# In another new terminal
-ssh <nuc3 username>@<nuc3 IP address>
->  <nuc3 username>@<nuc3 IP address>’s password : <nuc3 pw>
-
-```
-
-#### 2-1-2. For All NUCs
->>>>>>> 822ab353c7bffc27e5e3eb2c53452dc87c172ba9
+#### 2-1-2. From All NUCs
 
 ```shell
 # From NUC 1 :
@@ -98,7 +76,7 @@ sudo hostname nuc02
 sudo hostname nuc03
 ```
 
-For All NUCs
+From All NUCs
 
 ```shell
 sudo vi /etc/hosts
@@ -131,18 +109,18 @@ ping nuc02
 
 #### 2-1-3. From NUC1
 
-NUC1에서 NUC2, NUC3로 SSH 접속하여 작업을 합니다.
+예시)  
+<img width="116" alt="스크린샷 2022-05-24 오후 1 12 53" src="https://user-images.githubusercontent.com/65757344/169947428-3d028493-cf5e-4463-a9ea-d04f3bd56b99.png">  
+**username은 netcs**이고  
+hostname은 nuc01입니다!!!  
 
 ``` shell
 # In new terminal
-ssh <nuc2 usename>@nuc02
+ssh <nuc2 username>@nuc02
 
 # In another new terminal
-ssh <nuc3 usename>@nuc03
-
+ssh <nuc3 username>@nuc03
 ```
-
-
 
 # 지금부터 NUC1 학생 자리에서 모든 작업을 시작합니다. NUC2, NUC3 학생은  NUC1자리로 가서 작업을 시작합니다.
 
@@ -258,8 +236,6 @@ sudo rm -rf /var/lib/rook
 # 빨간 칸 안에 있는 명령어를 복사하고, 앞에 sudo를 붙여 sudo 권한으로 실행하며, --ignore-preflight-errors=all을 붙여서 실행시킵니다. 
 sudo kubeadm join <NUC1 IP>:6443 --token <YOUR TOKEN> --discovery-token-ca-cert-hash <YOUR HASH> --ignore-preflight-errors=all
 ```
-
-
 
 #### 2-4-4. Check Nodes at NUC1
 
