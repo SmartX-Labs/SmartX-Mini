@@ -67,14 +67,19 @@
 
 #### 2-1-1. For NUC1
 
+예시)  
+<img width="116" alt="스크린샷 2022-05-24 오후 1 12 53" src="https://user-images.githubusercontent.com/65757344/169947428-3d028493-cf5e-4463-a9ea-d04f3bd56b99.png">  
+**username은 netcs**이고  
+hostname은 nuc01입니다!!!  
+
 ``` shell
 # In new terminal
-ssh <nuc2 name>@<nuc2 IP address>
->  <nuc2 name>@<nuc2 IP address>’s password : <nuc2 pw>
+ssh <nuc2 username>@<nuc2 IP address>
+>  <nuc2 username>@<nuc2 IP address>’s password : <nuc2 pw>
 
 # In another new terminal
-ssh <nuc3 name>@<nuc3 IP address>
->  <nuc3 name>@<nuc3 IP address>’s password : <nuc3 pw>
+ssh <nuc3 username>@<nuc3 IP address>
+>  <nuc3 username>@<nuc3 IP address>’s password : <nuc3 pw>
 
 ```
 
