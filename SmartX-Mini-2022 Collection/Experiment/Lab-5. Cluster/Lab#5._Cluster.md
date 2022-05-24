@@ -67,7 +67,27 @@
 
 #### 2-1-1. For All NUCs
 
+<<<<<<< HEAD
 - 호스트네임을 변경해줍니다.
+=======
+예시)  
+<img width="116" alt="스크린샷 2022-05-24 오후 1 12 53" src="https://user-images.githubusercontent.com/65757344/169947428-3d028493-cf5e-4463-a9ea-d04f3bd56b99.png">  
+**username은 netcs**이고  
+hostname은 nuc01입니다!!!  
+
+``` shell
+# In new terminal
+ssh <nuc2 username>@<nuc2 IP address>
+>  <nuc2 username>@<nuc2 IP address>’s password : <nuc2 pw>
+
+# In another new terminal
+ssh <nuc3 username>@<nuc3 IP address>
+>  <nuc3 username>@<nuc3 IP address>’s password : <nuc3 pw>
+
+```
+
+#### 2-1-2. For All NUCs
+>>>>>>> 822ab353c7bffc27e5e3eb2c53452dc87c172ba9
 
 ```shell
 # From NUC 1 :
