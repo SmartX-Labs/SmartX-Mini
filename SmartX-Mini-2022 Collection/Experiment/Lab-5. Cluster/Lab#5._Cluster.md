@@ -160,8 +160,8 @@ sudo apt-get install xfsprogs
 
 ```shell
 # From NUC1
-ssh <NUC2 hostname>@nuc02
-ssh <NUC3 hostname>@nuc03
+ssh <NUC2 username>@nuc02
+ssh <NUC3 username>@nuc03
 ```
 
 - NUC1 학생의 자리에서, NUC2, NUC3를 원격접속하여 아래 과정을 실행할 예정입니다. 
