@@ -65,25 +65,7 @@
 
 ![Lab Preparation](img/7.png)
 
-#### 2-1-1. For NUC1
-
-예시)  
-<img width="116" alt="스크린샷 2022-05-24 오후 1 12 53" src="https://user-images.githubusercontent.com/65757344/169947428-3d028493-cf5e-4463-a9ea-d04f3bd56b99.png">  
-**username은 netcs**이고  
-hostname은 nuc01입니다!!!  
-
-``` shell
-# In new terminal
-ssh <nuc2 username>@<nuc2 IP address>
->  <nuc2 username>@<nuc2 IP address>’s password : <nuc2 pw>
-
-# In another new terminal
-ssh <nuc3 username>@<nuc3 IP address>
->  <nuc3 username>@<nuc3 IP address>’s password : <nuc3 pw>
-
-```
-
-#### 2-1-2. For All NUCs
+#### 2-1-2. From All NUCs
 
 ```shell
 # From NUC 1 :
@@ -94,7 +76,7 @@ sudo hostname nuc02
 sudo hostname nuc03
 ```
 
-For All NUCs
+From All NUCs
 
 ```shell
 sudo vi /etc/hosts
@@ -109,7 +91,7 @@ Append the following context into /etc/hosts :
  <IP Address of NUC 3>  nuc03
 ```
 
-#### 2-1-3. Check Connectivity
+#### 2-1-2. Check Connectivity
 
 ```shell
 # From NUC 1
@@ -125,6 +107,25 @@ ping nuc01
 ping nuc02
 ```
 
+#### 2-1-3. From NUC1
+
+예시)  
+<img width="116" alt="스크린샷 2022-05-24 오후 1 12 53" src="https://user-images.githubusercontent.com/65757344/169947428-3d028493-cf5e-4463-a9ea-d04f3bd56b99.png">  
+**username은 netcs**이고  
+hostname은 nuc01입니다!!!  
+
+``` shell
+# In new terminal
+ssh <nuc2 username>@nuc02
+
+# In another new terminal
+ssh <nuc3 username>@nuc03
+```
+
+# 지금부터 NUC1 학생 자리에서 모든 작업을 시작합니다. NUC2, NUC3 학생은  NUC1자리로 가서 작업을 시작합니다.
+
+
+
 ### 2-2. Preparations for Clustering
 
 #### 2-2-1. Docker Version Check : Prerequisite for Kubernetes
@@ -132,48 +133,23 @@ ping nuc02
 - Check Docker Version : 19.03.11
 
 ```shell
-# For All NUCs
+# From All NUCs
 docker version
+```
+
+# From NUC1
+
+```shell
+ssh <NUC2 username>@nuc02
+ssh <NUC3 username>@nuc03
 ```
 
 #### 2-2-2. xfprogs Install : Prerequisite for ROOK
 
 ```shell
-# For All NUCs
+# From All NUCs
 sudo apt-get install xfsprogs
 ```
-
-#### 2-2-2. Use SSH to Connect
-
-- Connect NUC1 <-> NUC2
-- Connect NUC1 <-> NUC3
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-지금부터 NUC2, NUC3 학생은 NUC1 학생의 자리로 갑니다!!!!!
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-```shell
-# From NUC1
-ssh <NUC2 username>@nuc02
-ssh <NUC3 username>@nuc03
-```
-
-- NUC1 학생의 자리에서, NUC2, NUC3를 원격접속하여 아래 과정을 실행할 예정입니다. 
-- 인원수로 인해 NUC4를 할당받은 학생 역시 NUC1 자리로 갑니다.
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-- From NUC1 : NUC1의 터미널에서 실행합니다. 
-- From NUC2 : NUC2의 터미널에서 실행합니다. 
-- From NUC3 : NUC3의 터미널에서 실행합니다. 
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 ### 2-3. Kubernets Installation(For All NUCs)
 
@@ -186,7 +162,7 @@ ssh <NUC3 username>@nuc03
 #### 2-3-1. Swapoff
 
 ```shell
-# For All NUCs
+# From All NUCs
 sudo swapoff -a
 sudo sed -e '/\/swapfile/s/^/#/g' -i /etc/fstab
 sudo sed -e '/\/swap\.img/s/^/#/g' -i /etc/fstab
@@ -195,7 +171,7 @@ sudo sed -e '/\/swap\.img/s/^/#/g' -i /etc/fstab
 #### 2-3-2. Install Kubernetes
 
 ```shell
-# For All NUCs
+# From All NUCs
 sudo apt-get update && sudo apt-get install -y apt-transport-https curl ipvsadm wget
 
 cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
@@ -212,25 +188,26 @@ sudo apt-get update && sudo apt-get install -y --allow-downgrades kubelet=1.14.1
 #### 2-4-1. Kubernetes Master Setting(For NUC1)
 
 ```shell
-# For NUC1
+# From NUC1
 sudo kubeadm reset -f
 sudo rm -rf /etc/cni/net.d
 sudo ipvsadm --clear 
 ```
 
 ```shell
-# For NUC1
+# From NUC1
 ## Cleanup Rook Configuration
 sudo rm -rf /var/lib/rook
 sudo kubeadm init --ignore-preflight-errors=all
 ```
 
-- **Copy  the command for joining Kubernetes Nodes(NUC2, NUC3)**
+- kubeadm을 실행하면 아래와 같이 Kubernetes Cluster에 참여할 수 있는 토큰값이 발급됩니다. 
+- **토큰 정보를 ** 지금 입력하지 말고,  2-4-3 파트에서 사용하기 위해 **저장해둡니다.**
 
 ![commnad](img/9.png)
 
 ```shell
-# For NUC1
+# From NUC1
 ## make kubectl work for your non-root user.
 rm -r $HOME/.kube
 mkdir -p $HOME/.kube
@@ -242,7 +219,7 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
 #### 2-4-2. Kubernetes Worker Setting(For NUC2, NUC3)
 
 ```shell
-# For NUC2, NUC3
+# From NUC2, NUC3
 sudo kubeadm reset -f
 sudo rm -r /etc/cni/net.d
 sudo ipvsadm --clear
@@ -253,32 +230,36 @@ sudo rm -rf /var/lib/rook
 
 #### 2-4-3. Worker Join
 
+- 2-4-1 파트에서 발급받은 토큰 정보를 가져옵니다. 
+- Master에서 발급받은 토큰을 NUC2, NUC3에 입력해줍니다. 커맨드는 아래와 같이 구성되어 있습니다. 
+  1. sudo 
+  2. kubeadm join <NUC1 IP>:6443 --token <YOUR TOKEN> --discovery-token-ca-cert-hash <YOUR HASH> 
+  3. --ignore-preflight-errors=all
+
 ![commnad](img/9.png)
 
 ```shell
 ## NUC1에 NUC2, NUC3를 추가하여 클러스터를 구성합니다. 
-# 빨간 칸 안에 있는 명령어를 복사하고, 앞에 sudo를 붙여서 입력합니다. #
+# 빨간 칸 안에 있는 명령어를 복사하고, 앞에 sudo를 붙여 sudo 권한으로 실행하며, --ignore-preflight-errors=all을 붙여서 실행시킵니다. 
 sudo kubeadm join <NUC1 IP>:6443 --token <YOUR TOKEN> --discovery-token-ca-cert-hash <YOUR HASH> --ignore-preflight-errors=all
 ```
-
-
 
 #### 2-4-4. Check Nodes at NUC1
 
 ````shell
-# For NUC1
+# From NUC1
 kubectl get node
 ````
 
 ### 2-5. Kubenetes Network Plugin Installation
 
 ```shell
-# For NUC1
+# From NUC1
 kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 ```
 
 ```shell
-# For NUC1 -> Check Weave works
+# From NUC1 -> Check Weave works
 kubectl get nodes
 kubectl get po -n kube-system -o wide
 ```
@@ -290,7 +271,7 @@ kubectl get po -n kube-system -o wide
 #### 2-6-1. Remove RBAC
 
 ```shell
-# For NUC1
+# From NUC1
 kubectl create clusterrolebinding permissive-binding \
 --clusterrole=cluster-admin \
 --user=admin \
@@ -301,7 +282,7 @@ kubectl create clusterrolebinding permissive-binding \
 #### 2-6-2. Install ROOK Storage
 
 ```shell
-# For NUC1
+# From NUC1
 cd $HOME
 git clone --single-branch --branch release-1.2 https://github.com/rook/rook.git
 cd $HOME/rook/cluster/examples/kubernetes/ceph
@@ -321,24 +302,28 @@ watch kubectl get pod -n rook-ceph
 #### 2-6-4. Install & Execute ToolBox
 
 ```shell
-# For NUC1
+# From NUC1
 ## Installation
 cd $HOME/rook/cluster/examples/kubernetes/ceph
 kubectl create -f toolbox.yaml
 kubectl -n rook-ceph  rollout status deploy/rook-ceph-tools
 ## Execution
+### 해당 코드를 실행하면, toolbox container안으로 접속하게 됩니다. 
 kubectl -n rook-ceph exec -it $(kubectl -n rook-ceph get pod -l "app=rook-ceph-tools"\
    -o jsonpath='{.items[0].metadata.name}') bash
    
 ## Check ceph Status in the toolbox
+### ceph의 상태를 toolbox안에서 확인합니다. 
 watch ceph status
+
+## toolbox container를 나갑니다.
 exit
 ```
 
 #### 2-6-5. Add StorageClass
 
 ```shell
-# For NUC1
+# From NUC1
 kubectl apply -f csi/rbd/storageclass-test.yaml
 ```
 
@@ -349,11 +334,11 @@ kubectl apply -f csi/rbd/storageclass-test.yaml
 ![Deploy WordPress on the Cluster](img/12.png)
 
 ```shell
-# For NUC1
+# From NUC1
 kubectl create -f $HOME/rook/cluster/examples/kubernetes/mysql.yaml
 kubectl create -f $HOME/rook/cluster/examples/kubernetes/wordpress.yaml
 
-# For NUC1
+# From NUC1
 ## Check WordPress Container
 watch kubectl get pod
 ```
@@ -363,7 +348,7 @@ watch kubectl get pod
 ![Access Wordpress Web](img/13.png)
 
 ```shell
-# For NUC1
+# From NUC1
 kubectl get svc
 ```
 
