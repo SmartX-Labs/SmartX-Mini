@@ -137,6 +137,13 @@ ssh <nuc3 username>@nuc03
 docker version
 ```
 
+# From NUC1
+
+```shell
+ssh <NUC2 username>@nuc02
+ssh <NUC3 username>@nuc03
+```
+
 #### 2-2-2. xfprogs Install : Prerequisite for ROOK
 
 ```shell
