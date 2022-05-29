@@ -28,41 +28,129 @@ The **MNIST** database (Modified National Institute of Standards and Technology 
 
 ![overview](img/overview.png)
 
-### 2-1. Check Docker K8s version
+### 2-1. K8s 클러스터 재설정 작업 진행
 
-![docker-k8s-version](img/docker-k8s-version.png)
+Lab5에서 진행했던 세팅들을 다시 진 
 
-- docker: `v19.03.11`
-- kubelet: `v1.14.1`
-- kubeadm: `v1.14.1`
-- kubectl: `v1.14.1`
-
-### 2-2. Check K8s Cluster status
-
-```bash
-kubectl get nodes
+#### hostname 설정
+```shell
+# From NUC 1 :
+sudo hostname nuc01
+# From NUC 2 :
+sudo hostname nuc02
+# From NUC 3 :
+sudo hostname nuc03
 ```
 
+#### swapoff
+```shell
+# From All NUCs
+sudo swapoff -a
+sudo sed -e '/\/swapfile/s/^/#/g' -i /etc/fstab
+sudo sed -e '/\/swap\.img/s/^/#/g' -i /etc/fstab
+```
+
+#### Kubernetes Master Setting(For NUC1)
+
+```shell
+# From NUC1
+sudo kubeadm reset -f
+sudo rm -rf /etc/cni/net.d
+sudo ipvsadm --clear 
+```
+
+```shell
+# From NUC1
+## Cleanup Rook Configuration
+sudo rm -rf /var/lib/rook
+sudo kubeadm init --ignore-preflight-errors=all
+```
+
+```shell
+# From NUC1
+## make kubectl work for your non-root user.
+rm -r $HOME/.kube
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+kubectl taint nodes --all node-role.kubernetes.io/master-
+```
+
+#### Kubernetes Worker Setting(For NUC2, NUC3)
+
+```shell
+# From NUC2, NUC3
+sudo kubeadm reset -f
+sudo rm -r /etc/cni/net.d
+sudo ipvsadm --clear
+
+## Cleanup Rook Configuration
+sudo rm -rf /var/lib/rook
+```
+
+![commnad](img/9.png)
+```shell
+# From NUC2, NUC3
+## NUC1의 명령어를 sudo 권한으로 실행(sudo 권한 필수!)
+sudo kubeadm join <NUC1 IP>:6443 --token <YOUR TOKEN> --discovery-token-ca-cert-hash <YOUR HASH>
+```
+
+
+#### Check K8s Cluster status
+
+```shell
+kubectl get nodes
+```
 ![nodes-status.png](img/nodes-status.png)
 
-```bash
-kubectl get pods -n rook-ceph
+
+#### Install ROOK Storage
+
+```shell
+# From NUC1
+kubectl create clusterrolebinding permissive-binding \
+--clusterrole=cluster-admin \
+--user=admin \
+--user=kubelet \
+--group=system:serviceaccounts
+```
+
+```shell
+# From NUC1
+cd $HOME
+git clone --single-branch --branch release-1.2 https://github.com/rook/rook.git
+cd $HOME/rook/cluster/examples/kubernetes/ceph
+kubectl create -f common.yaml
+kubectl create -f operator.yaml
+kubectl create -f cluster-test.yaml
+```
+
+```shell
+watch kubectl get pod -n rook-ceph
 ```
 
 ![pods-status.png](img/pods-status.png)
 Check Rook are running healthy on your cluster.
 
+#### Add StorageClass
+
+```shell
+# From NUC1
+kubectl apply -f csi/rbd/storageclass-test.yaml
+kubectl get storageclass
+```
+
 ### 2-2. Kubeflow Set-up
 
 #### 2-2-1. Set Rook Storageclass to default for kubeflow
 
-```bash
+```shell
 kubectl patch storageclass rook-ceph-block -p '{"metadata":{"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 ```
 
 #### 2-2-2. Check StorageClass
 
-```bash
+```shell
 kubectl get storageclass
 ```
 
@@ -70,7 +158,7 @@ kubectl get storageclass
 
 ### 2-3. Kubeflow Install
 
-```bash
+```shell
 # Configuration
 export BASE_DIR=$HOME/kubeflow
 mkdir -p $BASE_DIR && pushd $BASE_DIR
@@ -95,7 +183,7 @@ popd
 
 ### 2-4. Monitor kubeflow installation
 
-```bash
+```shell
 watch kubectl get pod -n kubeflow
 watch kubectl get svc -n istio-system
 ```
@@ -116,7 +204,7 @@ You can access Kubeflow at this address (In Browser)
 
 Get {Port} by below command
 
-```bash
+```shell
 kubectl -n istio-system get svc istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}'
 ```
 
@@ -137,6 +225,15 @@ Select or enter the options as below
 ![assign resources to cluster](img/kubeflow-assign.png)
 
 #### 2-6-2. Run MNIST CNN Example
+
+
+```shell
+# NUC1
+cd ~
+git clone https://github.com/aymericdamien/TensorFlow-Examples.git 
+```
+
+![notebook](img/notebook.png)
 
 Now, you will run the MNIST exam
 ple code in sample notebook.
