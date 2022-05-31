@@ -95,25 +95,20 @@ sudo rm -rf /var/lib/rook
 sudo kubeadm join <NUC1 IP>:6443 --token <YOUR TOKEN> --discovery-token-ca-cert-hash <YOUR HASH>
 ```
 
-
-#### Check K8s Cluster status
-
-```shell
-kubectl get nodes
-```
-![nodes-status.png](img/nodes-status.png)
-
-
 ```shell
 # From NUC1
 kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 ```
+
+#### Check K8s Cluster status
 
 ```shell
 # From NUC1 -> Check Weave works
 kubectl get nodes
 kubectl get po -n kube-system -o wide
 ```
+
+![nodes-status.png](img/nodes-status.png)
 
 
 #### Install ROOK Storage
