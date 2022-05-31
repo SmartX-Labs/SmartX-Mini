@@ -104,6 +104,18 @@ kubectl get nodes
 ![nodes-status.png](img/nodes-status.png)
 
 
+```shell
+# From NUC1
+kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+```
+
+```shell
+# From NUC1 -> Check Weave works
+kubectl get nodes
+kubectl get po -n kube-system -o wide
+```
+
+
 #### Install ROOK Storage
 
 ```shell
