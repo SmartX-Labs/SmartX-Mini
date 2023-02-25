@@ -100,7 +100,7 @@ sudo apt-get install python3-pip
 
 sudo python3 -m pip install --upgrade pip setuptools wheel
 
-sudo python3 setup.py install
+sudo pip3 install .
 ```
 <details>
 <summary>Package Versions (Expand)</summary>
