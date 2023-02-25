@@ -109,6 +109,12 @@ sudo pip3 install .
 |    Package    |    Version          |
 |:-------------:|:-------------------:|
 | python3-pip   | 18.1-5+rpt1  |
+    
+##### Python
+|    Package    |    Version          |
+|:-------------:|:-------------------:|
+| setuptools   | 40.8.0-1  |
+| wheel   | 18.1-5+rpt1  |
 
 </details>
 <br>
