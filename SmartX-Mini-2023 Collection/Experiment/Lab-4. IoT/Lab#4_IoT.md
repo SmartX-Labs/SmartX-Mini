@@ -100,7 +100,7 @@ sudo apt-get install python3-pip
 
 sudo python3 -m pip install --upgrade pip setuptools wheel
 
-sudo python3 setup.py install
+sudo pip3 install .
 ```
 <details>
 <summary>Package Versions (Expand)</summary>
@@ -109,6 +109,12 @@ sudo python3 setup.py install
 |    Package    |    Version          |
 |:-------------:|:-------------------:|
 | python3-pip   | 18.1-5+rpt1  |
+    
+##### Python
+|    Package    |    Version          |
+|:-------------:|:-------------------:|
+| setuptools   | 40.8.0-1  |
+| wheel   | 18.1-5+rpt1  |
 
 </details>
 <br>

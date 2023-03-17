@@ -132,7 +132,7 @@ curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.s
 sudo apt install -y git-lfs
 git lfs install
 git clone https://github.com/SmartX-Labs/SmartX-Mini.git
-cd ~/SmartX-Mini/SmartX-Mini-2023\ Collection/Experiment/Lab-2.\ Inter-Connect/
+cd ~/SmartX-Mini/SmartX-Mini-2023\ Collection/Experiment/Lab-2.\ InterConnect/
 ```
 <details>
 <summary>Package Versions (Expand)</summary>
