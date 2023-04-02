@@ -116,7 +116,7 @@ Installed on NUC(i.e., bare metal)
   (IP address, subnet mask, gateway)
   <img src="./img/network_setting2.png" />
 
-- Set Prerequisites
+- **Set Prerequisites**
 
 0. change apt repository links for fast update & upgrade
 
@@ -210,11 +210,13 @@ Installed on NUC(i.e., bare metal)
 
   !!!들여쓰기는 Tab 한번입니다!!!
   <br>**caution! one tab for indentation**
-  <br>`<your nuc ip>`에 현재 nuc의 ip와 `<gateway ip>`에 gateway ip를 입력해주세요.
-  <br>type your nuc's ip in `<your nuc ip>`and nuc's gateway ip in `<gateway ip>`
+
+  `<your nuc ip>`에 현재 nuc의 ip와 `<gateway ip>`에 gateway ip를 입력해주세요.
+  <br>type your nuc's ip in `<your nuc ip>`and gateway ip in `<gateway ip>`(In this experiment, **172.29.0.254** is the gateway IP.)
   
   caution!
-  If your NUC has two ethernet ports, there is no port named `eno1`. Check which port(`enp88s0` or `enp89s0`) is connected to ethernet by `ifconfig` command. and change all 'eno1' in the below text to `enp88s0` or `enp89s0`.   
+  If your NUC has two ethernet ports, there is no interface named `eno1`. Check which interface(`enp88s0` or `enp89s0`) is connected to the network by `ifconfig` command.(e.g., Type the `ifconfig -a` command into the terminal and choose an interface with non-zero RX and TX packets.) And change all `eno1` in the below text to `enp88s0` or `enp89s0`.
+
 
   ```text
   auto lo
@@ -242,7 +244,7 @@ Installed on NUC(i.e., bare metal)
   sudo ifup eno1
   ```
 
-We will make VM attaching vport_vFunction. You can think this tap as a NIC of VM.
+We will make VM attaching vport_vFunction. You can think this tap as a NIC(Network Interface Card) of VM.
 
 Restrart the whole interfaces 1
 
@@ -254,7 +256,8 @@ systemctl restart networking
 exit # Exit superuser mod
 ```
 
-add port ‘eno1’ and ‘vport_vFunction’ to ‘br0’
+add port ‘eno1’ and ‘vport_vFunction’ to ‘br0’<br>
+**caution!** Similarly, if your NUC has two ethernet ports, there is no interface named `eno1`. <br>Therefore, replace `eno1` at the bottom with the appropriate interface chosen above, either `enp88s0` or `enp89s0`.
 
 ```bash
 sudo ovs-vsctl add-port br0 eno1
@@ -280,14 +283,14 @@ exit # Exit superuser mod
 
 - Install dependency to upgrade KVM
 
-  Install dependency & download Ubuntu 20.04 64bit server image.
+  Install dependency & download Ubuntu 20.04.6 64bit server image.
 
   ```bash
   sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
   # upgrade KVM
   # qemu is open-source emulator
 
-  wget https://ftp.lanet.kr/ubuntu-releases/20.04.5/ubuntu-20.04.5-live-server-amd64.iso
+  wget https://ftp.lanet.kr/ubuntu-releases/20.04.6/ubuntu-20.04.6-live-server-amd64.iso
   ```
   
 
@@ -306,11 +309,12 @@ exit # Exit superuser mod
   <br>Be cautious about spacing.
 
   ```bash
-  sudo kvm -m 1024 -name tt -smp cpus=2,maxcpus=2 -device virtio-net-pci,netdev=net0 -netdev tap,id=net0,ifname=vport_vFunction,script=no -boot d vFunction20.img -cdrom ubuntu-20.04.5-live-server-amd64.iso -vnc :5 -daemonize -monitor telnet:127.0.0.1:3010,server,nowait,ipv4 -cpu host
+  sudo kvm -m 1024 -name tt -smp cpus=2,maxcpus=2 -device virtio-net-pci,netdev=net0 -netdev tap,id=net0,ifname=vport_vFunction,script=no -boot d vFunction20.img -cdrom ubuntu-20.04.6-live-server-amd64.iso -vnc :5 -daemonize -monitor telnet:127.0.0.1:3010,server,nowait,ipv4 -cpu host
   ```
 
   Configure SNAT with iptables for VM network  
-  <br>please type your NUC's ip address in `<Your ip address>` 
+  <br>please type your **NUC's ip address** in `<Your ip address>`
+  <br>**caution!** Similarly, if your NUC has two ethernet ports, there is no interface named `eno1`. <br>Therefore, replace `eno1` at the bottom with the appropriate interface chosen above, either `enp88s0` or `enp89s0`.
 
   ```bash
   sudo iptables -A FORWARD -i eno1 -j ACCEPT
