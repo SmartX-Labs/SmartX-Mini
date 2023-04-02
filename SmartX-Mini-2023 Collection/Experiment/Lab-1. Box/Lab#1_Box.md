@@ -534,12 +534,6 @@ Whenever NUC is rebooted, network configuration of Docker container is initializ
 Check connectivity with ping command
 
 ```bash
-docker attach c1
-```
-
-Do ping test with VM and Container
-
-```bash
 ping <VM IP address>
 ```
 
