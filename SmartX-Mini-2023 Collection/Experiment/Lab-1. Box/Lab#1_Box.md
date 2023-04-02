@@ -525,17 +525,18 @@ apt install net-tools
 apt install iputils-ping
 ```
 
-### 2-10. Keep Docker network configuration
+### 2-10. Check connectivity: VM & Container
 
-Whenever NUC is rebooted, network configuration of Docker container is initialized by executing commands in rc.local
-
-### 2-11. Check connectivity: VM & Container
-
-Check connectivity with ping command
+Check connectivity with ping command from docker to VM
 
 ```bash
 ping <VM IP address>
+# please type this command in the container.
 ```
 
 > Do above command in both container and KVM VM
-> <br> Finally, you can check that the container and the VM are connected. 
+> <br> **Finally, you can check that the container and the VM are connected.**
+
+### 2-Appendix. Keep Docker network configuration
+
+Whenever NUC is rebooted, network configuration of Docker container is initialized by executing commands in `rc.local` file.
