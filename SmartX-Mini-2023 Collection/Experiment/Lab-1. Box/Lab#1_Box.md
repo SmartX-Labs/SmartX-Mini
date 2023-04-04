@@ -141,7 +141,8 @@ Installed on NUC(i.e., bare metal)
    ![Network Configuration](./img/ifconfig.png)
 
    **caution!** After you enter  ```ifconfig -a```.<br>
-  If there exist enp88s0 and enp89s0, **please reboot your NUC.**
+  If there exist `enp88s0` and `enp89s0`, **please reboot your NUC.**
+  <br>**주의!** 만일 터미널에 ```ifconfig -a``` 작성 후 `enp88s0` 와 `enp89s0`가 존재한다면 **꼭 재부팅** 해주세요.
   ![two NIC](./img/two_NIC.png)
     
 4. Install openvswitch-switch & make br0 bridge
