@@ -118,19 +118,7 @@ Installed on NUC(i.e., bare metal)
 
 - **Set Prerequisites**
 
-0. change apt repository links for fast update & upgrade
 
-    ```bash
-    sudo vi /etc/apt/sources.list
-    ```
-    type below command and enter
-    ```text
-    :%s/kr.archive.ubuntu.com/mirror.kakao.com/
-    ```
-    type below command and enter to exit the text editor
-    ```text
-    :wq
-    ```
 1. Update & Upgrade
 
    ```bash
@@ -156,10 +144,6 @@ Installed on NUC(i.e., bare metal)
   If there exist enp88s0 and enp89s0, **please reboot your NUC.**
   ![two NIC](./img/two_NIC.png)
     
-
-
-
-
 4. Install openvswitch-switch & make br0 bridge
 
    ```bash
@@ -214,8 +198,11 @@ Installed on NUC(i.e., bare metal)
   `<your nuc ip>`에 현재 nuc의 ip와 `<gateway ip>`에 gateway ip를 입력해주세요.
   <br>type your nuc's ip in `<your nuc ip>`and gateway ip in `<gateway ip>`(In this experiment, **172.29.0.254** is the gateway IP.)
   
-  caution!
-  If your NUC has two ethernet ports, there is no interface named `eno1`. Check which interface(`enp88s0` or `enp89s0`) is connected to the network by `ifconfig` command.(e.g., Type the `ifconfig -a` command into the terminal and choose an interface with non-zero RX and TX packets.) And change all `eno1` in the below text to `enp88s0` or `enp89s0`.
+
+  주의!
+  NUC에 이더넷 포트가 두 개 있는 경우 `eno1`이라는 인터페이스가 없습니다. `ifconfig` 명령으로 네트워크에 연결된 인터페이스(`enp88s0` 또는 `enp89s0`)를 확인합니다. (예를 들어, 터미널에 `ifconfig -a` 명령어를 입력하고 RX 및 TX 패킷이 0이 아닌 인터페이스를 선택합니다.) 그리고 아래 텍스트의 `eno1`을 모두 `enp88s0` 또는 `enp89s0`으로 변경합니다.
+  <br>caution!
+  <br>If your NUC has two ethernet ports, there is no interface named `eno1`. Check which interface(`enp88s0` or `enp89s0`) is connected to the network by `ifconfig` command.(e.g., Type the `ifconfig -a` command into the terminal and choose an interface with non-zero RX and TX packets.) And change all `eno1` in the below text to `enp88s0` or `enp89s0`.
 
 
   ```text
@@ -244,9 +231,9 @@ Installed on NUC(i.e., bare metal)
   sudo ifup eno1
   ```
 
-We will make VM attaching vport_vFunction. You can think this tap as a NIC(Network Interface Card) of VM.
 
-Restrart the whole interfaces 1
+Restrart the whole interfaces 1<br>
+전체 interface를 다시 시작해주세요.
 
 ```bash
 sudo su # Enter superuser mod
@@ -255,6 +242,12 @@ systemctl enable networking
 systemctl restart networking
 exit # Exit superuser mod
 ```
+
+vport_vFunction을 연결한 VM을 만들겠습니다. 이 탭(vport_vFunction)은 VM의 NIC(네트워크 인터페이스 카드)라고 생각하시면 됩니다.
+<br>We will make VM attaching vport_vFunction. You can think this tap as a NIC(Network Interface Card) of VM.
+
+'br0'에 포트 'eno1' 및 'vport_vFunction'을 추가합니다.<br>
+**주의!** 만약 NUC 2개의 lan port가 있다면, `eno1` interface가 없습니다. 그러므로 하단의 block에서 `eno1`을 위에서 선택한 interface 중 하나로 변경해주세요(즉, `enp88s0` 또는 `enp89s0` 중에서 적절한 것을 선택해주세요.)
 
 add port ‘eno1’ and ‘vport_vFunction’ to ‘br0’<br>
 **caution!** Similarly, if your NUC has two ethernet ports, there is no interface named `eno1`. <br>Therefore, replace `eno1` at the bottom with the appropriate interface chosen above, either `enp88s0` or `enp89s0`.
@@ -269,7 +262,8 @@ Below is the figure you configurated so far
 
 ![Vport VFunction](./img/vport_vFunction.png)
 
-Restrart the whole interfaces 2
+Restrart the whole interfaces 2<br>
+전체 interface를 다시 시작해주세요.
 
 ```bash
 sudo su # Enter superuser mod
@@ -305,16 +299,22 @@ exit # Exit superuser mod
   ```
 
   Boot VM image from Ubuntu iso file
-  <br>(띄어쓰기 주의!)
+  <br>**띄어쓰기 주의하기**
   <br>Be cautious about spacing.
 
   ```bash
   sudo kvm -m 1024 -name tt -smp cpus=2,maxcpus=2 -device virtio-net-pci,netdev=net0 -netdev tap,id=net0,ifname=vport_vFunction,script=no -boot d vFunction20.img -cdrom ubuntu-20.04.6-live-server-amd64.iso -vnc :5 -daemonize -monitor telnet:127.0.0.1:3010,server,nowait,ipv4 -cpu host
   ```
 
-  Configure SNAT with iptables for VM network  
-  <br>please type your **NUC's ip address** in `<Your ip address>`
+  Configure SNAT with iptables for VM network<br>
+
+  **NUC's ip address**을 하단의 `<Your ip address>`에 기입해주세요(다만, **괄호는 지우고** 172.29.0.X의 형식으로 작성해주세요)
+
+  **주의!** 만약 NUC 2개의 lan port가 있다면, `eno1` interface가 없습니다. 그러므로 하단의 block에서 `eno1`을 위에서 선택한 interface 중 하나로 변경해주세요(즉, `enp88s0` 또는 `enp89s0` 적절한 것을 선택해주세요.)
+
+  please type your **NUC's ip address** in `<Your ip address>`
   <br>**caution!** Similarly, if your NUC has two ethernet ports, there is no interface named `eno1`. <br>Therefore, replace `eno1` at the bottom with the appropriate interface chosen above, either `enp88s0` or `enp89s0`.
+  
 
   ```bash
   sudo iptables -A FORWARD -i eno1 -j ACCEPT
@@ -366,6 +366,7 @@ exit # Exit superuser mod
 
   search domains는 공백으로 남겨주세요!
   <br> please leave search domains as empty.
+  <br> 그리고 위의 `< your VM IP >` 작성 시에 **괄호는 지우고** 172.29.0.X의 형식으로 작성해주세요
 
 - Installation Completed (control with ‘Enter key’ and ‘Arrow keys’)
 
@@ -503,6 +504,7 @@ Press ctrl + p, q to detach docker container.
 ### 2-9. Connect docker container
 
 Install OVS-docker utility in host machine (Not inside of Docker container)
+<br> **도커 외부에서**, 즉 host machine에서 OVS-docker utility를 하단의 명령어로 설치합니다
 
 ```bash
 sudo docker start c1
@@ -510,6 +512,8 @@ sudo ovs-docker del-port br0 veno1 c1
 sudo ovs-docker add-port br0 veno1 c1 --ipaddress=[docker_container_IP]/24 --gateway=[gateway_IP]
 # please type gateway IP and docker container IP.
 ```
+위의 --ipaddress=[docker_container_IP]/24 --gateway=[gateway_IP] 작성 시에 [ ]은 빼고, 172.29.0.X의 형식으로 작성해주세요.
+<br> 예를 들어, --ipaddress=172.29.0.X/24 --gateway=172.29.0.254
 
 Enter to docker container
 
@@ -533,6 +537,7 @@ Check connectivity with ping command from docker to VM
 ping <VM IP address>
 # please type this command in the container.
 ```
+예를 들어, ping 172.29.0.X 
 
 > Do above command in both container and KVM VM
 > <br> **Finally, you can check that the container and the VM are connected.**
