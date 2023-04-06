@@ -140,7 +140,7 @@ Installed on NUC(i.e., bare metal)
 
    ![Network Configuration](./img/ifconfig.png)
 
-   **caution!** After you enter  ```ifconfig -a```.<br>
+  <br> **caution!** After you enter  ```ifconfig -a```.<br>
   If there exist `enp88s0` and `enp89s0`, **please reboot your NUC.**
   <br>**주의!** 만일 터미널에 ```ifconfig -a``` 작성 후 `enp88s0` 와 `enp89s0`가 존재한다면 **꼭 재부팅** 해주세요.
   ![two NIC](./img/two_NIC.png)
@@ -148,7 +148,7 @@ Installed on NUC(i.e., bare metal)
 4. Install openvswitch-switch & make br0 bridge
 
    ```bash
-   sudo apt install openvswitch-switch
+   sudo apt -y install openvswitch-switch
    sudo ovs-vsctl add-br br0
    sudo ovs-vsctl show
    ```
@@ -227,9 +227,15 @@ Installed on NUC(i.e., bare metal)
       post-down ip link del dev vport_vFunction
   ```
 
+Save and quit the editor.
+파일을 저장하고 나와주세요. 
+
+**주의!** 만약 NUC 2개의 lan port가 있다면, `eno1` interface가 없습니다. 그러므로 하단의 block에서 `eno1`을 위에서 선택한 interface 중 하나로 변경해주세요(즉, `enp88s0` 또는 `enp89s0` 중에서 적절한 것을 선택해주세요.)
+**caution!** Similarly, if your NUC has two ethernet ports, there is no interface named `eno1`. <br>Therefore, replace `eno1` at the bottom with the appropriate interface chosen above, either `enp88s0` or `enp89s0`.
+
   ```bash
   sudo systemctl restart systemd-resolved.service
-  sudo ifup eno1
+  sudo ifup eno1  #change this if you are using two-port NUC
   ```
 
 
@@ -254,7 +260,7 @@ add port ‘eno1’ and ‘vport_vFunction’ to ‘br0’<br>
 **caution!** Similarly, if your NUC has two ethernet ports, there is no interface named `eno1`. <br>Therefore, replace `eno1` at the bottom with the appropriate interface chosen above, either `enp88s0` or `enp89s0`.
 
 ```bash
-sudo ovs-vsctl add-port br0 eno1
+sudo ovs-vsctl add-port br0 eno1   #change this if you are using two-port NUC
 sudo ovs-vsctl add-port br0 vport_vFunction
 sudo ovs-vsctl show
 ```
@@ -281,7 +287,7 @@ exit # Exit superuser mod
   Install dependency & download Ubuntu 20.04.6 64bit server image.
 
   ```bash
-  sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
+  sudo apt install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
   # upgrade KVM
   # qemu is open-source emulator
 
@@ -526,8 +532,8 @@ In container,
 
 ```bash
 apt update
-apt install net-tools
-apt install iputils-ping
+apt install -y net-tools
+apt install -y iputils-ping
 ```
 
 ### 2-10. Check connectivity: VM & Container
