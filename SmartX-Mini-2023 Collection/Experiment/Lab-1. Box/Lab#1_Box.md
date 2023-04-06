@@ -134,7 +134,7 @@ Installed on NUC(i.e., bare metal)
 3. Install net-tools & ifupdown
 
    ```bash
-   sudo apt install net-tools ifupdown
+   sudo apt install -y net-tools ifupdown
    ifconfig -a
    ```
 
