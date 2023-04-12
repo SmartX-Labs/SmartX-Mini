@@ -11,7 +11,7 @@ The main part of interConnect Lab is to connect one box with another box which c
 
 ### 1-1. Raspberry PI
 
-Raspberry PI is a small, embedded computer designed by Raspberry Pi Foundation. It has different HW and properties. For example, It doesn't have HW real-time clock. So, after booting, the time of PI is initialized. In this lecture, we will use Pi2.
+Raspberry PI is a small, embedded computer designed by Raspberry Pi Foundation. It has different HW and properties. For example, It doesn't have HW real-time clock. So, after booting, the time of PI is initialized. In this lecture, we will use Pi3.
 
 ### 1-2. Apache Kafka
 
