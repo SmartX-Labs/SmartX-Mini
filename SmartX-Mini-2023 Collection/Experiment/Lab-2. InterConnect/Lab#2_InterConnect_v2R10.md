@@ -208,11 +208,21 @@ netstat -rn
 #### 2-2-2. Install required packages(In PI)
 
 You need to install several packages **in PI**.
-
 ```bash
 sudo apt update
 sudo apt install -y git vim rdate openssh-server
 ```
+
+> If you got an error `Certificate verification failed: The certificate is NOT Trusted`, you should change your APT repository. Open sources.list and replace old repository url into another one. First, open the apt sources list file.
+> ```bash
+> sudo nano /etc/apt/sources.list
+> ```
+> Pleases change `http://ftp.lanet.kr/raspbian/` into `http://ftp.kaist.ac.kr/raspbian/raspbian/`. Enter Ctrl+X and Y to save the file. After you done, please install the packages again. 
+> ```bash
+> sudo apt update
+> sudo apt install -y git vim rdate openssh-server
+> ```
+ 
 <details>
 <summary>Package Versions (Expand)</summary>
 
