@@ -193,7 +193,7 @@ Insert the SD card back into your Raspberry PI and boot it up. Initial user is `
 
 #### 2-2-1. Check network setting(In PI)
 
-In PI, type `ifconfig` to check your network interface setting
+**In PI**, type `ifconfig` to check your network interface setting
 
 ```bash
 ifconfig
@@ -207,7 +207,7 @@ netstat -rn
 
 #### 2-2-2. Install required packages(In PI)
 
-You need to install several packages in PI.
+You need to install several packages **in PI**.
 
 ```bash
 sudo apt update
@@ -243,7 +243,7 @@ Now you can type command to PI in NUC terminal.
 > ![ssh key error](./img/ssh_duplicated.png)
 >
 > ```bash
-> ssh-keygen -f "home/$(whoami)/.ssh/know_hosts" -R "[PI_IP_ADDRESS]"
+> ssh-keygen -f "home/$(whoami)/.ssh/known_hosts" -R "[PI_IP_ADDRESS]"
 > ```
 
 ### 2-3. Check `crontab` Setting to sync clock (In PI)
@@ -487,6 +487,8 @@ bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic resource # Che
 ### 2-6. Flume on Raspberry PI(IN PI)
 
 #### 2-6-1. Install Net-SNMP installation
+
+Please install those packages **in PI**.
 
 ```bash
 sudo apt update
