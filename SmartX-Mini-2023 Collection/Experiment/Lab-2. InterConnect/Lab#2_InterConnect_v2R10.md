@@ -173,7 +173,7 @@ sudo vim network-config
 
 The assigned IP address will be automatically applied when you’re initially booting your Raspberry Pi via cloud-init.
 
-To flash your OS to an SD card, you need to know where your card is mounted. Find the partition that have similar volume value with your SD cards. If your SD is a 32GB card, It has value about 29.83 GiB.
+To flash your OS to an SD card, you need to know where your card is mounted. Find the partition that have similar volume value with your SD cards. 32GB SD card will be shown as about 29.83GiB, 16GB SD card will be shown as about 14.6GiB.
 
 ```bash
 sudo fdisk -l
@@ -222,7 +222,10 @@ sudo apt install -y git vim rdate openssh-server
 > sudo apt update
 > sudo apt install -y git vim rdate openssh-server
 > ```
- 
+
+If you successfully installed all packages, please connect NUC to your monitor. DON'T turn off your Pi, we will access PI within your NUC via SSH.
+패키지가 모두 설치되었다면, NUC를 모니터에 연결해주세요. Pi는 끄지 말아주세요.
+
 <details>
 <summary>Package Versions (Expand)</summary>
 
@@ -304,18 +307,18 @@ Open `/etc/hosts` in NUC.
 sudo vim /etc/hosts
 ```
 
-Add 2 lines below the file.
+Add 2 lines below the file. **IF your hostname consists of only numbers, you should use other name in the HOSTNAME. Please enter some word that you can memorize. 만약 hostname이 숫자로만 이루어져 있다면, 기억하기 쉬운 다른 이름을 사용해주세요. **
 
 ```text
 [NUC_IP] [NUC_HOSTNAME]
 [PI_IP] [PI_HOSTNAME]
 ```
 
-For example,
+**For example,**
 
 ```text
-172.29.0.XX nuc
-172.29.0.XX pi
+172.29.0.XX nuc #This is an example
+172.29.0.XX pi #This is an example
 ```
 
 #### 2-4-2. Hostname preparation for Kafka(In PI)
