@@ -103,11 +103,15 @@ Before this, you need to check the following,
 ```bash
 sudo docker start zookeeper broker0 broker1 broker2
 ```
+- you can get into the docker's terminal by using below command (excute below command in NUC terminal.)
+```bash
+sudo docker attach [docker name]
+```
 - Run zookeeper (excute below command in zookeeper container.)  
 ```bash
 bin/zookeeper-server-start.sh config/zookeeper.properties
 ```
-- Run brokers (excute below command in each broker container.)
+- Run brokers (excute below command in each broker(e.g., broker0, broker1, broker2) container.)
 ```bash
 bin/kafka-server-start.sh config/server.properties
 ```
