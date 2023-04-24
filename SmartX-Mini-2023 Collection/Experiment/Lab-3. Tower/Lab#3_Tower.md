@@ -103,9 +103,9 @@ Before this, you need to check the following,
 ```bash
 sudo docker start zookeeper broker0 broker1 broker2
 ```
-- you can get into the docker's terminal by using below command (excute below command in NUC terminal.)
+- you can get into the docker's terminal(e.g., zookeeper, broker0, broker1, broker2) by using below command (excute below command in NUC terminal.)
 ```bash
-sudo docker attach [docker name]
+sudo docker attach [docker container name]
 ```
 - Run zookeeper (excute below command in zookeeper container.)  
 ```bash
