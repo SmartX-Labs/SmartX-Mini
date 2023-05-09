@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR App</title>
+    <style>
+        #dropzone {
+            border: 2px dashed #999;
+            width: 600px;
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="dropzone">Drag & drop image here</div>
+    <pre id="result">Drag an image to see the result</pre>
+    <script>
+        const dropzone = document.querySelector("#dropzone");
+        dropzone.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        dropzone.addEventListener("drop", async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const image = e.dataTransfer.files[0];
+            if (image && image.type.startsWith("image/")) {
+                await upload(image);
+            } else {
+                alert("Please upload a valid image file.");
+            }
+        });
+
+        async function upload(image) {
+            const formData = new FormData();
+            formData.append("image", image);
+            document.querySelector("#result").innerText = "Processing...";
+
+            const response = await fetch('/api/ocr', { method: "POST", body: formData });
+        
+            if (!response.ok) {
+                console.error("An error occurred:", response.statusText);
+                return;
+            }
+        
+            const data = await response.json();
+            document.querySelector("#result").innerText = data.text;
+      }
+</script>
+</body>
+</html>
