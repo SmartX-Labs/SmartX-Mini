@@ -100,6 +100,8 @@ sudo apt-get install python3-pip
 
 sudo python3 -m pip install --upgrade pip setuptools wheel
 
+sudo apt install -y build-essential python3-dev
+
 sudo pip3 install .
 ```
 <details>
@@ -123,6 +125,8 @@ If you have error while build package.
 
 ```bash
 sudo apt install -y build-essential python3-dev
+
+sudo pip3 install .
 ```
 <details>
 <summary>Package Versions (Expand)</summary>
