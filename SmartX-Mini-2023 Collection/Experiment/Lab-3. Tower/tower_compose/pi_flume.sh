@@ -10,7 +10,7 @@
 local_file=/etc/hosts
 remote_file_path=/etc/hosts
 search_string_pi="pi"
-search_string_bp="black_pearl"
+search_string_bp="black-pearl"
 
 # Set the remote server's address, user, and password
 remote_user="pirate"
