@@ -27,6 +27,7 @@ git clone https://github.com/SmartX-Labs/SmartX-Mini.git
 sudo bin/kafka-topics.sh --create --bootstrap-server <NUC IP>:9092 --replication-factor 1 --partitions 1 --topic pi-video
 ```
 `<NUC IP>`를 적절하게 수정해 주세요.  
+
 6. lab02 ppt: OpenCV Python Setup in Pi
 ```Bash
 sudo apt install libdatrie1 libswresample3 libchromaprint1 libgsm1 libgdk-pixbuf2.0-0 libxcb-shm0 libaom0 libjbig0 libspeex1 libtwolame0 libx264-155 libcroco3 libatspi2.0-0 libmp3lame0 libopenmpt0 librsvg2-2 libgraphite2-3 libcairo2 libxkbcommon0 libatk1.0-0 libvorbisenc2 libvorbisfile3 libwayland-client0 libwavpack1 libvdpau1 libgfortran5 libatlas3-base libvpx5 libxrandr2 libzvbi0 libxfixes3 libavcodec58 libgtk-3-0 libxcursor1 libtheora0 libsnappy1v5 libthai0 libwayland-egl1 libopenjp2-7 libxdamage1 libcodec2-0.8.1 libopus0 libswscale5 libxvidcore4 libshine3 libwayland-cursor0 libsoxr0 libatk-bridge2.0-0 libwebpmux3 libbluray2 libxcb-render0 libx265-165 libharfbuzz0b libva-x11-2 libxi6 libxrender1 libcairo-gobject2 libxinerama1 libtiff5 libvorbis0a libmpg123-0 libssh-gcrypt-4 libpangoft2-1.0-0 libpango-1.0-0 libogg0 libva2 libavutil56 libwebp6 libva-drm2 libdrm2 libavformat58 libpixman-1-0 libfontconfig1 libxcomposite1 libgme0 libpangocairo-1.0-0 libepoxy0
