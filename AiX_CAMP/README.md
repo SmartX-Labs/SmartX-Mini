@@ -38,7 +38,7 @@
 ## 저작권
 
 © 2021. 최유라 all rights reserved.
-- https://github.com/Yuuraa/AI_X_SUMMER_2021
+https://github.com/Yuuraa/AI_X_SUMMER_2021  
 2022 김현서 일부 내용 수정 및 업데이트.
-- https://github.com/dodok8/AI_SUMMER_2022
+https://github.com/dodok8/AI_SUMMER_2022  
 2023 최지호 일부 내용 수정 및 업데이트.
