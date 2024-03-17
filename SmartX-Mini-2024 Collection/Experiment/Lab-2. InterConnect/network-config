@@ -1,0 +1,8 @@
+version: 2
+ethernets:
+  eth0:
+    addresses:
+      - 172.29.0.xxx/24 # change xxx to your pi address!
+    gateway4: 172.29.0.254
+    nameservers:
+      addresses: [203.237.32.100, 203.237.32.101]
