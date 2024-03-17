@@ -1,0 +1,75 @@
+#: Title : docker-compose.yml
+#: Date : 20230429
+#: Author : "Jiho Choi" <17choijiho@gm.gist.ac.kr>
+#: Version : 1.0
+#: Description : docker-compose yaml file to automate influxdb, chronograf, kafkas(zookeeper, broker0, broker1, broker2, consumer)
+#: Usage : sudo docker comose up# inside NUC machine's docker-compose.yml directory
+
+version: '3'
+services:
+  influxdb:
+    image: influxdb:1.7
+    network_mode: host
+  chronograf:
+    image: chronograf
+    network_mode: host
+    ports:
+      - "8888:8888"
+    command: --influxdb-url=http://localhost:8086
+    depends_on:
+      influxdb:
+        condition: service_started
+  zookeeper:
+    # 만일 이미지를 새로 받는 다면 여기도 수정할 필요가 있다.
+    # ubuntu-kafra -> jihoscholar/ubuntu-kafka
+    image: ubuntu-kafka
+    network_mode: host
+    tty: true
+    stdin_open: true
+    depends_on:
+      influxdb:
+        condition: service_started
+    command: sh -c "bin/zookeeper-server-start.sh config/zookeeper.properties"
+  broker0:
+    image: ubuntu-kafka
+    network_mode: host
+    tty: true
+    stdin_open: true
+    working_dir: /kafka
+    command: sh -c "sed -i 's/broker.id=0/broker.id=0/g' /kafka/config/server.properties && sed -i 's/port=9092/port=9090/g' /kafka/config/server.properties && bin/kafka-server-start.sh config/server.properties"
+    depends_on:
+      zookeeper:
+        condition: service_started
+  broker1:
+    image: ubuntu-kafka
+    network_mode: host
+    tty: true
+    stdin_open: true
+    working_dir: /kafka
+    command: sh -c "sed -i 's/broker.id=0/broker.id=1/g' /kafka/config/server.properties && sed -i 's/port=9092/port=9091/g' /kafka/config/server.properties && bin/kafka-server-start.sh config/server.properties"
+    depends_on:
+      zookeeper:
+        condition: service_started
+  broker2:
+    image: ubuntu-kafka
+    network_mode: host
+    tty: true
+    stdin_open: true
+    working_dir: /kafka
+    command: sh -c "sed -i 's/broker.id=0/broker.id=2/g' /kafka/config/server.properties && sed -i 's/port=9092/port=9092/g' /kafka/config/server.properties &&bin/kafka-server-start.sh config/server.properties"
+    depends_on:
+      zookeeper:
+        condition: service_started
+  consumer:
+    image: ubuntu-kafka
+    network_mode: host
+    tty: true
+    stdin_open: true
+    command: sh -c "sleep 30 && bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 3 --topic resource && bin/kafka-topics.sh --list --zookeeper localhost:2181 && bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic resource && /bin/bash"
+    depends_on:
+      zookeeper:
+        condition: service_started
+  
+
+
+
