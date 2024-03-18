@@ -1,0 +1,33 @@
+#cloud-config
+# vim: syntax=yaml
+#
+
+# Set your hostname here, the manage_etc_hosts will update the hosts file entries as well
+hostname: pi
+manage_etc_hosts: true
+# don't write debian.org into apt mirrors
+apt_preserve_sources_list: true
+
+# You could modify this for your own user information
+users:
+  - name: pirate
+    gecos: "Hypriot Pirate"
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    groups: users,docker,video
+    plain_text_passwd: hypriot
+    lock_passwd: false
+    ssh_pwauth: true
+    chpasswd: { expire: false }
+
+package_upgrade: false
+
+timezone: Asia/Seoul
+
+# These commands will be ran once on first boot only
+runcmd:
+  # Pickup the hostname changes
+  - 'systemctl restart avahi-daemon'
+
+  # Activate WiFi interface
+#  - 'ifup wlan0'
