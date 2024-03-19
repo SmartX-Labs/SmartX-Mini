@@ -564,7 +564,7 @@ cd ~/SmartX-mini/raspbian-flume
 Open `Dockerfile` and check it is correct.
 
 ```dockerfile
-FROM balenalib/rpi-raspbian:stretch
+FROM balenalib/rpi-raspbian:buster
 LABEL "maintainer"="Seungryong Kim <srkim@nm.gist.ac.kr>"
 
 #Update & Install wget, vim
