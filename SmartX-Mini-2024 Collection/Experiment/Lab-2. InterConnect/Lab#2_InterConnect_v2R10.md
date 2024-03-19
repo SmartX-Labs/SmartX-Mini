@@ -584,6 +584,8 @@ ADD flume-conf.properties /flume/conf/
 WORKDIR /flume
 ```
 
+#### Please change "FROM balenalib/rpi-raspbian:stretch" to "FROM balenalib/rpi-raspbian:buster"
+
 #### 2-6-4. Build docker image
 
 Then build docker image with `docker build`. It takes a longer time than NUC.
