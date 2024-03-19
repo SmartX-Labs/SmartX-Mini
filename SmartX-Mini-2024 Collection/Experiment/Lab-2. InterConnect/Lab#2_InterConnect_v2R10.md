@@ -60,7 +60,7 @@ A distributed, reliable, and available service for efficiently collecting, aggre
 > If you have a problem with the internet connection even the box can send a ping to the gateway. You can fix this problem by editing `etc/resolv.conf`. Open `/etc/resolv.conf`
 >
 > ```bash
-> sudo vim /etc/resolv.conf 
+> sudo vim /etc/resolv.conf
 > ```
 >
 > Add name server like below.
@@ -95,33 +95,34 @@ Before we start, your Raspberry Pi must be ready with the proper OS. In this lab
 Type the commands below to get the “flash” script for the OS setup. Then, type the `flash` command to see if it’s installed correctly.
 
 ```bash
-sudo apt update && sudo apt install -y pv curl python3-pip unzip hdparm
+sudo apt-get update && sudo apt-get install -y pv curl python3-pip unzip hdparm
 sudo pip3 install awscli
 curl -O https://raw.githubusercontent.com/hypriot/flash/master/flash
 chmod +x flash
 sudo mv flash /usr/local/bin/flash
 ```
+
 <details>
 <summary>Package Versions (Expand)</summary>
 
 ##### NUC
-|    Package    |    Version          |
-|:-------------:|:-------------------:|
-| pv            | 1.6.6-1             |
-| curl          | 7.68.0-1ubuntu2.15  |
-| python3-pip   | 20.0.2-5ubuntu1.7   |
-| unzip         | 6.0-25ubuntu1.1     |
-| hdparm        | 9.58+ds-4           |
+
+|   Package   |      Version       |
+| :---------: | :----------------: |
+|     pv      |      1.6.6-1       |
+|    curl     | 7.68.0-1ubuntu2.15 |
+| python3-pip | 20.0.2-5ubuntu1.7  |
+|    unzip    |  6.0-25ubuntu1.1   |
+|   hdparm    |     9.58+ds-4      |
+
 ##### Python
-|    Package    |    Version          |
-|:-------------:|:-------------------:|
-| awscli        |1.27.59             |
+
+| Package | Version |
+| :-----: | :-----: |
+| awscli  | 1.27.59 |
 
 </details>
 <br>
-
-
-
 
 After installing `flash`, clone the repository from Github. You need to install `git-lfs` first because this repository contains large files.
 
@@ -134,15 +135,16 @@ git lfs install
 git clone https://github.com/SmartX-Labs/SmartX-Mini.git
 cd ~/SmartX-Mini/SmartX-Mini-2023\ Collection/Experiment/Lab-2.\ InterConnect/
 ```
+
 <details>
 <summary>Package Versions (Expand)</summary>
 
 ##### NUC
-|    Package    |    Version          |
-|:-------------:|:-------------------:|
-| git            | 1:2.25.1-1ubuntu3.8   |
-| git-lfs          | 3.3.0 |
 
+| Package |       Version       |
+| :-----: | :-----------------: |
+|   git   | 1:2.25.1-1ubuntu3.8 |
+| git-lfs |        3.3.0        |
 
 </details>
 <br>
@@ -208,16 +210,22 @@ netstat -rn
 #### 2-2-2. Install required packages(In PI)
 
 You need to install several packages **in PI**.
+
 ```bash
 sudo apt update
 sudo apt install -y git vim rdate openssh-server
 ```
 
 > **If you got an error** `Certificate verification failed: The certificate is NOT Trusted`, you should change your APT repository. Open sources.list and replace old repository url into another one. First, open the apt sources list file.
+>
 > ```bash
 > sudo nano /etc/apt/sources.list
 > ```
-> Pleases change `http://ftp.lanet.kr/raspbian/`  into `http://ftp.kaist.ac.kr/raspbian/raspbian/`. Enter Ctrl+X and Y to save the file. After you done, please install the packages again. 
+
+### MUST READ!!!
+
+> Pleases change `http://ftp.lanet.kr/raspbian/` into `http://ftp.kaist.ac.kr/raspbian/raspbian/`. Enter Ctrl+X and Y to save the file. After you done, please install the packages again.
+>
 > ```bash
 > sudo apt update
 > sudo apt install -y git vim rdate openssh-server
@@ -230,12 +238,13 @@ If you successfully installed all packages, please connect NUC to your monitor. 
 <summary>Package Versions (Expand)</summary>
 
 ##### PI
-|    Package     |    Version          |
-|:--------------:|:-------------------:|
-| git            | 1:2.20.1-2+deb10u7  |
-| vim            | 2:8.1.0875-5+deb10u4|
-| rdate          | 1:1.2-6             |
-| openssh-server | 1:7.9p1-10+deb10u2+rpt1    |
+
+|    Package     |         Version         |
+| :------------: | :---------------------: |
+|      git       |   1:2.20.1-2+deb10u7    |
+|      vim       |  2:8.1.0875-5+deb10u4   |
+|     rdate      |         1:1.2-6         |
+| openssh-server | 1:7.9p1-10+deb10u2+rpt1 |
 
 </details>
 <br>
@@ -295,7 +304,7 @@ Every machine in a network that communicates with itself must know its address. 
 
 #### 2-4-1. Hostname preparation for Kafka(In NUC)
 
-To check your hostname, you can use  the `hostname` command.
+To check your hostname, you can use the `hostname` command.
 
 ```bash
 hostname
@@ -361,12 +370,12 @@ If it was successful, We can be sure that NUC knows its hostname and Pi’s host
 We’ll use one zookeeper, 3 brokers, and one consumer containers that share the host’s public IP address. The zookeeper container doesn’t have a broker id. Each Broker has a unique id and port to interact with each other. The consumer container is just used to manage topics and check the data from brokers.
 
 | Function(container) Name | IP Address | Broker ID | Listening Port |
-|:------------------------:|:----------:|:---------:|:--------------:|
-|         zookeeper        |  Host's IP |     -     |      2181      |
-|          broker0         |  Host's IP |     0     |      9090      |
-|          broker1         |  Host's IP |     1     |      9091      |
-|          broker2         |  Host's IP |     2     |      9092      |
-|         consumer         |  Host's IP |     -     |        -       |
+| :----------------------: | :--------: | :-------: | :------------: |
+|        zookeeper         | Host's IP  |     -     |      2181      |
+|         broker0          | Host's IP  |     0     |      9090      |
+|         broker1          | Host's IP  |     1     |      9091      |
+|         broker2          | Host's IP  |     2     |      9092      |
+|         consumer         | Host's IP  |     -     |       -        |
 
 #### 2-5-1. Clone repository from GitHub
 
@@ -411,8 +420,6 @@ RUN sudo apt-get install -y wget vim iputils-ping net-tools iproute2 dnsutils op
 …
 ```
 
-
-
 #### 2-5-3. Build docker image
 
 Then build docker image with `docker build`. It takes a long time.
@@ -424,7 +431,7 @@ sudo docker build --tag ubuntu-kafka . #You should type '.'
 It's good to know basic docker commands. For more detail, visit [docker official document](https://docs.docker.com/engine/reference/commandline/cli/).
 
 ```bash
-sudo docker --help #show docker instruction 
+sudo docker --help #show docker instruction
 sudo docker ps # show list of container
 sudo docker rm # remove docker container
 sudo docker start [container_name] # start docker container
@@ -455,7 +462,7 @@ Check the client port is `2181`
 Execute the zookeeper first, leave the zookeeper running and open a new terminal for the next tasks.
 
 ```bash
-bin/zookeeper-server-start.sh config/zookeeper.properties 
+bin/zookeeper-server-start.sh config/zookeeper.properties
 ```
 
 #### 2-5-6. Broker configuration(IN NUC, `broker0`, `broker1`, `broker2` containers)
@@ -467,17 +474,17 @@ sudo vi config/server.properties
 ```
 
 | Function(container) Name | IP Address | Broker ID | Listening Port |
-|:------------------------:|:----------:|:---------:|:--------------:|
-|          broker0         |  Host's IP |     0     |      9090      |
-|          broker1         |  Host's IP |     1     |      9091      |
-|          broker2         |  Host's IP |     2     |      9092      |
+| :----------------------: | :--------: | :-------: | :------------: |
+|         broker0          | Host's IP  |     0     |      9090      |
+|         broker1          | Host's IP  |     1     |      9091      |
+|         broker2          | Host's IP  |     2     |      9092      |
 
 ![broker setting](./img/broker%20setting.png)
 
 Execute Kafka brokers.
 
 ```bash
-bin/kafka-server-start.sh config/server.properties 
+bin/kafka-server-start.sh config/server.properties
 ```
 
 Repeat this in 3 broker containers. (`broker0`, `broker1`, `broker2`)
@@ -512,17 +519,18 @@ Download Net-SNMP
 ```bash
 sudo apt install -y snmp snmpd snmp-mibs-downloader openjdk-8-jdk
 ```
+
 <details>
 <summary>Package Versions (Expand)</summary>
 
 ##### PI
-|    Package    |    Version          |
-|:-------------:|:-------------------:|
-| snmp            | 5.7.3+dfsg-5+deb10u4  |
-| snmpd          | 5.7.3+dfsg-5+deb10u4 |
-| snmp-mibs-downloader   | 1.2|
-| openjdk-8-jdk         | 8u312-b07-1~deb9u1|
 
+|       Package        |       Version        |
+| :------------------: | :------------------: |
+|         snmp         | 5.7.3+dfsg-5+deb10u4 |
+|        snmpd         | 5.7.3+dfsg-5+deb10u4 |
+| snmp-mibs-downloader |         1.2          |
+|    openjdk-8-jdk     |  8u312-b07-1~deb9u1  |
 
 </details>
 <br>
@@ -586,13 +594,13 @@ sudo docker build --tag raspbian-flume .
 
 #### 2-6-5. Run flume on container
 
-After building the image, run the `flume`  container.
+After building the image, run the `flume` container.
 
 ```bash
 sudo docker run -it --net=host --name flume raspbian-flume
 ```
 
-In, the `flume` container, check the configuration file, and modify the broker list. (Change default  value `nuc` to your own NUC's hostname in `/etc/hosts`)
+In, the `flume` container, check the configuration file, and modify the broker list. (Change default value `nuc` to your own NUC's hostname in `/etc/hosts`)
 
 ```bash
 sudo vi conf/flume-conf.properties
