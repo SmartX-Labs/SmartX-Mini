@@ -78,7 +78,7 @@ A distributed, reliable, and available service for efficiently collecting, aggre
 > You should turn off your VM used in Box Lab to prevent IP conflict.
 >
 > ```bash
-> sudo killall -9 qemu-system-x86_64
+> sudo killall -9 qemu-system-x86_64  # if can not kill it, use sudo killall -9 kvm
 > ```
 
 Before we start, your Raspberry Pi must be ready with the proper OS. In this lab, we will use “HypriotOS” Linux for it. Insert a Micro SD into your SD card reader and attach the reader to your NUC.

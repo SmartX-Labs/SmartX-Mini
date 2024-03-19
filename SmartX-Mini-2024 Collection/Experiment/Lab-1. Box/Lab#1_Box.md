@@ -375,7 +375,7 @@ exit # Exit superuser mod
   When ‘installation completed’ message is shown, terminate the VM
 
   ```bash
-  sudo killall -9 qemu-system-x86_64
+  sudo killall -9 qemu-system-x86_64 # if can not kill it, use sudo killall -9 kvm
   ```
 
   boot VM again (mac should be different from others).
