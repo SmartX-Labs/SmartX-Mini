@@ -6,7 +6,7 @@
 
 Box Lab에서는 \*베어 메탈에 os를 직접 설치해보고  
 이 안에 가상 머신과 컨테이너를 띄운 뒤 가상 스위치로 서로를 연결시켜보는 것입니다.<br>
-In the Box Lab, we will install OS directly on a *bare metal and build a virtual machine and a container inside the bare metal. Finally, we will connect two of them via a virtual switch.
+In the Box Lab, we will install OS directly on a \*bare metal and build a virtual machine and a container inside the bare metal. Finally, we will connect two of them via a virtual switch.
 
 \*베어 메탈: 하드웨어 상에 어떤 소프트웨어도 설치되어 있지 않은 상태<br>
 \*bare metal: a hardware without any installed software
@@ -24,7 +24,7 @@ In the Box Lab, we will install OS directly on a *bare metal and build a virtual
 
   하나의 피지컬 머신을 여러개의 가상 머신으로 나눌 것입니다. 각각의 가상 머신은 모두 독립적이며 개별적인 자원을 할당받습니다. 또한, 피지컬 머신의 OS와 다른 OS를 사용자 마음대로 정할 수 있습니다. 가상 머신은 피지컬 머신과 비교할 때 차이가 거의 없지만, 그만큼 Container보다 무겁고 생성하는데 오래걸립니다.<br>
   We will divide a physical machine into several virtual machines. Each of the virtual machines is independent and allocated individual computation resources. Also, Each virtual machine can
-  have a different OS from the host OS. There is almost no difference between **a virtual machine** and a physical machine. However, It takes more time to build a virtual machine than a container and requires more computation resources to operate a virtual machine.  
+  have a different OS from the host OS. There is almost no difference between **a virtual machine** and a physical machine. However, It takes more time to build a virtual machine than a container and requires more computation resources to operate a virtual machine.
 
   저희는 가상 머신을 생성하기 위해 리눅스에 기본적으로 탑재되어있는 KVM Hypervisor를 사용할 것입니다.<br>
   To build a virtual machine, we will use the KVM hypervisor.
@@ -32,7 +32,7 @@ In the Box Lab, we will install OS directly on a *bare metal and build a virtual
 - Docker Runtime => Container
 
   가상 머신과 비교했을 때 Container의 가장 큰 특징은 OS층이 없다는 것입니다. Container는 가상 머신과 달리 피지컬 머신의 OS를 공유합니다. 그리고 가상 머신은 각각의 머신이 독립적이지만 Container는 그렇지 않습니다.<br>
-  One of the most important properties is that a container does not have OS layer compared to a virtual machine. A container shares OS with its physical machine's OS. And each of the virtual machines is independent. Meanwhile, each of the containers does not.  
+  One of the most important properties is that a container does not have OS layer compared to a virtual machine. A container shares OS with its physical machine's OS. And each of the virtual machines is independent. Meanwhile, each of the containers does not.
 
   Container를 생성하기 위해서 가장 널리 쓰이는 Docker Runtime을 사용할 것입니다.
   To build a containerm we will uses Docker Runtime.
@@ -89,19 +89,19 @@ Installed on NUC(i.e., bare metal)
 - LVM 관련 오류 발생 시<br> If a issue which is related to LVM occured, do the following thing.
 
   1. 뒤로 이동하여, 첫 Installation type 화면으로 이동
-  <br> go back to first installation type display.
+     <br> go back to first installation type display.
   2. select Erase disk
 
      - choose none in advance.
 
   3. 시간대 선택 화면까지 진행
-  <br> do the steps up to 'where are you?'
+     <br> do the steps up to 'where are you?'
 
   4. 여기서 뒤로 돌아가, 다시 첫 Installation type 화면으로 이동
-  <br> go back from here to first installation type display.
+     <br> go back from here to first installation type display.
 
   5. Something else 선택하여 정상 진행
-  <br> choose Something else and do the following steps
+     <br> choose Something else and do the following steps
 
 ### 2-2. NUC: Network Configuration
 
@@ -118,18 +118,18 @@ Installed on NUC(i.e., bare metal)
 
 - **Set Prerequisites**
 
-
 1. Update & Upgrade
 
    ```bash
    sudo apt update
    sudo apt upgrade
    ```
+
 2. upgrade vim text editor
 
-    ```bash
-    sudo apt install vim
-    ```
+   ```bash
+   sudo apt install vim
+   ```
 
 3. Install net-tools & ifupdown
 
@@ -140,11 +140,11 @@ Installed on NUC(i.e., bare metal)
 
    ![Network Configuration](./img/ifconfig.png)
 
-  <br> **caution!** After you enter  ```ifconfig -a```.<br>
-  If there exist `enp88s0` and `enp89s0`, **please reboot your NUC.**
-  <br>**주의!** 만일 터미널에 ```ifconfig -a``` 작성 후 `enp88s0` 와 `enp89s0`가 존재한다면 **꼭 재부팅** 해주세요.
-  ![two NIC](./img/two_NIC.png)
-    
+<br> **caution!** After you enter `ifconfig -a`.<br>
+If there exist `enp88s0` and `enp89s0`, **please reboot your NUC.**
+<br>**주의!** 만일 터미널에 `ifconfig -a` 작성 후 `enp88s0` 와 `enp89s0`가 존재한다면 **꼭 재부팅** 해주세요.
+![two NIC](./img/two_NIC.png)
+
 4. Install openvswitch-switch & make br0 bridge
 
    ```bash
@@ -173,7 +173,7 @@ Installed on NUC(i.e., bare metal)
   ```
 
   DNS 왼편에 있는 주석표시 /# 을 제거해주고<br>
-  delete # next to DNS.   
+  delete # next to DNS.  
   DNS 주소를 명시해주세요<br>
   type the DNS addresses as below.
 
@@ -198,13 +198,11 @@ Installed on NUC(i.e., bare metal)
 
   `<your nuc ip>`에 현재 nuc의 ip와 `<gateway ip>`에 gateway ip를 입력해주세요.
   <br>type your nuc's ip in `<your nuc ip>`and gateway ip in `<gateway ip>`(In this experiment, **172.29.0.254** is the gateway IP.)
-  
 
   주의!
   NUC에 이더넷 포트가 두 개 있는 경우 `eno1`이라는 인터페이스가 없습니다. `ifconfig` 명령으로 네트워크에 연결된 인터페이스(`enp88s0` 또는 `enp89s0`)를 확인합니다. (예를 들어, 터미널에 `ifconfig -a` 명령어를 입력하고 RX 및 TX 패킷이 0이 아닌 인터페이스를 선택합니다.) 그리고 아래 텍스트의 `eno1`을 모두 `enp88s0` 또는 `enp89s0`으로 변경합니다.
   <br>caution!
   <br>If your NUC has two ethernet ports, there is no interface named `eno1`. Check which interface(`enp88s0` or `enp89s0`) is connected to the network by `ifconfig` command.(e.g., Type the `ifconfig -a` command into the terminal and choose an interface with non-zero RX and TX packets.) And change all `eno1` in the below text to `enp88s0` or `enp89s0`.
-
 
   ```text
   auto lo
@@ -228,16 +226,15 @@ Installed on NUC(i.e., bare metal)
   ```
 
 Save and quit the editor.
-파일을 저장하고 나와주세요. 
+파일을 저장하고 나와주세요.
 
 **주의!** 만약 NUC 2개의 lan port가 있다면, `eno1` interface가 없습니다. 그러므로 하단의 block에서 `eno1`을 위에서 선택한 interface 중 하나로 변경해주세요(즉, `enp88s0` 또는 `enp89s0` 중에서 적절한 것을 선택해주세요.)
 **caution!** Similarly, if your NUC has two ethernet ports, there is no interface named `eno1`. <br>Therefore, replace `eno1` at the bottom with the appropriate interface chosen above, either `enp88s0` or `enp89s0`.
 
-  ```bash
-  sudo systemctl restart systemd-resolved.service
-  sudo ifup eno1  #change this if you are using two-port NUC
-  ```
-
+```bash
+sudo systemctl restart systemd-resolved.service
+sudo ifup eno1  #change this if you are using two-port NUC
+```
 
 Restrart the whole interfaces 1<br>
 전체 interface를 다시 시작해주세요.
@@ -293,7 +290,6 @@ exit # Exit superuser mod
 
   wget https://ftp.lanet.kr/ubuntu-releases/20.04.6/ubuntu-20.04.6-live-server-amd64.iso
   ```
-  
 
   Now we are ready to make VM. So, continue the setting.
 
@@ -321,7 +317,6 @@ exit # Exit superuser mod
 
   please type your **NUC's ip address** in `<Your ip address>`
   <br>**caution!** Similarly, if your NUC has two ethernet ports, there is no interface named `eno1`. <br>Therefore, replace `eno1` at the bottom with the appropriate interface chosen above, either `enp88s0` or `enp89s0`.
-  
 
   ```bash
   sudo iptables -A FORWARD -i eno1 -j ACCEPT
@@ -424,23 +419,6 @@ sudo apt-get update
 sudo apt-get install -y ca-certificates curl gnupg lsb-release
 ```
 
-Add Docker's official GPG key
-
-```bash
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-```
-
-Add the Docker apt repository
-
-```bash
-# For All NUCs
- echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
-  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-```
-
-Update APT repos.
-
 ```bash
 # For All NUCs
 sudo apt-get update
@@ -449,10 +427,7 @@ sudo apt-get update
 Install Docker
 
 ```bash
-sudo apt-get install -y --allow-downgrades \
-          containerd.io=1.2.13-2 \
-          docker-ce=5:19.03.11~3-0~ubuntu-$(lsb_release -cs) \
-          docker-ce-cli=5:19.03.11~3-0~ubuntu-$(lsb_release -cs)
+sudo apt install docker.io -y
 ```
 
 Create /etc/docker
@@ -519,6 +494,7 @@ sudo ovs-docker del-port br0 veno1 c1
 sudo ovs-docker add-port br0 veno1 c1 --ipaddress=[docker_container_IP]/24 --gateway=[gateway_IP]
 # please type gateway IP and docker container IP.
 ```
+
 위의 --ipaddress=[docker_container_IP]/24 --gateway=[gateway_IP] 작성 시에 [ ]은 빼고, 172.29.0.X의 형식으로 작성해주세요.
 <br> 예를 들어, --ipaddress=172.29.0.X/24 --gateway=172.29.0.254
 
@@ -544,7 +520,8 @@ Check connectivity with ping command from docker to VM
 ping <VM IP address>
 # please type this command in the container.
 ```
-예를 들어, ping 172.29.0.X 
+
+예를 들어, ping 172.29.0.X
 
 > Do above command in both container and KVM VM
 > <br> **Finally, you can check that the container and the VM are connected.**
