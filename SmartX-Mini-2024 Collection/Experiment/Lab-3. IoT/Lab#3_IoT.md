@@ -1,4 +1,4 @@
-# Lab#4. IoT Lab
+# Lab#3. IoT Lab
 
 ## 0. Concept
 
@@ -87,7 +87,7 @@ def pi_version():
     else:
         # Something else, not a pi.
         return None
-    
+
 ```
 
 Install package
@@ -104,19 +104,22 @@ sudo apt install -y build-essential python3-dev
 
 sudo pip3 install .
 ```
+
 <details>
 <summary>Package Versions (Expand)</summary>
 
 ##### PI
-|    Package    |    Version          |
-|:-------------:|:-------------------:|
-| python3-pip   | 18.1-5+rpt1  |
-    
+
+|   Package   |   Version   |
+| :---------: | :---------: |
+| python3-pip | 18.1-5+rpt1 |
+
 ##### Python
-|    Package    |    Version          |
-|:-------------:|:-------------------:|
-| setuptools   | 40.8.0-1  |
-| wheel   | 18.1-5+rpt1  |
+
+|  Package   |   Version   |
+| :--------: | :---------: |
+| setuptools |  40.8.0-1   |
+|   wheel    | 18.1-5+rpt1 |
 
 </details>
 <br>
@@ -128,14 +131,16 @@ sudo apt install -y build-essential python3-dev
 
 sudo pip3 install .
 ```
+
 <details>
 <summary>Package Versions (Expand)</summary>
 
 ##### PI
-|    Package    |    Version          |
-|:-------------:|:-------------------:|
-| build-essential      | 12.6           |
-| python3-dev |3.7.3-1 |
+
+|     Package     | Version |
+| :-------------: | :-----: |
+| build-essential |  12.6   |
+|   python3-dev   | 3.7.3-1 |
 
 </details>
 <br>
@@ -189,14 +194,16 @@ sudo apt-get install python3-numpy
 
 sudo apt-get install mercurial
 ```
+
 <details>
 <summary>Package Versions (Expand)</summary>
 
 ##### PI
-|    Package    |    Version          |
-|:-------------:|:-------------------:|
-| python3-numpy | 1:1.16.2-1          |
-| mercurial     | 4.8.2-1+deb10u1     |
+
+|    Package    |     Version     |
+| :-----------: | :-------------: |
+| python3-numpy |   1:1.16.2-1    |
+|   mercurial   | 4.8.2-1+deb10u1 |
 
 </details>
 <br>
