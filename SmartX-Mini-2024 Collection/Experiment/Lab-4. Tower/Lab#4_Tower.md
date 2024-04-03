@@ -1,4 +1,4 @@
-# Lab#3. Tower Lab
+# Lab#4. Tower Lab
 
 ## 0. Objective
 
@@ -50,17 +50,18 @@ sudo docker run -p 8888:8888 --net=host chronograf --influxdb-url=http://<NUC IP
 ```bash
 sudo apt-get install -y libcurl4 openssl curl python3-pip
 ```
+
 <details>
 <summary>Package Versions (Expand)</summary>
 
 ##### NUC
-|    Package    |    Version          |
-|:-------------:|:-------------------:|
-| libcurl4      | 7.68.0-1ubuntu2.15  |
-| openssl       | 1.1.1f-1ubuntu2.16  |
-| curl          | 7.68.0-1ubuntu2.15  |
-| python3-pip   | 20.0.2-5ubuntu1.7   |
 
+|   Package   |      Version       |
+| :---------: | :----------------: |
+|  libcurl4   | 7.68.0-1ubuntu2.15 |
+|   openssl   | 1.1.1f-1ubuntu2.16 |
+|    curl     | 7.68.0-1ubuntu2.15 |
+| python3-pip | 20.0.2-5ubuntu1.7  |
 
 </details>
 <br>
@@ -69,17 +70,19 @@ sudo apt-get install -y libcurl4 openssl curl python3-pip
 ```bash
 sudo pip install requests kafka-python influxdb msgpack
 ```
+
 <details>
 <summary>Package Versions (Expand)</summary>
 
-
 ##### Python
-|    Package    |    Version          |
-|:-------------:|:-------------------:|
-| requests      |2.22.0               |
-| kafka-python  |2.0.2                |
-| influxdb      |5.3.1                |
-| msgpack       |1.0.4                |
+
+|   Package    | Version |
+| :----------: | :-----: |
+|   requests   | 2.22.0  |
+| kafka-python |  2.0.2  |
+|   influxdb   |  5.3.1  |
+|   msgpack    |  1.0.4  |
+
 </details>
 <br>
 ### 1-5. Modify `broker_to_influxdb.py` code ( in NUC )
@@ -99,51 +102,68 @@ In this file, change `<NUC_IP>` into your actual NUC IP.
 Before this, you need to check the following,
 
 #### 1-6-1. Kafka zookeeper and brokers in NUC are running
+
 - Start zookeeper,brokers container (excute below command in NUC terminal.)
+
 ```bash
 sudo docker start zookeeper broker0 broker1 broker2
 ```
+
 - you can get into the docker's terminal(e.g., zookeeper, broker0, broker1, broker2) by using below command (excute below command in NUC terminal.)
+
 ```bash
 sudo docker attach [docker container name]
 ```
-- Run zookeeper (excute below command in zookeeper container.)  
+
+- Run zookeeper (excute below command in zookeeper container.)
+
 ```bash
 bin/zookeeper-server-start.sh config/zookeeper.properties
 ```
+
 - Run brokers (excute below command in each broker(e.g., broker0, broker1, broker2) container.)
+
 ```bash
 bin/kafka-server-start.sh config/server.properties
 ```
+
 #### 1-6-2. Flume container in PI is running
+
 When pi is rebooted, the information in /etc/hosts disappears.
 
 So, you need to rewrite "IP and hostname info" in /etc/hosts.
+
 ```bash
 sudo vim /etc/hosts
 ```
+
 Add 2 lines in the file(/etc/hosts).
+
 ```
 [NUC_IP] [NUC_HOSTNAME]
 [PI_IP] [PI_HOSTNAME]
 ```
 
 - Start flume container (excute below command in PI terminal.)
+
 ```bash
 sudo docker start flume
 sudo docker attach flume
 ```
+
 - Run flume (excute below command in flume container.)
+
 ```bash
 bin/flume-ng agent --conf conf --conf-file conf/flume-conf.properties --name agent -Dflume.root.logger=INFO,console
 ```
 
 #### 1-6-3. Run `broker_to_influxdb.py`. (excute below commands in NUC terminal.)
-````bash
+
+```bash
 sudo sysctl -w fs.file-max=100000
 ulimit -S -n 2048
 python3 ~/SmartX-mini/ubuntu-kafkatodb/broker_to_influxdb.py
-````
+```
 
 ### 1-7. Open your web browser and connect to Chronograf Dashboard ( in NUC )
 
