@@ -135,7 +135,6 @@ Install packages to allow apt to use a repository over HTTPS
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y ca-certificates curl gnupg lsb-release
 ```
 
 <details>
@@ -243,13 +242,6 @@ ssh <NUC2 username>@nuc02
 ssh <NUC3 username>@nuc03
 ```
 
-#### 2-2-2. xfprogs Install : Prerequisite for ROOK
-
-```shell
-# From All NUCs
-sudo apt-get install xfsprogs
-```
-
 <details>
 <summary>Package Versions (Expand)</summary>
 
@@ -275,8 +267,6 @@ sudo apt-get install xfsprogs
 ```shell
 # From All NUCs
 sudo swapoff -a
-sudo sed -e '/\/swapfile/s/^/#/g' -i /etc/fstab
-sudo sed -e '/\/swap\.img/s/^/#/g' -i /etc/fstab
 ```
 
 #### 2-3-2. Install Kubernetes
@@ -305,9 +295,9 @@ sudo apt install -y kubeadm=1.28.1-1.1 kubelet=1.28.1-1.1 kubectl=1.28.1-1.1
 |        curl         | 7.68.0-1ubuntu2.15 amd64 |
 |       ipvsadm       |       1.31-1 amd64       |
 |        wget         |  1.20.3-1ubuntu2 amd64   |
-|       kubelet       |        1.14.1-00         |
-|       kubeadm       |        1.14.1-00         |
-|       kubectl       |          0.7.1           |
+|       kubelet       |        1.28.1-00         |
+|       kubeadm       |        1.28.1-00         |
+|       kubectl       |          1.28.1          |
 |   kubernetes-cni    |         0.7.5-00         |
 
 </details>
@@ -317,18 +307,22 @@ sudo apt install -y kubeadm=1.28.1-1.1 kubelet=1.28.1-1.1 kubectl=1.28.1-1.1
 
 #### 2-4-1. Kubernetes Master Setting(For NUC1)
 
+지금부터 sudo su 로 root에서 실행합니다
+
 ```shell
 # From NUC1
-sudo kubeadm reset -f
-sudo rm -rf /etc/cni/net.d
-sudo ipvsadm --clear
+kubeadm init --pod-network-cidr=10.244.0.0/16 # 변경된 부분
+
+# sudo kubeadm reset -f
+# sudo rm -rf /etc/cni/net.d
+# sudo ipvsadm --clear
 ```
 
 ```shell
 # From NUC1
 ## Cleanup Rook Configuration
-sudo rm -rf /var/lib/rook
-sudo kubeadm init --ignore-preflight-errors=all
+# sudo rm -rf /var/lib/rook
+# sudo kubeadm init --ignore-preflight-errors=all
 ```
 
 - kubeadm을 실행하면 아래와 같이 Kubernetes Cluster에 참여할 수 있는 토큰값이 발급됩니다.
@@ -352,12 +346,12 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
 
 ```shell
 # From NUC2, NUC3
-sudo kubeadm reset -f
-sudo rm -r /etc/cni/net.d
-sudo ipvsadm --clear
+# sudo kubeadm reset -f
+# sudo rm -r /etc/cni/net.d
+# sudo ipvsadm --clear
 
 ## Cleanup Rook Configuration
-sudo rm -rf /var/lib/rook
+# sudo rm -rf /var/lib/rook
 ```
 
 #### 2-4-3. Worker Join
@@ -391,7 +385,9 @@ kubectl get node
 
 ```shell
 # From NUC1
-kubectl apply -f "https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s-1.11.yaml"
+# kubectl apply -f "https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s-1.11.yaml"
+flannel을 사용합니다 https://github.com/flannel-io/flannel
+kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 ```
 
 ```shell
@@ -408,29 +404,29 @@ kubectl get po -n kube-system -o wide
 
 ```shell
 # From NUC1
-kubectl create clusterrolebinding permissive-binding \
---clusterrole=cluster-admin \
---user=admin \
---user=kubelet \
---group=system:serviceaccounts
+# kubectl create clusterrolebinding permissive-binding \
+# --clusterrole=cluster-admin \
+# --user=admin \
+# --user=kubelet \
+# --group=system:serviceaccounts
 ```
 
 #### 2-6-2. Install ROOK Storage
 
 ```shell
 # From NUC1
-cd $HOME
-git clone --single-branch --branch release-1.2 https://github.com/rook/rook.git
-cd $HOME/rook/cluster/examples/kubernetes/ceph
-kubectl create -f common.yaml
-kubectl create -f operator.yaml
-kubectl create -f cluster-test.yaml
+# cd $HOME
+# git clone --single-branch --branch release-1.2 https://github.com/rook/rook.git
+# cd $HOME/rook/cluster/examples/kubernetes/ceph
+# kubectl create -f common.yaml
+# kubectl create -f operator.yaml
+# kubectl create -f cluster-test.yaml
 ```
 
 #### 2-6-3. Check rook-ceph-pod
 
 ```shell
-watch kubectl get pod -n rook-ceph
+# watch kubectl get pod -n rook-ceph
 ```
 
 ![Check rook-ceph-pod](img/11.png)
@@ -440,22 +436,22 @@ watch kubectl get pod -n rook-ceph
 ```shell
 # From NUC1
 ## Installation
-cd $HOME/rook/cluster/examples/kubernetes/ceph
-kubectl create -f toolbox.yaml
-kubectl -n rook-ceph  rollout status deploy/rook-ceph-tools
-## Execution
-### 해당 코드를 실행하면, toolbox container안으로 접속하게 됩니다.
-### By executing this code, you can access to toolbox container.
-kubectl -n rook-ceph exec -it $(kubectl -n rook-ceph get pod -l "app=rook-ceph-tools"\
-   -o jsonpath='{.items[0].metadata.name}') bash
+# cd $HOME/rook/cluster/examples/kubernetes/ceph
+# kubectl create -f toolbox.yaml
+# kubectl -n rook-ceph  rollout status deploy/rook-ceph-tools
+# ## Execution
+# ### 해당 코드를 실행하면, toolbox container안으로 접속하게 됩니다.
+# ### By executing this code, you can access to toolbox container.
+# kubectl -n rook-ceph exec -it $(kubectl -n rook-ceph get pod -l "app=rook-ceph-tools"\
+#    -o jsonpath='{.items[0].metadata.name}') bash
 
-## Check ceph Status in the toolbox
-### ceph의 상태를 toolbox안에서 확인합니다.
-watch ceph status
+# ## Check ceph Status in the toolbox
+# ### ceph의 상태를 toolbox안에서 확인합니다.
+# watch ceph status
 
-## toolbox container를 나갑니다.
-## exit from toolbox container.
-exit
+# ## toolbox container를 나갑니다.
+# ## exit from toolbox container.
+# exit
 ```
 
 #### 2-6-5. Add StorageClass
