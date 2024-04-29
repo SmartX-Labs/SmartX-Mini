@@ -243,8 +243,8 @@ kubeadm init --pod-network-cidr=10.244.0.0/16
 - **토큰 정보를** 지금 입력하지 말고, 2-4-3 파트에서 사용하기 위해 **저장해둡니다.**
 - You can get token value that can join Kubernetes Cluster like below when you execute kubeadm.
 - Please don't enter **token information** right now, but **save** it to use at part 2-4-3.
-
-![commnad](img/9.png)
+- if you failed here. please check port-port forwarding refer to https://kubernetes.io/docs/reference/networking/ports-and-protocols/ (ubuntu uses ufw as the default firewall.)
+  ![commnad](img/9.png)
 
 ```shell
 # From NUC1
