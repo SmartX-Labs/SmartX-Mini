@@ -2,31 +2,15 @@
 
 ## 0. Objective
 
-Deploy `Machine Learning` workflows on Kubernetes Cluster with `Kubeflow` project. Then, we can run a Sample ML code `MNIST` on Jupyter Notebook that served by kubeflow.
+As we did at Tower Lab, this time we will use the kubernetes dashboard to visualize the resource share of each pod in a cloud-native environment for efficient operation.
 
-The minimum specification of the latest version of 'kubeflow' exceeds that of NUC. Therefore, we will install a version of _0.7_ that meets the specifications.
+This lab aims to deploy the kubernetes dashboard in the form of .yaml.
 
 ## 1. Concept
 
-### 1-1. Kubeflow
+Dashboard is a web-based Kubernetes user interface. You can use Dashboard to deploy containerized applications to a Kubernetes cluster, troubleshoot your containerized application, and manage the cluster resources. You can use Dashboard to get an overview of applications running on your cluster, as well as for creating or modifying individual Kubernetes resources (such as Deployments, Jobs, DaemonSets, etc). For example, you can scale a Deployment, initiate a rolling update, restart a pod or deploy new applications using a deploy wizard.
 
-![Kubeflow](img/kubeflow.png)
-The [**Kubeflow**](https://www.kubeflow.org/) project is dedicated to making deployments of machine learning (ML) workflows on Kubernetes simple, portable and scalable. Our goal is not to recreate other services, but to provide a straightforward way to deploy best-of-breed open-source systems for ML to diverse infrastructures. Anywhere you are running Kubernetes, you should be able to run Kubeflow.
-
-### 1-2. TensorFlow & Jupyter Notebook
-
-![Tensorflow-JupyterNotebook](img/tensorflow-jupyter.png)
-[**TensorFlow**](https://github.com/tensorflow/tensorflow) is an open-source machine learning library for research and production. TensorFlow offers APIs for beginners and experts to develop for desktop, mobile, web, and cloud.
-**Jupyter Notebook** is an open-source web application that allows you to create and share documents that contain live code, equations, visualizations and narrative text. Uses include: data cleaning and transformation, numerical simulation, statistical modeling, data visualization, machine learning, and much more.
-
-### 1-3. MNIST
-
-![MNIST](img/mnist.png)
-The **MNIST** database (Modified National Institute of Standards and Technology database) is a large database of handwritten digits that is commonly used for training various image processing systems.[1][2] The database is also widely used for training and testing in the field of machine learning.
-
-## 2. Practice
-
-![overview](img/overview.png)
+Dashboard also provides information on the state of Kubernetes resources in your cluster and on any errors that may have occurred.
 
 ### 2-1. K8s 클러스터 재설정 작업 진행(re-config K8s cluster)
 
@@ -122,5 +106,5 @@ kubectl proxy
 
 ![nodes-status.png](img/ui-dashboard.png)
 
-if you encounter the error please refer to offical docs
+if you encounter the error please refer to offical docs or search! it's debug!
 https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/
