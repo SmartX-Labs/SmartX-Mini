@@ -38,11 +38,7 @@
 - **Service discovery and load balancing:** No need to modify your application to use an unfamiliar service discovery mechanism. Kubernetes gives containers their own IP addresses and a single DNS name for a set of containers, and can load-balance across them.
 - **Storage Orchestration:** Automatically mount the storage system of your choice, whether from local storage, a public cloud provider
 
-## 2. Practice
-
-![Rook](img/6.png)
-
-### 2-1. Lab Preparation
+## 2. Lab Preparation
 
 ![Lab Preparation](img/7.png)
 
