@@ -349,8 +349,6 @@ watch kubectl get pods --all-namespaces
 
 #### 2-7-2. Access Nginx
 
-![Access Wordpress Web](img/13.png)
-
 ```shell
 # From NUC1
 kubectl get svc
