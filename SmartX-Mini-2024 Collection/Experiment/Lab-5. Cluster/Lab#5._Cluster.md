@@ -59,6 +59,21 @@ From All NUCs
 sudo vi /etc/hosts
 ```
 
+From All NUCs change hostname in /etc/hostname
+
+remove all insert nuc01 or nuc02 or nuc03 on each right NUC.
+
+```shell
+sudo vi /etc/hostname
+```
+
+Reboot
+
+```shell
+sudo reboot
+sudo hostname # after reboot change hostname ~@nuu## :
+```
+
 Append the following context into /etc/hosts :
 
 ```text
