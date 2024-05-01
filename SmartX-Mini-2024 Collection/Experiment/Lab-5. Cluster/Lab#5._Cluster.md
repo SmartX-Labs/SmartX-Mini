@@ -59,6 +59,14 @@ From All NUCs
 sudo vi /etc/hosts
 ```
 
+From All NUCs change hostname in /etc/hostname
+
+remove all insert nuc01 or nuc02 or nuc03 on each right NUC.
+
+```shell
+sudo vi /etc/hostname
+```
+
 Append the following context into /etc/hosts :
 
 ```text
@@ -102,71 +110,22 @@ ssh <nuc2 username>@nuc02
 ssh <nuc3 username>@nuc03
 ```
 
-#### 2-1-4. Install docker
-
-Docker is a set of platform as a service (PaaS) products that use OS-level virtualization to deliver software in packages called containers. The service has both free and premium tiers. The software that hosts the containers is called Docker Engine. It was first started in 2013 and is developed by Docker, Inc.
-
-Set up the repository
-
-Install packages to allow apt to use a repository over HTTPS
-
-```bash
-sudo apt-get update
-```
-
-Update APT repos.
+#### 2-1-4. Setting containerd
 
 ```bash
 # For All NUCs
 sudo apt-get update
+sudo mkdir -p /etc/containerd
+containerd config default | sudo tee /etc/containerd/config.toml
+sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
 ```
 
-Install Docker
+#### 2-1-5. Reboot All NUC
 
-```bash
-sudo apt install docker.io -y
+```shell
+# From All NUCs
+sudo reboot
 ```
-
-Create /etc/docker
-
-```bash
-sudo mkdir -p /etc/docker
-```
-
-Set up the Docker daemon
-
-```bash
-cat <<EOF | sudo tee /etc/docker/daemon.json
-{
-  "exec-opts": ["native.cgroupdriver=systemd"],
-  "log-driver": "json-file",
-  "log-opts": {
-    "max-size": "100m"
-  },
-  "storage-driver": "overlay2"
-}
-EOF
-```
-
-Create /etc/systemd/system/docker.service.d
-
-```bash
-sudo mkdir -p /etc/systemd/system/docker.service.d
-sudo systemctl daemon-reload
-sudo systemctl enable docker
-sudo systemctl start docker
-sudo systemctl start docker.socket
-```
-
-#### 2-1-4. Check docker installation
-
-```bash
-sudo docker run hello-world
-```
-
-If it doesn’t work, please try several times. Nevertheless, if you are not successful, try running from the installing `docker-ce`, `docker-ce-cli`, `containerd.io`
-
-![](./img/HelloFromDocker.png)
 
 # 지금부터 NUC1 학생 자리에서 모든 작업을 시작합니다. NUC2, NUC3 학생은 NUC1자리로 가서 작업을 시작합니다.
 
@@ -366,6 +325,8 @@ kubectl get svc
 Agents : 워커 노드가 될 눅
 Servers : 마스터 노드가 될 눅
 
+#### 1-1. port-forwarding
+
 ```shell
 # How to use ufw
 sudo ufw enable # ufw가 켜져 있는지 아닌지 확인 할 수 있습니다.
@@ -375,10 +336,14 @@ sudo ufw allow 2380/udp # to open udp port method
 # 위 방법으로 모두 세팅한 후, 다시 ufw status 를 통해 열려있는지 확인합니다.
 ```
 
+#### 1-2. Master Node port-forwarding
+
 ```shell
 # from Master mode(NUC1)
 sudo ufw allow 2379:2380/tcp
 ```
+
+#### 1-3. Worker Node port-forwarding
 
 ```shell
 # from Master mode(NUC2, 3)
