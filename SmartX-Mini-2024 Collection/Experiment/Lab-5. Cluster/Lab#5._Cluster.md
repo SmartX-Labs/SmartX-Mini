@@ -53,24 +53,24 @@ sudo hostname nuc02
 sudo hostname nuc03
 ```
 
-From All NUCs
+From All NUCs: Change hostname in /etc/hostname
+
+```shell
+sudo rm /etc/hostname
+# ex) echo nuc01 | sudo tee /etc/hostname
+# if this is being executed on NUC 1
+echo {NUC Hostname: One of nuc01, nuc02, nuc03} | sudo tee /etc/hostname
+```
+
+**Change `{NUC Hostname: One of nuc01, nuc02, nuc03}` to selected hostname above (01~03)**
+
+From All NUCs: Append the following context into /etc/hosts
 
 ```shell
 sudo vi /etc/hosts
 ```
 
-From All NUCs change hostname in /etc/hostname
-
-remove all insert nuc01 or nuc02 or nuc03 on each right NUC.
-
-```shell
-sudo vi /etc/hostname
-```
-
-Append the following context into /etc/hosts :
-
 ```text
- 127.0.0.1 localhost
  <IP Address of NUC 1>  nuc01
  <IP Address of NUC 2>  nuc02
  <IP Address of NUC 3>  nuc03
