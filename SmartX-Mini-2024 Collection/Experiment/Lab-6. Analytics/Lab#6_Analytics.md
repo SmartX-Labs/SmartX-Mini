@@ -104,6 +104,43 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.6.1/a
 kubectl proxy
 ```
 
+#### 2-3. issue Dashboard token
+Cluster role binding
+```shell
+cat <<EOF | kubectl create -f -
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+subjects:
+- kind: ServiceAccount
+  name: admin-user
+  namespace: kubernetes-dashboard
+EOF
+```
+Service account
+```shell
+cat <<EOF | kubectl create -f -
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard
+EOF
+```
+Get token
+```shell
+kubectl -n kubernetes-dashboard create token admin-user
+```
+#### 2-4. Access Dashboard
+
+http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+![image](https://github.com/SmartX-Labs/SmartX-Mini/assets/53600533/7acd0b5f-06ce-4c32-bbfa-6b0d11aff6f8)
+Paste the token you generated just before.
 ![nodes-status.png](img/ui-dashboard.png)
 
 if you encounter the error please refer to offical docs or search! it's debug!
