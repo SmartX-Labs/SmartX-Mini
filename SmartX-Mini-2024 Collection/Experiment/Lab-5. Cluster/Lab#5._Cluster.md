@@ -67,11 +67,8 @@ remove all insert nuc01 or nuc02 or nuc03 on each right NUC.
 sudo vi /etc/hostname
 ```
 
-Reboot
-
 ```shell
 sudo reboot
-sudo hostname # after reboot change hostname ~@nuc## :
 ```
 
 Append the following context into /etc/hosts :
@@ -127,11 +124,11 @@ containerd config default | sudo tee /etc/containerd/config.toml
 sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
 ```
 
-#### 2-1-5. restart containerd
+#### 2-1-5. Reboot All NUC
 
-```bash
-# For All NUCs
-sudo systemctl restart containerd
+```shell
+# From All NUCs
+sudo reboot
 ```
 
 # 지금부터 NUC1 학생 자리에서 모든 작업을 시작합니다. NUC2, NUC3 학생은 NUC1자리로 가서 작업을 시작합니다.
