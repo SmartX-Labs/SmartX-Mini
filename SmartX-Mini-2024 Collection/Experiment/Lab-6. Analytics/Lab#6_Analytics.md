@@ -2,31 +2,15 @@
 
 ## 0. Objective
 
-Deploy `Machine Learning` workflows on Kubernetes Cluster with `Kubeflow` project. Then, we can run a Sample ML code `MNIST` on Jupyter Notebook that served by kubeflow.
+As we did at Tower Lab, this time we will use the kubernetes dashboard to visualize the resource share of each pod in a cloud-native environment for efficient operation.
 
-The minimum specification of the latest version of 'kubeflow' exceeds that of NUC. Therefore, we will install a version of _0.7_ that meets the specifications.
+This lab aims to deploy the kubernetes dashboard in the form of .yaml.
 
 ## 1. Concept
 
-### 1-1. Kubeflow
+Dashboard is a web-based Kubernetes user interface. You can use Dashboard to deploy containerized applications to a Kubernetes cluster, troubleshoot your containerized application, and manage the cluster resources. You can use Dashboard to get an overview of applications running on your cluster, as well as for creating or modifying individual Kubernetes resources (such as Deployments, Jobs, DaemonSets, etc). For example, you can scale a Deployment, initiate a rolling update, restart a pod or deploy new applications using a deploy wizard.
 
-![Kubeflow](img/kubeflow.png)
-The [**Kubeflow**](https://www.kubeflow.org/) project is dedicated to making deployments of machine learning (ML) workflows on Kubernetes simple, portable and scalable. Our goal is not to recreate other services, but to provide a straightforward way to deploy best-of-breed open-source systems for ML to diverse infrastructures. Anywhere you are running Kubernetes, you should be able to run Kubeflow.
-
-### 1-2. TensorFlow & Jupyter Notebook
-
-![Tensorflow-JupyterNotebook](img/tensorflow-jupyter.png)
-[**TensorFlow**](https://github.com/tensorflow/tensorflow) is an open-source machine learning library for research and production. TensorFlow offers APIs for beginners and experts to develop for desktop, mobile, web, and cloud.
-**Jupyter Notebook** is an open-source web application that allows you to create and share documents that contain live code, equations, visualizations and narrative text. Uses include: data cleaning and transformation, numerical simulation, statistical modeling, data visualization, machine learning, and much more.
-
-### 1-3. MNIST
-
-![MNIST](img/mnist.png)
-The **MNIST** database (Modified National Institute of Standards and Technology database) is a large database of handwritten digits that is commonly used for training various image processing systems.[1][2] The database is also widely used for training and testing in the field of machine learning.
-
-## 2. Practice
-
-![overview](img/overview.png)
+Dashboard also provides information on the state of Kubernetes resources in your cluster and on any errors that may have occurred.
 
 ### 2-1. K8s 클러스터 재설정 작업 진행(re-config K8s cluster)
 
@@ -105,160 +89,59 @@ kubectl apply -f "https://github.com/weaveworks/weave/releases/download/v2.8.1/w
 #### Check K8s Cluster status
 
 ```shell
-# From NUC1 -> Check Weave works
+# From NUC1 -> check status
 kubectl get nodes
 kubectl get po -n kube-system -o wide
 ```
 
 ![nodes-status.png](img/nodes-status.png)
 
-#### Install ROOK Storage
+#### 2-2. install kubernetes Dashboard
 
 ```shell
 # From NUC1
-kubectl create clusterrolebinding permissive-binding \
---clusterrole=cluster-admin \
---user=admin \
---user=kubelet \
---group=system:serviceaccounts
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.6.1/aio/deploy/recommended.yaml
+kubectl proxy
 ```
 
+#### 2-3. issue Dashboard token
+Cluster role binding
 ```shell
-# From NUC1
-cd $HOME
-git clone --single-branch --branch release-1.2 https://github.com/rook/rook.git
-cd $HOME/rook/cluster/examples/kubernetes/ceph
-kubectl create -f common.yaml
-kubectl create -f operator.yaml
-kubectl create -f cluster-test.yaml
+cat <<EOF | kubectl create -f -
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+subjects:
+- kind: ServiceAccount
+  name: admin-user
+  namespace: kubernetes-dashboard
+EOF
 ```
-
+Service account
 ```shell
-watch kubectl get pod -n rook-ceph
+cat <<EOF | kubectl create -f -
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard
+EOF
 ```
-
-![pods-status.png](img/pods-status.png)
-Check Rook are running healthy on your cluster.
-
-#### Add StorageClass
-
+Get token
 ```shell
-# From NUC1
-kubectl apply -f csi/rbd/storageclass-test.yaml
-kubectl get storageclass
+kubectl -n kubernetes-dashboard create token admin-user
 ```
+#### 2-4. Access Dashboard
 
-### 2-2. Kubeflow Set-up
+http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+![image](https://github.com/SmartX-Labs/SmartX-Mini/assets/53600533/7acd0b5f-06ce-4c32-bbfa-6b0d11aff6f8)
+Paste the token you generated just before.
+![nodes-status.png](img/ui-dashboard.png)
 
-#### 2-2-1. Set Rook Storageclass to default for kubeflow
-
-```shell
-kubectl patch storageclass rook-ceph-block -p '{"metadata":{"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
-```
-
-#### 2-2-2. Check StorageClass
-
-```shell
-kubectl get storageclass
-```
-
-![storage class status](img/storagclass.png)
-
-### 2-3. Kubeflow Install
-
-```shell
-# Configuration
-export BASE_DIR=$HOME/kubeflow
-mkdir -p $BASE_DIR && pushd $BASE_DIR
-
-# Download kfctl
-KFCTL_FILE=kfctl_v0.7.1-2-g55f9b2a_linux.tar.gz
-wget https://github.com/kubeflow/kfctl/releases/download/v0.7.1/${KFCTL_FILE}
-tar -xf $KFCTL_FILE && rm $KFCTL_FILE
-sudo mv kfctl /usr/local/bin/kfctl
-
-# Set environment variables
-export KF_NAME="my-kubeflow"
-export KF_DIR=${BASE_DIR}/${KF_NAME}
-export PATH=$PATH:$BASE_DIR
-export CONFIG_URI="https://raw.githubusercontent.com/kubeflow/manifests/v0.7-branch/kfdef/kfctl_k8s_istio.0.7.0.yaml"
-
-# Install kubeflow
-rm -rf $KF_DIR; mkdir -p $KF_DIR && cd $KF_DIR
-kfctl apply -V -f $CONFIG_URI
-popd
-```
-
-### 2-4. Monitor kubeflow installation
-
-```shell
-watch kubectl get pod -n kubeflow
-watch kubectl get svc -n istio-system
-```
-
-> Wait until all Container Running
-> ![kubeflow status](img/watch-kubeflow.png) > ![istio status](img/watch-istio.png)
-
-`ctrl + c` for stop watching
-
-### 2-5. Connect Jupyter hub
-
-#### 2-5-1. Check exposed port for Kubeflow
-
-You can access Kubeflow at this address (In Browser)
-
-> `http://{nuc01_IP}:{PORT}`
-
-Get {Port} by below command
-
-```shell
-kubectl -n istio-system get svc istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}'
-```
-
-### 2-6. Deploy ML Container (MNIST)
-
-#### 2-6-1. Assign NoteBook Server
-
-Open a web browser and enter the Kubeflow address
-![Main Page of Kubeflow](img/kubeflow-main.png)
-![New Server Configuration](img/new-server.png)
-
-Select or enter the options as below
-
-- Image: `gcr.io/kubeflow-images-public/tensorflow-1.14.0-notebook-cpu:v0.7.0`
-- CPU: `2`
-- Memory: `2Gi`
-
-![assign resources to cluster](img/kubeflow-assign.png)
-
-#### 2-6-2. Run MNIST CNN Example
-
-```shell
-# NUC1
-cd ~
-git clone https://github.com/aymericdamien/TensorFlow-Examples.git
-```
-
-![notebook](img/notebook.png)
-
-Now, you will run the MNIST exam
-ple code in sample notebook.
-Click kernel -> “Restart&Clear Output” button -> “Restart&Run All” button
-
-The training takes a few **minutes** (Wait!!!!!!!!)
-
-![jupyter code](img/jupyter-1.png)
-![Accuracy Result](img/jupyter-2.png)
-
-Check training results. Your model has 99.04% accuracy!
-
-![Result of model prediction](img/jupyter-3.png)
-Your Machine Learning model correctly identified the number in the images!
-
-## 3. Lab Summary
-
-1. How to create ML/DL environment on a container-orchestrated cluster? (Kubeflow, …)
-2. How to operate desired ML training by testing selected ML code (i.e., neural networks) over the prepared training data?
-3. Do you understand the overall workflow for running ML/DL?
-
-> Thank You for Your Attention Any Questions? -> twkim@smartx.kr
+if you encounter the error please refer to offical docs or search! it's debug!
+https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/

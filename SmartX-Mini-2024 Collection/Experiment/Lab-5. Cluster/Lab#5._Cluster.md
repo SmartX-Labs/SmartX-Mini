@@ -38,30 +38,7 @@
 - **Service discovery and load balancing:** No need to modify your application to use an unfamiliar service discovery mechanism. Kubernetes gives containers their own IP addresses and a single DNS name for a set of containers, and can load-balance across them.
 - **Storage Orchestration:** Automatically mount the storage system of your choice, whether from local storage, a public cloud provider
 
-### 1-4. Ceph and Rook
-
-#### 1-4-1. Ceph
-
-![Ceph](img/4.png)
-
-- **Ceph** is a unified, distributed storage system designed for excellent performance, reliability and scalability.
-
-  Ceph provide Ceph Object Storage and/or Ceph Block Device services to Cloud Platforms, deploy a Ceph Filesystem or use Ceph for another purpose, all Ceph Storage Cluster deployments begin with setting up each Ceph Node, your network, and the Ceph Storage Cluster.
-
-  A Ceph Storage Cluster requires at least one Ceph Monitor, Ceph Manager, and Ceph OSD (Object Storage Daemon). The Ceph Metadata Server is also required when running Ceph Filesystem clients.
-
-#### 1-4-2. Rook
-
-![Rook](img/5.png)
-
-- **Rook** is an open source cloud-native **Ceph** **storage orchestrator** for Kubernetes, providing the platform, framework, and support for a diverse set of storage solutions to natively integrate with cloud-native environments.
-- Rook turns storage software into self-managing, self-scaling, and self-healing storage services. It does this by automating deployment, bootstrapping, configuration, provisioning, scaling, upgrading, migration, disaster recovery, monitoring, and resource management. Rook uses the facilities provided by the underlying cloud-native container management, scheduling and orchestration platform to perform its duties.
-
-## 2. Practice
-
-![Rook](img/6.png)
-
-### 2-1. Lab Preparation
+## 2. Lab Preparation
 
 ![Lab Preparation](img/7.png)
 
@@ -135,23 +112,7 @@ Install packages to allow apt to use a repository over HTTPS
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y ca-certificates curl gnupg lsb-release
 ```
-
-<details>
-<summary>Package Versions (Expand)</summary>
-
-##### NUC
-
-|     Package     |         Version         |
-| :-------------: | :---------------------: |
-| ca-certificates | 20211016ubuntu0.20.04.1 |
-|      curl       |   7.68.0-1ubuntu2.15    |
-|      gnupg      |    2.2.19-3ubuntu2.2    |
-|   lsb-release   |      11.1.0ubuntu2      |
-
-</details>
-<br>
 
 Update APT repos.
 
@@ -165,20 +126,6 @@ Install Docker
 ```bash
 sudo apt install docker.io -y
 ```
-
-<details>
-<summary>Package Versions (Expand)</summary>
-
-##### NUC
-
-|    Package    |           Version           |
-| :-----------: | :-------------------------: |
-| containerd.io |          1.2.13-2           |
-|   docker-ce   | 5:19.03.11~3-0~ubuntu-focal |
-| docker-ce-cli | 5:19.03.11~3-0~ubuntu-focal |
-
-</details>
-<br>
 
 Create /etc/docker
 
@@ -243,25 +190,6 @@ ssh <NUC2 username>@nuc02
 ssh <NUC3 username>@nuc03
 ```
 
-#### 2-2-2. xfprogs Install : Prerequisite for ROOK
-
-```shell
-# From All NUCs
-sudo apt-get install xfsprogs
-```
-
-<details>
-<summary>Package Versions (Expand)</summary>
-
-##### NUC
-
-| Package  |       Version        |
-| :------: | :------------------: |
-| xfsprogs | 5.3.0-1ubuntu2 amd64 |
-
-</details>
-<br>
-
 ### 2-3. Kubernets Installation(For All NUCs)
 
 ![Kubernets Installation](img/8.png)
@@ -275,8 +203,6 @@ sudo apt-get install xfsprogs
 ```shell
 # From All NUCs
 sudo swapoff -a
-sudo sed -e '/\/swapfile/s/^/#/g' -i /etc/fstab
-sudo sed -e '/\/swap\.img/s/^/#/g' -i /etc/fstab
 ```
 
 #### 2-3-2. Install Kubernetes
@@ -294,49 +220,31 @@ sudo apt update
 sudo apt install -y kubeadm=1.28.1-1.1 kubelet=1.28.1-1.1 kubectl=1.28.1-1.1
 ```
 
-<details>
-<summary>Package Versions (Expand)</summary>
-
-##### NUC
-
-|       Package       |         Version          |
-| :-----------------: | :----------------------: |
-| apt-transport-https |          2.0.9           |
-|        curl         | 7.68.0-1ubuntu2.15 amd64 |
-|       ipvsadm       |       1.31-1 amd64       |
-|        wget         |  1.20.3-1ubuntu2 amd64   |
-|       kubelet       |        1.14.1-00         |
-|       kubeadm       |        1.14.1-00         |
-|       kubectl       |          0.7.1           |
-|   kubernetes-cni    |         0.7.5-00         |
-
-</details>
-<br>
-
 ### 2-4. Kubernetes Configuration
 
 #### 2-4-1. Kubernetes Master Setting(For NUC1)
 
+지금부터 sudo su 로 root에서 실행합니다
+
 ```shell
 # From NUC1
-sudo kubeadm reset -f
-sudo rm -rf /etc/cni/net.d
-sudo ipvsadm --clear
+kubeadm init --pod-network-cidr=10.244.0.0/16
+
 ```
 
 ```shell
 # From NUC1
-## Cleanup Rook Configuration
-sudo rm -rf /var/lib/rook
-sudo kubeadm init --ignore-preflight-errors=all
+# Cleanup Rook Configuration
+ sudo rm -rf /var/lib/rook
+ sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --ignore-preflight-errors=all # 계속 실패한다면 이 명령어를 사용해 보세요
 ```
 
 - kubeadm을 실행하면 아래와 같이 Kubernetes Cluster에 참여할 수 있는 토큰값이 발급됩니다.
 - **토큰 정보를** 지금 입력하지 말고, 2-4-3 파트에서 사용하기 위해 **저장해둡니다.**
 - You can get token value that can join Kubernetes Cluster like below when you execute kubeadm.
 - Please don't enter **token information** right now, but **save** it to use at part 2-4-3.
-
-![commnad](img/9.png)
+- if you failed here. please check port-port forwarding refer to https://kubernetes.io/docs/reference/networking/ports-and-protocols/ (ubuntu uses ufw as the default firewall.)
+  ![commnad](img/9.png)
 
 ```shell
 # From NUC1
@@ -345,19 +253,17 @@ rm -r $HOME/.kube
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
-kubectl taint nodes --all node-role.kubernetes.io/master-
+kubectl taint nodes --all node-role.kubernetes.io/master- # taint에서 포드를 스케쥴링 할 수 없는 경우 사용합니다
 ```
 
-#### 2-4-2. Kubernetes Worker Setting(For NUC2, NUC3)
+#### 2-4-2. Kubernetes Worker Setting(For NUC2, NUC3) [최초 진행 시에는 사용하지 않아도 됩니다!]
 
 ```shell
 # From NUC2, NUC3
-sudo kubeadm reset -f
-sudo rm -r /etc/cni/net.d
-sudo ipvsadm --clear
+# sudo kubeadm reset -f
+# sudo rm -r /etc/cni/net.d
+# sudo ipvsadm --clear
 
-## Cleanup Rook Configuration
-sudo rm -rf /var/lib/rook
 ```
 
 #### 2-4-3. Worker Join
@@ -377,7 +283,7 @@ sudo rm -rf /var/lib/rook
 ## Consist cluster by adding NUC2, NUC3 to NUC1.
 ## 빨간 칸 안에 있는 명령어를 복사하고, 앞에 sudo를 붙여 sudo 권한으로 실행하며, --ignore-preflight-errors=all을 붙여서 실행시킵니다.
 ## Copy command in red rectangle, prefix 'sudo' to run with sudo previlege and run command with option '--ignore-preflight-errors=all'.
-sudo kubeadm join <NUC1 IP>:6443 --token <YOUR TOKEN> --discovery-token-ca-cert-hash <YOUR HASH> --ignore-preflight-errors=all
+sudo kubeadm join <NUC1 IP>:6443 --token <YOUR TOKEN> --discovery-token-ca-cert-hash <YOUR HASH> --ignore-preflight-errors=all # 계속 실패할 경우 --ignore-preflight-errors=all 옵션을 붙여 시도합니다!
 ```
 
 #### 2-4-4. Check Nodes at NUC1
@@ -391,7 +297,8 @@ kubectl get node
 
 ```shell
 # From NUC1
-kubectl apply -f "https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s-1.11.yaml"
+# flannel을 사용합니다 https://github.com/flannel-io/flannel
+kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 ```
 
 ```shell
@@ -402,88 +309,41 @@ kubectl get po -n kube-system -o wide
 
 ![Kubenetes Network Plugin Installation](img/10.png)
 
-### 2-6. ROOK Installation
+### 2-6. Nginx Deploy
 
-#### 2-6-1. Remove RBAC
+make nginx.yaml on your directory
+
+```shell
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-nginx-pod
+spec:
+  containers:
+  - name: my-nginx-container
+    image: nginx:latest
+    ports:
+    - containerPort: 80
+      protocol: TCP
+
+  - name: ubuntu-sidecar-container
+    image: alicek106/rr-test:curl
+    command: ["tail"]
+    args: ["-f", "/dev/null"] # 포드가 종료되지 않도록 유지합니다
+```
+
+#### 2-7-1. Deploy Nginx on the Cluster
 
 ```shell
 # From NUC1
-kubectl create clusterrolebinding permissive-binding \
---clusterrole=cluster-admin \
---user=admin \
---user=kubelet \
---group=system:serviceaccounts
-```
-
-#### 2-6-2. Install ROOK Storage
-
-```shell
-# From NUC1
-cd $HOME
-git clone --single-branch --branch release-1.2 https://github.com/rook/rook.git
-cd $HOME/rook/cluster/examples/kubernetes/ceph
-kubectl create -f common.yaml
-kubectl create -f operator.yaml
-kubectl create -f cluster-test.yaml
-```
-
-#### 2-6-3. Check rook-ceph-pod
-
-```shell
-watch kubectl get pod -n rook-ceph
-```
-
-![Check rook-ceph-pod](img/11.png)
-
-#### 2-6-4. Install & Execute ToolBox
-
-```shell
-# From NUC1
-## Installation
-cd $HOME/rook/cluster/examples/kubernetes/ceph
-kubectl create -f toolbox.yaml
-kubectl -n rook-ceph  rollout status deploy/rook-ceph-tools
-## Execution
-### 해당 코드를 실행하면, toolbox container안으로 접속하게 됩니다.
-### By executing this code, you can access to toolbox container.
-kubectl -n rook-ceph exec -it $(kubectl -n rook-ceph get pod -l "app=rook-ceph-tools"\
-   -o jsonpath='{.items[0].metadata.name}') bash
-
-## Check ceph Status in the toolbox
-### ceph의 상태를 toolbox안에서 확인합니다.
-watch ceph status
-
-## toolbox container를 나갑니다.
-## exit from toolbox container.
-exit
-```
-
-#### 2-6-5. Add StorageClass
-
-```shell
-# From NUC1
-kubectl apply -f csi/rbd/storageclass-test.yaml
-```
-
-### 2-7. WordPress Installation
-
-#### 2-7-1. Deploy WordPress on the Cluster
-
-![Deploy WordPress on the Cluster](img/12.png)
-
-```shell
-# From NUC1
-kubectl create -f $HOME/rook/cluster/examples/kubernetes/mysql.yaml
-kubectl create -f $HOME/rook/cluster/examples/kubernetes/wordpress.yaml
+kubectl apply -f nginx.yaml
 
 # From NUC1
 ## Check WordPress Container
-watch kubectl get pod
+watch kubectl get pods --all-namespaces
 ```
 
-#### 2-7-2. Access Wordpress Web
-
-![Access Wordpress Web](img/13.png)
+#### 2-7-2. Access Nginx
 
 ```shell
 # From NUC1
