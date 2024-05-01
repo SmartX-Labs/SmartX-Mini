@@ -366,6 +366,8 @@ kubectl get svc
 Agents : 워커 노드가 될 눅
 Servers : 마스터 노드가 될 눅
 
+#### 1-1. port-forwarding
+
 ```shell
 # How to use ufw
 sudo ufw enable # ufw가 켜져 있는지 아닌지 확인 할 수 있습니다.
@@ -375,10 +377,14 @@ sudo ufw allow 2380/udp # to open udp port method
 # 위 방법으로 모두 세팅한 후, 다시 ufw status 를 통해 열려있는지 확인합니다.
 ```
 
+#### 1-2. Master Node port-forwarding
+
 ```shell
 # from Master mode(NUC1)
 sudo ufw allow 2379:2380/tcp
 ```
+
+#### 1-3. Worker Node port-forwarding
 
 ```shell
 # from Master mode(NUC2, 3)
