@@ -67,10 +67,6 @@ remove all insert nuc01 or nuc02 or nuc03 on each right NUC.
 sudo vi /etc/hostname
 ```
 
-```shell
-sudo reboot
-```
-
 Append the following context into /etc/hosts :
 
 ```text
