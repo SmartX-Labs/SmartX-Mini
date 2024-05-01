@@ -133,10 +133,6 @@ sudo reboot
 
 ### 2-2. Preparations for Clustering
 
-#### 2-2-1. Docker Version Check : Prerequisite for Kubernetes
-
-- Check Docker Version : 19.03.11
-
 ```shell
 # From All NUCs
 docker version
@@ -313,7 +309,7 @@ kubectl get svc
 
   `http://<your NUC1 IP>:<Exposed port>`
 
-## K3S installation
+## (Optional) K3S installation
 
 설치하기 전, docke, openssh-server, ssh, vim, tet-tools가 설치되어 있어야합니다.
 
