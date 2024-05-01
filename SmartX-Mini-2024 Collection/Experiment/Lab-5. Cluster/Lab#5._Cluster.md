@@ -71,7 +71,7 @@ Reboot
 
 ```shell
 sudo reboot
-sudo hostname # after reboot change hostname ~@nuu## :
+sudo hostname # after reboot change hostname ~@nuc## :
 ```
 
 Append the following context into /etc/hosts :
