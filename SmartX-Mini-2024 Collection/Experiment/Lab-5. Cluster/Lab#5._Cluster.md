@@ -117,71 +117,22 @@ ssh <nuc2 username>@nuc02
 ssh <nuc3 username>@nuc03
 ```
 
-#### 2-1-4. Install docker
-
-Docker is a set of platform as a service (PaaS) products that use OS-level virtualization to deliver software in packages called containers. The service has both free and premium tiers. The software that hosts the containers is called Docker Engine. It was first started in 2013 and is developed by Docker, Inc.
-
-Set up the repository
-
-Install packages to allow apt to use a repository over HTTPS
-
-```bash
-sudo apt-get update
-```
-
-Update APT repos.
+#### 2-1-4. Setting containerd
 
 ```bash
 # For All NUCs
 sudo apt-get update
+sudo mkdir -p /etc/containerd
+containerd config default | sudo tee /etc/containerd/config.toml
+sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
 ```
 
-Install Docker
+#### 2-1-5. restart containerd
 
 ```bash
-sudo apt install docker.io -y
+# For All NUCs
+sudo systemctl restart containerd
 ```
-
-Create /etc/docker
-
-```bash
-sudo mkdir -p /etc/docker
-```
-
-Set up the Docker daemon
-
-```bash
-cat <<EOF | sudo tee /etc/docker/daemon.json
-{
-  "exec-opts": ["native.cgroupdriver=systemd"],
-  "log-driver": "json-file",
-  "log-opts": {
-    "max-size": "100m"
-  },
-  "storage-driver": "overlay2"
-}
-EOF
-```
-
-Create /etc/systemd/system/docker.service.d
-
-```bash
-sudo mkdir -p /etc/systemd/system/docker.service.d
-sudo systemctl daemon-reload
-sudo systemctl enable docker
-sudo systemctl start docker
-sudo systemctl start docker.socket
-```
-
-#### 2-1-4. Check docker installation
-
-```bash
-sudo docker run hello-world
-```
-
-If it doesn’t work, please try several times. Nevertheless, if you are not successful, try running from the installing `docker-ce`, `docker-ce-cli`, `containerd.io`
-
-![](./img/HelloFromDocker.png)
 
 # 지금부터 NUC1 학생 자리에서 모든 작업을 시작합니다. NUC2, NUC3 학생은 NUC1자리로 가서 작업을 시작합니다.
 
