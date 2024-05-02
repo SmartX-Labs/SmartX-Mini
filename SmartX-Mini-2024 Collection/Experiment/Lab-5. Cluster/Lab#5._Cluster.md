@@ -307,7 +307,7 @@ watch kubectl get pods --all-namespaces -o wide
 
 - Enter following address in web browser
 
-  `http://<your NUC1 IP>:443`
+  `http://<your Nginx Pod IP>:80`
 
 ## (Optional) K3S installation
 
