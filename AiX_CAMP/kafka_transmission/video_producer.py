@@ -46,3 +46,6 @@ if __name__ == "__main__":
 
     # 0번째 카메라 장치를 사용해 비디오를 스트리밍합니다
     produce_videostream(0)
+
+
+
