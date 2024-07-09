@@ -3,6 +3,8 @@ import io
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
 import time
+import argparse
+import os
 
 def main():
     # Initialize the camera
