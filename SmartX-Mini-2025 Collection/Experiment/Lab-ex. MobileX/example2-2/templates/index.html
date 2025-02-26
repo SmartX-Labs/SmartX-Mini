@@ -1,0 +1,57 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Object Detection App</title>
+<style>
+#dropzone {
+border: 2px dashed #999;
+width: 600px;
+height: 400px;
+display: flex;
+justify-content: center;
+align-items: center;
+margin-bottom: 20px;
+}
+</style>
+
+</head>
+<body>
+    <div id="dropzone">Drag & drop image here</div>
+    <img id="result" src="" alt="Drag an image to see the result">
+    <script>
+        const dropzone = document.querySelector("#dropzone");
+        dropzone.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        dropzone.addEventListener("drop", async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const image = e.dataTransfer.files[0];
+            if (image && image.type.startsWith("image/")) {
+                await upload(image);
+            } else {
+                alert("Please upload a valid image file.");
+            }
+        });
+ async function upload(image) {
+        const formData = new FormData();
+        formData.append("image", image);
+        document.querySelector("#result").src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='24'%3EProcessing...%3C/text%3E%3C/svg%3E";
+
+        const response = await fetch('/api/detect_objects', { method: "POST", body: formData });
+    
+        if (!response.ok) {
+            console.error("An error occurred:", response.statusText);
+            return;
+        }
+    
+        const blob = await response.blob();
+        document.querySelector("#result").src = URL.createObjectURL(blob);
+    }
+</script>
+</body>
+</html>
