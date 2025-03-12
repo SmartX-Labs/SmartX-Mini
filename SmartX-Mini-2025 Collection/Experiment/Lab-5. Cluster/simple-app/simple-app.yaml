@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-app
+  labels:
+    app: simple-app
+spec:
+  containers:
+    - name: simple-app
+      image: cheolhuikim/my-simple-app:v1
+      ports:
+        - containerPort: 5000
+      env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
