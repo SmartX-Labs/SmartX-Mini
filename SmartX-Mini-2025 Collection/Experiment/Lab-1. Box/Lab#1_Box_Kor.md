@@ -371,7 +371,7 @@ exit # Exit superuser mod
   -device virtio-net-pci,netdev=net0 \
   -netdev tap,id=net0,ifname=vport_vFunction,script=no \
   -boot d vFunction22.img \
-  -cdrom ubuntu-22.04.6-live-server-amd64.iso \
+  -cdrom ubuntu-22.04.5-live-server-amd64.iso \
   -vnc :5 -daemonize \
   -monitor telnet:127.0.0.1:3010,server,nowait,ipv4 \
   -cpu host
