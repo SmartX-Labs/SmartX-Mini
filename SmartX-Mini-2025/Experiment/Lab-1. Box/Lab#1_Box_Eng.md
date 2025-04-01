@@ -376,6 +376,10 @@ sudo ovs-vsctl add-port br0 vport_vFunction
 sudo ovs-vsctl show
 ```
 
+Below is the figure you have configured so far.
+
+![vport_vFunction](./img/vport_vFunction.png)
+
 After running the `sudo ovs-vsctl show` command, the configuration is successful if the `vport_vFunction` and one of the active network interfaces (`eno1`, `enp88s0`, or `enp89s0`) are listed under the Bridge `br0`.
 
 Restart the whole interfaces.

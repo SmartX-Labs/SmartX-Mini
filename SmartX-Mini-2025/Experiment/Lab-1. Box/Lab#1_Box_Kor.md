@@ -367,6 +367,10 @@ sudo ovs-vsctl add-port br0 vport_vFunction
 sudo ovs-vsctl show
 ```
 
+지금까지의 설정 구성입니다.
+
+![vport_vFunction](./img/vport_vFunction.png)
+
 `sudo ovs-vsctl show` 명령어 실행 후, Bridge `br0` 아래에 `vport_vFunction`과 사용중인 네트워크 인터페이스 (`eno1` 또는 `enp88s0` 또는 `enp89s0` 중 1개)가 등록되어 있으면 성공적으로 설정이 된 것입니다.
 
 전체 interface를 다시 시작합니다.
