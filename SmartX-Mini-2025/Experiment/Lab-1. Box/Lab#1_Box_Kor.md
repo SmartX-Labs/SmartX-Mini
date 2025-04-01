@@ -84,7 +84,7 @@ Box Lab에서는 \*베어 메탈에 운영체제(OS)를 직접 설치해보고
 > 2. VM IP: Extra라고 적힌 부분의 IP를 사용합니다.
 > 3. Container IP: 이번 Lab에 한정하여 PI라고 적힌 부분의 IP를 사용합니다.
 
-## 2-1. NUC: OS Installation
+## 2-1. NUC: OS Installation and Network Configuration
 
 > [!NOTE]
 > 수강생들 중, Playground Lab에서 OS를 설치한 경우에는 OS Installation 부분을 생략합니다.
@@ -93,7 +93,7 @@ Lab에서 사용할 Host OS는 다음과 같습니다. 제공받은 설치 USB�
 OS : Ubuntu Desktop 22.04 LTS(64bit)  
 참고: Download Site - <https://releases.ubuntu.com/22.04/>
 
-### 2-1-1. Boot configuration
+### 2-1-1. Boot Configuration
 
 1. NUC의 전원이 꺼진 상태에서 OS 설치를 위한 USB를 NUC에 연결한 뒤에, NUC의 전원을 켭니다.
 2. 부팅이 시작되면 F10 키를 눌러서 Boot device를 선택하는 화면에 진입합니다.
@@ -148,11 +148,12 @@ OS : Ubuntu Desktop 22.04 LTS(64bit)
   5. Something else 선택하여 정상 진행
   </details>
 
-## 2-2. NUC: Network Configuration
+### 2-1-3. Basic Network Configuration after OS Installation
+
+> [!CAUTION]  
+> <b>⚠️ (중요. 로그인 뒤에 Ubuntu를 업데이트할 것인지 묻는 창이 뜬다면 반드시 Don't Upgrade를 선택해야합니다!) ⚠️</b>
 
 - 로그인 화면이 보이면, 계정 정보를 입력하여 로그인합니다. 이제부터는 초기 네트워크 설정을 진행할 것입니다.
-  > [!CAUTION]  
-  > <b>⚠️ (중요. 로그인 뒤에 Ubuntu를 업데이트할 것인지 묻는 창이 뜬다면 반드시 Don't Upgrade를 선택해야합니다!) ⚠️</b>
 - ‘Temporary’ Network Configuration using GUI
 
   ![Network Configuration](./img/network_configuration.png)
@@ -177,9 +178,12 @@ OS : Ubuntu Desktop 22.04 LTS(64bit)
     <img src="./img/network_setting3.png" />
   </p><br>
 
-- **Set Prerequisites**
+## 2-2. NUC: Network Configuration Using Virtual Switch
 
-1. Update & Upgrade
+> [!CAUTION]  
+> <b>⚠️ (중요. 로그인 뒤에 Ubuntu를 업데이트할 것인지 묻는 창이 뜬다면 반드시 Don't Upgrade를 선택해야합니다!) ⚠️</b>
+
+1. apt Update & Upgrade
 
    - Lab에서는 패키지 관리자인 apt를 사용합니다. 앞으로 사용할 패키지들을 설치하기 위해 패키지 목록을 최신으로 업데이트하고, 업데이트 가능한 패키지를 실제로 업데이트합니다.
    - 명령어를 실행하기 위해 터미널을 엽니다. 터미널은 화면 좌하단에 위치한 앱 리스트 아이콘을 누르고, 리스트에서 터미널 아이콘을 눌러 실행할 수 있습니다.
@@ -189,7 +193,7 @@ OS : Ubuntu Desktop 22.04 LTS(64bit)
    sudo apt upgrade
    ```
 
-2. Upgrade vim text editor
+2. Install vim text editor
 
    - 앞으로 vim editor를 사용하여 파일의 내용을 수정하겠습니다. vim을 설치합니다.
 
@@ -368,7 +372,9 @@ sudo ovs-vsctl show
 
 지금까지의 설정 구성입니다.
 
-![Vport VFunction](./img/vport_vFunction.png)
+![vport_vFunction](./img/vport_vFunction.png)
+
+`sudo ovs-vsctl show` 명령어 실행 후, Bridge `br0` 아래에 `vport_vFunction`과 사용중인 네트워크 인터페이스 (`eno1` 또는 `enp88s0` 또는 `enp89s0` 중 1개)가 등록되어 있으면 성공적으로 설정이 된 것입니다.
 
 전체 interface를 다시 시작합니다.
 
