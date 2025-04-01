@@ -150,9 +150,10 @@ OS : Ubuntu Desktop 22.04 LTS(64bit)
 
 ## 2-2. NUC: Network Configuration
 
+> [!CAUTION]  
+> <b>⚠️ (중요. 로그인 뒤에 Ubuntu를 업데이트할 것인지 묻는 창이 뜬다면 반드시 Don't Upgrade를 선택해야합니다!) ⚠️</b>
+
 - 로그인 화면이 보이면, 계정 정보를 입력하여 로그인합니다. 이제부터는 초기 네트워크 설정을 진행할 것입니다.
-  > [!CAUTION]  
-  > <b>⚠️ (중요. 로그인 뒤에 Ubuntu를 업데이트할 것인지 묻는 창이 뜬다면 반드시 Don't Upgrade를 선택해야합니다!) ⚠️</b>
 - ‘Temporary’ Network Configuration using GUI
 
   ![Network Configuration](./img/network_configuration.png)
@@ -366,9 +367,7 @@ sudo ovs-vsctl add-port br0 vport_vFunction
 sudo ovs-vsctl show
 ```
 
-지금까지의 설정 구성입니다.
-
-![Vport VFunction](./img/vport_vFunction.png)
+`sudo ovs-vsctl show` 명령어 실행 후, Bridge `br0` 아래에 `vport_vFunction`과 사용중인 네트워크 인터페이스 (`eno1` 또는 `enp88s0` 또는 `enp89s0` 중 1개)가 등록되어 있으면 성공적으로 설정이 된 것입니다.
 
 전체 interface를 다시 시작합니다.
 

@@ -159,9 +159,10 @@ If an issue related to booting occurs, follow these steps.
 
 ## 2-2. NUC: Network Configuration
 
+> [!CAUTION]  
+> <b>⚠️(Important: If a window appears asking whether to update Ubuntu after logging in, make sure to select “Don’t Upgrade”!)⚠️</b>
+
 - When the login screen appears, enter your account information to log in. You will now proceed with the initial network configuration.
-  > [!CAUTION]  
-  > <b>⚠️(Important: If a window appears asking whether to update Ubuntu after logging in, make sure to select “Don’t Upgrade”!)⚠️</b>
 - ‘Temporary’ Network Configuration using GUI
 
   ![Network Configuration](./img/network_configuration.png)
@@ -375,9 +376,7 @@ sudo ovs-vsctl add-port br0 vport_vFunction
 sudo ovs-vsctl show
 ```
 
-Below is the figure you have configured so far.
-
-![Vport VFunction](./img/vport_vFunction.png)
+After running the `sudo ovs-vsctl show` command, the configuration is successful if the `vport_vFunction` and one of the active network interfaces (`eno1`, `enp88s0`, or `enp89s0`) are listed under the Bridge `br0`.
 
 Restart the whole interfaces.
 
