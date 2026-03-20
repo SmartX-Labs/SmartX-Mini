@@ -95,23 +95,22 @@ In this lab, we will install `snmpd` on the Pi and use Apache Flume to collect t
 
 ## 1-4. Fluentd
 
-Fluentd는 다양한 소스에서 로그 및 이벤트 데이터를 수집, 변환, 전송하는 오픈소스 데이터 수집 도구입니다. Ruby로 작성되어 있으며, 경량화와 플러그인 기반의 유연한 구조가 특징입니다. CNCF(Cloud Native Computing Foundation)의 졸업 프로젝트로, 클라우드 네이티브 환경에서 널리 사용됩니다.
+Fluentd is an open-source data collection tool that collects, converts, and transmits log and event data from a variety of sources. Written in Ruby, it features a lightweight and plug-in-based flexible structure. It is a graduation project from the Cloud Native Computing Foundation (CNCF), widely used in cloud native environments.
 
-Fluentd의 Data Flow Model은 하단의 그림과 같으며, 크게 3가지 요소로 구성됩니다.
+Fluent's Data Flow Model is shown in the figure below and consists of three main elements.
 
 ![Fluentd](./img/fluentd.png)
 
 | Component      | Description                                                                                                                                  |
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Input / Filter | 외부 시스템이나 명령어 실행 결과 등으로부터 데이터를 수집하고, 변환·필터링한다. 파일, HTTP, 명령어 실행(`exec`) 등 다양한 방식을 지원한다.   |
-| Output         | 처리된 데이터를 외부 시스템(Kafka, Elasticsearch, S3 등)으로 전송한다.                                                                       |
-| Buffer         | stage(chunk 적재)와 queue(전송 대기) 구조로 데이터를 안전하게 버퍼링한다. Chunk 단위로 묶어 전송함으로써 신뢰성 있는 데이터 전달을 보장한다. |
+| Input / Filter | Collect, Convert, and Filter Data from external systems or command execution results. It supports various methods such as file, HTTP, and command execution ('exec') etc.   |
+| Output         | Transmit the processed Data to an external system (Kafka, Elasticsearch, S3, etc.).       |
+| Buffer         | Buffer data safely with stage (chunk load) and queue structures. Reliable data delivery is guaranteed by transmitting it in chunks. |
 
-이번 실습에서는 Flume은 `snmpd`로부터 상태 정보를 받아 Kafka로 전달하는 데에 사용됩니다. 실습에서는 Source를 `snmpd`로 설정하여 SNMP를 통해 상태 정보를 수집하며, 이를 Kafka에게 넘겨주게 됩니다.
-이번 실습에서는 Fluentd가 `snmpd`로부터 상태 정보를 주기적으로 수집(`exec` Input)하여 Kafka로 전달하는 데에 사용됩니다. `snmpget` 명령어를 통해 SNMP로 상태 정보를 수집하고, 이를 JSON 형식으로 가공하여 Kafka Topic에 전송합니다.
+Fluentd is used to periodically collect the status information from 'snmpd' and deliver it to Kafka. The 'snmpget' command collects the status information with SNMP, processes it in JSON format, and sends it to Kafka Topic.
 
 > [!tip]
-> Fluentd를 더 자세히 알고 싶다면 [Fluentd Docs](https://docs.fluentd.org/)를 참고해주세요.
+>If you would like to know more about Fluentd, please refer to [Fluentd Docs] (https://docs.fluentd.org/) .
 
 # 2. Practice
 
@@ -391,9 +390,9 @@ flash -u hypriotos-init.yaml -F network-config -d <Your SD Card Directory> hypri
 
 ### 2-2-1. (PI) Check Network Configuration
 
-Now, eject the SD card, insert it into the Pi, and power it on. The default login credentials are (ID: `pi`, Password: `1234`).
+Now, eject the SD card, insert it into the Pi, and power it on. 
 
-HypriotOS는 기본적으로 SSH 서버가 활성화되어 있으므로, 이제부터 NUC의 터미널에서 SSH를 통해 Pi에 접속하여 작업합니다. NUC의 터미널에서 다음 명령어를 입력하여 Pi에 접속합니다. ID는 `pi`, Password는 `1234` 입니다.
+HypriotOS has SSH server enabled by default, so from now on, you can access Pi from the NUC's terminal via SSH. From the NUC's terminal, enter the following command to access Pi. The default login credentials are (ID: `pi`, Password: `1234`).
 
 ```bash
 ssh pi@<PI_IP>
@@ -568,7 +567,7 @@ sudo vim /etc/hosts
 Add the following line(Pi IP Address & Hostname) at the bottom of the file:
 
 <!--
-  Pi IP만 적는 것으로 수정합니다.
+  Modify to write Pi IP only.
   REF: Issue #98
 -->
 
@@ -617,7 +616,7 @@ sudo vim /etc/hosts
 ```
 
 <!--
-  NUC IP만 적는 것으로 수정합니다.
+  Modify to write NUC IP only.
   REF: Issue #98
 -->
 
@@ -669,11 +668,11 @@ Successful communication should display ICMP packet responses. If you encounter 
 
 ## 2-4. (NUC) Kafka Deployment
 
-NUC과 Pi가 Hostname을 이용하여 정상적으로 통신할 수 있게 되었으니, 이제부터 Docker를 통해 Apache Kafka를 배치하여 NUC과 Pi가 메세지를 교환할 수 있는 환경을 구성하도록 하겠습니다. (2가지 Interconnect 중 Data Interconnect에 해당합니다.)
+Now that NUC and Pi can communicate normally using Hostname, we will deploy Apache Kafka through Docker to configure an environment where NUC and Pi can exchange messages. (Of the two interconnects, they are Data Interconnects.)
 
-이번 실습에서는 Apache Kafka 4.2.0을 KRaft 모드로 배치합니다. KRaft 모드에서는 기존의 Zookeeper 없이, Controller가 클러스터 메타데이터 관리를 직접 담당합니다. NUC에 Controller 3개와 Broker 3개를 Docker Compose로 배치하며, 이들은 모두 Host 네트워크를 공유합니다.
+In this exercise, Apache Kafka 4.2.0 is placed in KRaft mode. In KRaft mode, without the traditional Zookeeper, the controller is directly responsible for managing the cluster metadata. Three Controllers and three Brokers are placed in the NUC as Docker Compose, which all share the Host network.
 
-| Container 이름 |    역할    | Node ID | Listening Port |
+| Container Name |    Role    | Node ID | Listening Port |
 | :------------: | :--------: | :-----: | :------------: |
 |  controller0   | Controller |    0    |     19090      |
 |  controller1   | Controller |    1    |     19091      |
@@ -682,15 +681,15 @@ NUC과 Pi가 Hostname을 이용하여 정상적으로 통신할 수 있게 되�
 |    broker1     |   Broker   |    4    |      9091      |
 |    broker2     |   Broker   |    5    |      9092      |
 
-### 2-4-1. (NUC) 디렉토리 이동 및 Dockerfile 확인
+### 2-4-1. (NUC) Directory Movement and Check Dockerfile 
 
-먼저 Kafka 배치에 사용할 디렉토리로 이동합니다.
+First, move to the directory that you want to use for the Kafka placement.
 
 ```bash
 cd ~/SmartX-Mini/SmartX-Mini-2026/Experiment/'Lab-2. InterConnect'/deploy/kafka
 ```
 
-디렉토리 내 `Dockerfile`이 하단과 동일한지 확인합니다.
+Check that the 'Dockerfile' in the directory is the same as the bottom.
 
 ```dockerfile
 FROM ubuntu:24.04
@@ -711,13 +710,13 @@ RUN chmod +x /kafka/start-kafka.sh
 
 > [!tip]
 >
-> Note: APT Repository 변경 (Optional)
+> Note: Change APT Repository (Optional)
 >
-> 이미지 파일 빌드 과정에서 `apt`를 통한 패키지 다운로드에 많은 시간이 소요됩니다.
+> It takes a lot of time to download the package through 'apt' during the image file build process.
 >
-> 지역적으로 가까울수록 다운로드 속도는 일반적으로 높지만, 기본 레포지토리는 보통 해외에 있고 느립니다. 따라서 속도 향상을 위해 지역적으로 가까운 위치의 미러 서버를 사용합니다.
+> The closer you are locally, the higher the download speed is generally, but the default repository is usually overseas and slow. Therefore, we use mirror servers in local locations to improve the speed.
 >
-> 해당 설정은 Dockerfile 명령 중 하단의 `sed`를 통해 이루어집니다. 지금은 카카오의 미러 서버를 가리키도록 수정하지만, 다른 서버를 사용하고자 할 경우 `mirror.kakao.com`의 주소를 다른 값(Lanet, KAIST 미러 서버 등)으로 수정하면 됩니다.
+> This setting is done through 'sed' at the bottom of the Dockerfile command. For now, you can modify it to point to Kakao's mirror server, but if you want to use another server, you can modify the address of 'mirror.kakao.com ' to another value (Lanet, KAIST mirror server, etc.).
 >
 > ```dockerfile
 > …
@@ -732,9 +731,9 @@ RUN chmod +x /kafka/start-kafka.sh
 > …
 > ```
 
-### 2-4-2. (NUC) Docker Image 빌드
+### 2-4-2. (NUC) Build Docker Image 
 
-다음의 명령어를 입력하여 `ubuntu-kafka` 이미지를 빌드합니다.
+Build the 'ubuntu-kafka' image by entering the following command.
 
 ```bash
 sudo docker build -t ubuntu-kafka .
@@ -760,18 +759,18 @@ sudo docker build -t ubuntu-kafka .
 >
 > You can use the first 4 characters of the container ID shown by `docker ps` as `<container id>`, as long as they are unique.
 
-### 2-4-3. (NUC) 환경변수 파일(`.env`) 작성
+### 2-4-3. (NUC) Create environment variable file ('.env')
 
-Docker Compose 실행에 앞서 클러스터 설정에 필요한 환경변수를 `.env` 파일에 작성합니다.
+Before running Docker Compose, write the environment variables required to set up the cluster in the `.env` file.
 
-먼저 클러스터 전체를 식별하는 `CLUSTER_ID`를 생성합니다.
+First, create a `CLUSTER_ID` that identifies the entire cluster.
 
 ```bash
 sudo docker run --rm ubuntu-kafka bin/kafka-storage.sh random-uuid
-# 출력 예시: MkU3OEVBNTcwNTJENDM2Qg
+# Output Example: MkU3OEVBNTcwNTJENDM2Qg
 ```
 
-다음으로, Controller 각각을 식별하는 Voter UUID도 3개 생성합니다.
+Next, create three Voter UUIDs that identify each Controller.
 
 ```bash
 sudo docker run --rm ubuntu-kafka bin/kafka-storage.sh random-uuid  # CONTROLLER0_UUID
@@ -781,9 +780,9 @@ sudo docker run --rm ubuntu-kafka bin/kafka-storage.sh random-uuid  # CONTROLLER
 
 > [!note]
 >
-> `CLUSTER_ID`는 클러스터 전체를 식별하는 값이며, Voter UUID는 각 Controller 노드를 식별하는 값입니다. 두 가지 모두 고유해야 하며, 한 번 포맷된 이후에는 변경할 수 없습니다.
+>`CLUSTER_ID` is the value that identifies the entire cluster, and Voter UUID is the value that identifies each Controller node. Both must be unique and cannot be changed after being formatted.
 
-생성한 값을 이용하여 `.env` 파일을 작성합니다. `.env.example` 파일을 참고하여 작성하면 됩니다.
+Create a `.env` file using the value you created. You can write it by referring to the `.env.example` file.
 
 ```bash
 cp .env.example .env
@@ -791,28 +790,28 @@ vim .env
 ```
 
 ```text
-CLUSTER_ID=<위에서 생성한 CLUSTER_ID>
-CONTROLLER0_UUID=<위에서 생성한 CONTROLLER0_UUID>
-CONTROLLER1_UUID=<위에서 생성한 CONTROLLER1_UUID>
-CONTROLLER2_UUID=<위에서 생성한 CONTROLLER2_UUID>
-HOST_HOSTNAME=<NUC의 hostname>
+CLUSTER_ID=<CLUSTER_ID generated above>
+CONTROLLER0_UUID=<CONTROLLER0_UUID generated above>
+CONTROLLER1_UUID=<CONTROLLER1_UUID generated above>
+CONTROLLER2_UUID=<CONTROLLER2_UUID generated above>
+HOST_HOSTNAME=<hostname of NUC>
 ```
 
-`<NUC의 hostname>`은 다음 명령어로 확인할 수 있습니다.
+You can check `<hostname of nuc>` by the following command.
 
 ```bash
 hostname
 ```
 
-### 2-4-4. (NUC) Docker Compose로 클러스터 실행
+### 2-4-4. (NUC) Run the cluster with Docker Compose
 
-다음의 명령어를 입력하여 Kafka 클러스터를 실행합니다.
+Run the Kafka cluster by the following command.
 
 ```bash
 sudo docker compose up -d
 ```
 
-모든 컨테이너가 정상적으로 실행되었는지 확인합니다.
+Verify that all containers are running normally.
 
 ```bash
 sudo docker ps
@@ -820,24 +819,24 @@ sudo docker ps
 
 > [!note]
 >
-> **`start-kafka.sh`의 역할**
+> **Role of `start-kafka.sh`**
 >
-> `docker-compose.yml`에 작성된 환경변수 설정들을 컨테이너 내부에 주입하고, 각 노드의 역할(Controller/Broker)에 맞는 설정 파일을 자동으로 생성한 뒤 Kafka를 시작합니다.
+> Inject the environment variable settings written in `docker-compose.yml` into the container, automatically create a setting file for each node's role (controller/broker), and start Kafka.
 
 <!-- -->
 
 > [!tip]
 >
-> 실습을 재시작할 경우, 이전 실행에서 남은 로그 디렉토리를 삭제해야 정상적으로 재포맷됩니다.
+> If you restart the practice, you must delete the remaining log directory from the previous run before it is reformatted normally.
 >
 > ```bash
 > sudo rm -rf /tmp/kraft-controller*-logs /tmp/kraft-broker*-logs
 > sudo docker compose up -d
 > ```
 
-### 2-4-5. (NUC) Topic 생성 및 확인
+### 2-4-5. (NUC) Generate & Check Topic
 
-Kafka 클러스터가 정상적으로 실행된 이후, `resource`라는 Topic을 생성합니다. Topic 생성은 실행 중인 `broker0` 컨테이너를 통해 수행합니다.
+After the Kafka cluster runs normally, a Topic called `resource` is created. Topic creation is done through the running `broker0` container.
 
 ```bash
 sudo docker exec broker0 /kafka/bin/kafka-topics.sh --create \
@@ -847,7 +846,7 @@ sudo docker exec broker0 /kafka/bin/kafka-topics.sh --create \
   --topic resource
 ```
 
-Topic이 정상적으로 생성되었는지 확인합니다.
+Check that Topic has been created successfully.
 
 ```bash
 sudo docker exec broker0 /kafka/bin/kafka-topics.sh --list \
@@ -856,9 +855,9 @@ sudo docker exec broker0 /kafka/bin/kafka-topics.sh --list \
 
 ## 2-5. (PI) Fluentd on Raspberry PI
 
-### 2-5-1. (PI) Net-SNMP 설치
+### 2-5-1. (PI) Install Net-SNMP 
 
-이제 Pi로 돌아가 다음의 명령어를 입력해 `Net-SNMP` 패키지를 설치해주십시오.
+Now return to Pi and install the 'Net-SNMP' package by following command.
 
 ```bash
 sudo apt update
@@ -878,37 +877,37 @@ sudo apt install -y snmp snmpd snmp-mibs-downloader
 
 </details>
 
-이제 설정파일을 수정하겠습니다. 편집기로 파일을 열어 `#rocommunity public localhost`를 찾고, `#`을 제거해주십시오.
+To modify the settings file, Open the file with the editor to find '#rocommunity public localhost' and remove '#'.
 
 ```bash
 sudo vim /etc/snmp/snmpd.conf
 ```
 
-설정파일이 반영되도록 `snmpd.service`를 다음의 명령어를 통해 재시작하겠습니다.
+Restart 'snmpd.service' by the following command to reflect the configuration file.
 
 ```bash
 sudo systemctl restart snmpd.service
 ```
 
-### 2-5-2. (NUC) Fluentd 이미지 크로스빌드
+### 2-5-2. (NUC) Cross-build Fluent image 
 
-Fluentd 이미지는 용량이 크고 빌드에 시간이 오래 걸리기 때문에, Pi에서 직접 빌드하는 대신 NUC에서 크로스빌드한 뒤 Pi로 전송합니다.
+Because Fluentd images are large and time consuming to build, they are cross-built in NUC and sent to Pi instead of building directly in Pi.
 
-Pi(ARMv7)와 NUC(x86_64)는 아키텍처가 다르므로, NUC에서 ARM 바이너리를 실행할 수 있도록 QEMU를 먼저 설치합니다. (최초 1회만 수행합니다.)
+Pi (ARMv7) and NUC (x86_64) have different architectures, so install QEMU first to run ARM binaries in NUC. (Do it only once for the first time.)
 
 ```bash
 sudo apt-get install -y qemu-user-static
 sudo docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 ```
 
-다음으로, Fluentd 디렉토리로 이동한 뒤 `fluent.conf`에서 NUC의 hostname을 수정합니다.
+Next, Move to the Fluentd directory and modify the hostname of the NUC in `fluent.conf`.
 
 ```bash
 cd ~/SmartX-Mini/SmartX-Mini-2026/Experiment/'Lab-2. InterConnect'/deploy/fluentd
 vim fluent.conf
 ```
 
-파일 내에서 `<YOUR_NUC_HOSTNAME>`을 Pi의 `/etc/hosts`에 기록한 NUC Hostname으로 수정해주십시오.
+Modify `<YOUR_NUC_HOSTNAME>` in the file to the NUC Hostname recorded in Pi's `/etc/hosts`.
 
 ```text
 ...
@@ -916,7 +915,7 @@ brokers <Your NUC hostname>:9090,<Your NUC hostname>:9091,<Your NUC hostname>:90
 ...
 ```
 
-`buildx`를 이용하여 arm/v7용 이미지를 빌드합니다.
+Build an image for arm/v7 by `buildx`.
 
 ```bash
 sudo docker buildx build \
@@ -926,22 +925,22 @@ sudo docker buildx build \
   .
 ```
 
-빌드된 이미지를 tar 파일로 저장한 뒤 Pi로 전송합니다.
+Save the built image as a tar file and send it to Pi.
 
 ```bash
 sudo docker save pi-fluentd | gzip > pi-fluentd.tar.gz
 scp pi-fluentd.tar.gz pi@<PI_IP>:~/
 ```
 
-### 2-5-3. (PI) 이미지 로드 및 Fluentd 실행
+### 2-5-3. (PI) Load images and run Fluentd
 
-Pi에서 전송받은 이미지를 로드합니다.
+Load the image received in Pi.
 
 ```bash
 sudo docker load < ~/pi-fluentd.tar.gz
 ```
 
-다음의 명령어를 통해 Fluentd 컨테이너를 실행합니다.
+Run the Fluentd container by following command.
 
 ```bash
 sudo docker run -it --rm \
@@ -953,7 +952,7 @@ sudo docker run -it --rm \
 
 > [!note]
 >
-> `--security-opt seccomp=unconfined` 옵션은 HypriotOS의 커널(4.19)에서 seccomp 정책이 일부 시스템 콜을 차단하는 문제를 우회하기 위해 필요합니다.
+> The `--security-opt seccomp=unconfirmed` option is required to bypass the issue of the seccomp policy blocking some system calls in HypriotOS kernel (4.19).
 
 <!-- -->
 
