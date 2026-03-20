@@ -55,23 +55,7 @@ The above image shows the **GPIO (General Purpose Input/Output) pin layout** of 
 
 ## 2-1. Running a Node.js Web Server in Docker Container ( in NUC )
 
-### 2-1-1. Run Docker Container
-
-Run the prepared Docker container image below.
-
-```bash
-sudo docker run -it --net host --dns 203.237.32.100 --name webserver cheolhuikim/smartx-box-mini
-```
-
-Once you get inside the container, run the following commands.
-
-```bash
-apt-get update
-
-apt-get install vim
-```
-
-## 2-2. Check Web Server Code ( in NUC container )
+### 2-1-1. Check Web Server Code
 
 Run the following command to check the web server code. (No modification is needed.)
 
@@ -81,16 +65,45 @@ This web server performs the following functions depending on the path of the re
 2. Returns stored information in JSON format
 
 ```bash
-vim /SmartX-Mini/IoT-labs/webserver.js
+vim ~/SmartX-Mini/SmartX-Mini-2026/Experiment/'Lab-3. IoT'/deploy/webserver/webserver.js
 ```
 
 ![webserver code](./img/webserver.png)
+### 2-1-2. Build Docker Image 
 
-## 2-3. Test Temperature-Humidity Sensor ( in PI )
+Move to the webserver directory and build the Docker image.
+
+```bash
+cd ~/SmartX-Mini/SmartX-Mini-2026/Experiment/'Lab-3. IoT'/deploy/webserver
+
+sudo docker build -t webserver .
+```
+
+### 2-1-3. Transmit files to Pi
+
+Compress the files to be used in Pi and send them to scp.
+
+```bash
+cd ~/SmartX-Mini/SmartX-Mini-2026/Experiment/'Lab-3. IoT'/deploy
+
+tar -czf pi.tar.gz pi/
+
+scp pi.tar.gz pi@<PI_IP>:~/
+```
+
+### 2-1-4. Run Docker Container 
+
+Runs the built image in the background. Once the container starts, the web server runs automatically.
+
+```bash
+sudo docker run -d --net host --name webserver webserver
+```
+
+## 2-2. Test Temperature-Humidity Sensor ( in PI )
 
 Now, let's verify that the temperature-humidity sensor connected to the Raspberry Pi is working correctly.
 
-### 2-3-1. Install package
+### 2-2-1. Install package
 
 Enter the following commands to download the necessary files:
 
@@ -169,7 +182,7 @@ sudo pip3 install .
 
 </details>
 
-### Test Temperature-Humidity Sensor ( in PI )
+### 2-2-2. Test Temperature-Humidity Sensor ( in PI )
 
 Navigate to the example folder.
 
@@ -213,11 +226,11 @@ If temperature and humidity are displayed correctly as shown below, the sensor i
 
 ![result](https://user-images.githubusercontent.com/63437430/160829118-04bae048-2cf3-4c3f-8cd9-4b9295b019d0.png)
 
-## 2-4. Collect and Transmit Sensor Data ( in PI )
+## 2-3. Collect and Transmit Sensor Data ( in PI )
 
 Now, let's modify the relevant code to transmit sensor data collected on the Raspberry Pi to the NUC.
 
-### 2-4-1. Install required packages
+### 2-3-1. Install required packages
 
 ```bash
 sudo apt-get update
@@ -239,48 +252,46 @@ sudo apt-get install -y mercurial
 
 </details>
 
-### 2-4-2. Sensor Data Collection Code
+### 2-3-2. Sensor Data Collection Code
+
+Uncompresses the files sent by the NUC.
+
+```bash
+cd ~
+tar -xzf pi.tar.gz
+```
 
 Run the following command to check the sensor data transmission code. (No modification is needed.)
 
 **This code runs on the Raspberry Pi and reads data from the sensor to save in a file.**
 
 ```bash
-vim ~/SmartX-Mini/SmartX-Box/IoT-labs/RPI_capture.py
+vim ~/pi/RPI_capture.py
 ```
 
 ![rpi capture code](./img/rpi_capture.png)
 
-### 2-4-3. Sensor Data Transmission Code
+### 2-3-3. Sensor Data Transmission Code
 
 Open the code that sends the saved sensor data and modify `<NUC IP>` to your NUC IP.
 
 ```bash
-vim ~/SmartX-Mini/SmartX-Box/IoT-labs/RPI_transfer.py
+vim ~/pi/RPI_transfer.py
 ```
 
 ![rpi transfer code](./img/rpi_transfer.png)
 
-## 2-5. Run IoT Web Service
+## 2-4. Run IoT Web Service
 
 Now, let's run a simple IoT Web Service based on the work done so far.
 
-### 2-5-1. Run Web Server ( in NUC container )
 
-Run the following command **inside the Docker container** running on the NUC. This command runs the web server code named `webserver.js`.
-
-```bash
-cd /SmartX-Mini/IoT-labs
-
-nodejs webserver.js
-```
-
-### 2-5-2. Collect and Transmit Sensor Data ( in PI )
+### 2-4-1. Collect and Transmit Sensor Data ( in PI )
 
 Run the following commands. `process.sh` repeatedly runs the `RPI_capture.py` and `RPI_transfer.py` files we just reviewed.
 
 ```bash
-cd ~/SmartX-Mini/SmartX-Box/IoT-labs
+cd ~/pi
 
 # Grant execution permission
 chmod +x process.sh
@@ -288,7 +299,7 @@ chmod +x process.sh
 sudo ./process.sh
 ```
 
-### 2-5-3. Access IoT Web Service ( in NUC )
+### 2-4-2. Access IoT Web Service ( in NUC )
 
 Open a web browser on the NUC and go to `http://<NUC IP>`.
 
