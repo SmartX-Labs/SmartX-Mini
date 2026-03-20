@@ -56,12 +56,6 @@ Zookeeper continuously communicates with brokers to monitor their status. It man
 
 In this Lab, we will see that data-interconnects can be achieved by confirming that Apache Kafka delivers Pi events to NUC's Consumer.
 
-> [!warning]
->
-> As of Apache Kafka 3.5, Zookeeper is deprecated and replaced by KRaft, which provides enhanced capabilities. While we use Zookeeper in this lab for compatibility purposes, it is recommended to use KRaft for future deployments.
-
-<!-- -->
-
 > [!tip]
 > If you want to know more about Apache Kafka, Please refer to [Apache Kafka Docs](https://kafka.apache.org/documentation/#intro_concepts_and_terms).
 
@@ -99,26 +93,25 @@ In this lab, we will install `snmpd` on the Pi and use Apache Flume to collect t
 > [!tip]  
 > For more details on SNMP, refer to [GeeksForGeeks](https://www.geeksforgeeks.org/simple-network-management-protocol-snmp/).
 
-## 1-4. Apache Flume
+## 1-4. Fluentd
 
-Apache Flume is a distributed, reliable service designed for efficiently collecting, aggregating, and moving large volumes of log data.
+Fluentd는 다양한 소스에서 로그 및 이벤트 데이터를 수집, 변환, 전송하는 오픈소스 데이터 수집 도구입니다. Ruby로 작성되어 있으며, 경량화와 플러그인 기반의 유연한 구조가 특징입니다. CNCF(Cloud Native Computing Foundation)의 졸업 프로젝트로, 클라우드 네이티브 환경에서 널리 사용됩니다.
 
-Flume's data flow model consists of three main components:
+Fluentd의 Data Flow Model은 하단의 그림과 같으며, 크게 3가지 요소로 구성됩니다.
 
-![Apache Flume](./img/flume.png)
+![Fluentd](./img/fluentd.png)
 
-| Component | Description                                                                                                                                                    |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Source    | Collects events from external systems. Event format must have to be recognized by Flume.                                                                       |
-| Channel   | A passive store that temporarily holds events until they are retrieved by the sink. Event comes from the `Source`. e.g. File Channel (Local File System based) |
-| Sink      | Retrieves events from the channel and sends them to an external storage system or agent.                                                                       |
+| Component      | Description                                                                                                                                  |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Input / Filter | 외부 시스템이나 명령어 실행 결과 등으로부터 데이터를 수집하고, 변환·필터링한다. 파일, HTTP, 명령어 실행(`exec`) 등 다양한 방식을 지원한다.   |
+| Output         | 처리된 데이터를 외부 시스템(Kafka, Elasticsearch, S3 등)으로 전송한다.                                                                       |
+| Buffer         | stage(chunk 적재)와 queue(전송 대기) 구조로 데이터를 안전하게 버퍼링한다. Chunk 단위로 묶어 전송함으로써 신뢰성 있는 데이터 전달을 보장한다. |
 
-In this lab, Flume will be used to gather system status data from `snmpd` via SNMP and send it to Kafka.
+이번 실습에서는 Flume은 `snmpd`로부터 상태 정보를 받아 Kafka로 전달하는 데에 사용됩니다. 실습에서는 Source를 `snmpd`로 설정하여 SNMP를 통해 상태 정보를 수집하며, 이를 Kafka에게 넘겨주게 됩니다.
+이번 실습에서는 Fluentd가 `snmpd`로부터 상태 정보를 주기적으로 수집(`exec` Input)하여 Kafka로 전달하는 데에 사용됩니다. `snmpget` 명령어를 통해 SNMP로 상태 정보를 수집하고, 이를 JSON 형식으로 가공하여 Kafka Topic에 전송합니다.
 
-> [!warning]
->
-> As of October 2024, Apache Flume is officially discontinued. Consider migrating to alternatives like Fluentd or Logstash for future distributed log collection, when you are planning to use, or using Apache Flume.  
-> For now, we are using Flume for compatibility and lab purposes.
+> [!tip]
+> Fluentd를 더 자세히 알고 싶다면 [Fluentd Docs](https://docs.fluentd.org/)를 참고해주세요.
 
 # 2. Practice
 
@@ -175,8 +168,11 @@ To install HypriotOS, insert the Micro SD card into a reader, and insert into th
 [`flash`](https://github.com/hypriot/flash) is a script that flash SD Card. We will use `flash` to install HypriotOS on SD Card. Please install `flash` following the guidance below.
 
 ```bash
-sudo apt-get update && sudo apt-get install -y pv curl python3-pip unzip hdparm
-sudo pip3 install awscli
+cd ~
+sudo apt update && sudo apt install -y pv curl python3-pip unzip hdparm python3.12-venv
+python3 -m venv ~/.venv
+source .venv/bin/activate
+pip3 install awscli
 curl -O https://raw.githubusercontent.com/hypriot/flash/master/flash
 chmod +x flash
 sudo mv flash /usr/local/bin/flash
@@ -229,8 +225,8 @@ sudo apt install -y git
 curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
 sudo apt install -y git-lfs
 git lfs install
-git clone https://github.com/SmartX-Labs/SmartX-Mini.git
-cd ~/SmartX-Mini/SmartX-Mini-2025/Experiment/Lab-2.\ InterConnect/
+git clone --depth=1 https://github.com/SmartX-Labs/SmartX-Mini.git
+cd ~/SmartX-Mini/SmartX-Mini-2026/Experiment/Lab-2.\ InterConnect/deploy/hypriotos
 ```
 
 <details>
@@ -294,8 +290,8 @@ ls -alh # Check all files
 > REF2: <https://cloudinit.readthedocs.io/en/stable/reference/datasources/nocloud.html>
 
 ```bash
-pwd # check working directory is "SmartX-Mini/SmartX-Mini-2025/Experiment/Lab-2. InterConnect/"
-sudo vim network-config
+pwd # check working directory is "SmartX-Mini/SmartX-Mini-2026/Experiment/Lab-2. InterConnect/deploy/hypriotos"
+vim network-config
 ```
 
 In the `network-config` file, `ethernet.eth0` represents the configuration for the Pi's `eth0` interface. This section specifies the IP address, DNS address, and gateway address for the Pi.
@@ -397,7 +393,11 @@ flash -u hypriotos-init.yaml -F network-config -d <Your SD Card Directory> hypri
 
 Now, eject the SD card, insert it into the Pi, and power it on. The default login credentials are (ID: `pi`, Password: `1234`).
 
-Next, connect a keyboard, and monitor to the **Pi** to proceed with the setup.
+HypriotOS는 기본적으로 SSH 서버가 활성화되어 있으므로, 이제부터 NUC의 터미널에서 SSH를 통해 Pi에 접속하여 작업합니다. NUC의 터미널에서 다음 명령어를 입력하여 Pi에 접속합니다. ID는 `pi`, Password는 `1234` 입니다.
+
+```bash
+ssh pi@<PI_IP>
+```
 
 First, verify that the network interface is configured correctly by entering the following command in the shell:
 
@@ -669,54 +669,55 @@ Successful communication should display ICMP packet responses. If you encounter 
 
 ## 2-4. (NUC) Kafka Deployment
 
-Now that the Pi and NUC can communicate via their hostnames, we will deploy Apache Kafka on the NUC using Docker to enable message exchange between the devices. This corresponds to the "Data Interconnect" portion of the lab.
+NUC과 Pi가 Hostname을 이용하여 정상적으로 통신할 수 있게 되었으니, 이제부터 Docker를 통해 Apache Kafka를 배치하여 NUC과 Pi가 메세지를 교환할 수 있는 환경을 구성하도록 하겠습니다. (2가지 Interconnect 중 Data Interconnect에 해당합니다.)
 
-We will deploy 1 Zookeeper, 3 Brokers, and 1 Consumer as Docker containers on the NUC. These containers will share the NUC's public IP address.  
-Zookeeper does not require a Broker ID, while each Kafka broker will be assigned IDs 0, 1, and 2. The consumer will only be used for managing topics and collecting data.
+이번 실습에서는 Apache Kafka 4.2.0을 KRaft 모드로 배치합니다. KRaft 모드에서는 기존의 Zookeeper 없이, Controller가 클러스터 메타데이터 관리를 직접 담당합니다. NUC에 Controller 3개와 Broker 3개를 Docker Compose로 배치하며, 이들은 모두 Host 네트워크를 공유합니다.
 
-| Function(container) Name | IP Address | Broker ID | Listening Port |
-| :----------------------: | :--------: | :-------: | :------------: |
-|        zookeeper         | Host's IP  |     -     |      2181      |
-|         broker0          | Host's IP  |     0     |      9090      |
-|         broker1          | Host's IP  |     1     |      9091      |
-|         broker2          | Host's IP  |     2     |      9092      |
-|         consumer         | Host's IP  |     -     |       -        |
+| Container 이름 |    역할    | Node ID | Listening Port |
+| :------------: | :--------: | :-----: | :------------: |
+|  controller0   | Controller |    0    |     19090      |
+|  controller1   | Controller |    1    |     19091      |
+|  controller2   | Controller |    2    |     19092      |
+|    broker0     |   Broker   |    3    |      9090      |
+|    broker1     |   Broker   |    4    |      9091      |
+|    broker2     |   Broker   |    5    |      9092      |
 
-### 2-4-1. (NUC) Check Dockerfile
+### 2-4-1. (NUC) 디렉토리 이동 및 Dockerfile 확인
 
-First, we will build the Docker image required to create the containers.  
-We will use the `ubuntu-kafka` directory to build the image.  
-Navigate to this directory using the command below.
+먼저 Kafka 배치에 사용할 디렉토리로 이동합니다.
 
 ```bash
-cd ~/SmartX-Mini/SmartX-Box/ubuntu-kafka
+cd ~/SmartX-Mini/SmartX-Mini-2026/Experiment/'Lab-2. InterConnect'/deploy/kafka
 ```
 
-Check that the `Dockerfile` in the current directory matches the expected contents.
+디렉토리 내 `Dockerfile`이 하단과 동일한지 확인합니다.
 
 ```dockerfile
-FROM ubuntu:14.04
-LABEL "maintainer"="Seungryong Kim <srkim@nm.gist.ac.kr>"
+FROM ubuntu:24.04
 
-RUN sed -i 's@archive.ubuntu.com@mirror.kakao.com@g' /etc/apt/sources.list
+RUN sed -i 's@archive.ubuntu.com@mirror.kakao.com@g' /etc/apt/sources.list.d/ubuntu.sources
 
-#Update & Install wget
-RUN sudo apt-get update
-RUN sudo apt-get install -y wget vim iputils-ping net-tools iproute2 dnsutils openjdk-7-jdk
+RUN apt-get update && apt-get install -y wget openjdk-21-jdk-headless && \
+    rm -rf /var/lib/apt/lists/*
 
-#Install Kafka
-RUN sudo wget --no-check-certificate https://archive.apache.org/dist/kafka/0.8.2.0/kafka_2.10-0.8.2.0.tgz -O - | tar -zxv
-RUN sudo mv kafka_2.10-0.8.2.0 /kafka
+RUN wget -q https://downloads.apache.org/kafka/4.2.0/kafka_2.13-4.2.0.tgz -O - | tar -zxv && \
+    mv kafka_2.13-4.2.0 /kafka
+
 WORKDIR /kafka
+
+COPY start-kafka.sh /kafka/start-kafka.sh
+RUN chmod +x /kafka/start-kafka.sh
 ```
 
 > [!tip]
 >
-> Note: Modifying the APT Repository (Optional)
+> Note: APT Repository 변경 (Optional)
 >
-> Downloading packages via `apt` during the image build process can be slow.
+> 이미지 파일 빌드 과정에서 `apt`를 통한 패키지 다운로드에 많은 시간이 소요됩니다.
 >
-> To speed up the build, consider updating the APT repository to a mirror server by changing the following `sed` command.
+> 지역적으로 가까울수록 다운로드 속도는 일반적으로 높지만, 기본 레포지토리는 보통 해외에 있고 느립니다. 따라서 속도 향상을 위해 지역적으로 가까운 위치의 미러 서버를 사용합니다.
+>
+> 해당 설정은 Dockerfile 명령 중 하단의 `sed`를 통해 이루어집니다. 지금은 카카오의 미러 서버를 가리키도록 수정하지만, 다른 서버를 사용하고자 할 경우 `mirror.kakao.com`의 주소를 다른 값(Lanet, KAIST 미러 서버 등)으로 수정하면 됩니다.
 >
 > ```dockerfile
 > …
@@ -725,16 +726,18 @@ WORKDIR /kafka
 > #Update & Install wget
 > RUN sudo apt-get update
 > RUN sudo apt-get install -y wget vim iputils-ping net-tools iproute2 dnsutils openjdk-7-jdk
+>
+> RUN sed -i 's@archive.ubuntu.com@mirror.kakao.com@g' /etc/apt/sources.list.d/ubuntu.sources
+> RUN apt-get update && apt-get install -y wget openjdk-21-jdk-headless
 > …
 > ```
 
-### 2-4-2. (NUC) Build Docker Image
+### 2-4-2. (NUC) Docker Image 빌드
 
-Once you have verified the `Dockerfile`, proceed to build the Docker image using the following command:
+다음의 명령어를 입력하여 `ubuntu-kafka` 이미지를 빌드합니다.
 
 ```bash
-sudo docker build --tag ubuntu-kafka .
-#You should type '.', so docker can automatically start to find `Dockerfile` in the current directory('.').
+sudo docker build -t ubuntu-kafka .
 ```
 
 > [!tip]
@@ -757,95 +760,109 @@ sudo docker build --tag ubuntu-kafka .
 >
 > You can use the first 4 characters of the container ID shown by `docker ps` as `<container id>`, as long as they are unique.
 
-### 2-4-3. (NUC) Deploy Docker Containers
+### 2-4-3. (NUC) 환경변수 파일(`.env`) 작성
 
-Once the `ubuntu-kafka` image is built, create and run the following Docker containers: `zookeeper`, `broker0`, `broker1`, `broker2`, `consumer`.
+Docker Compose 실행에 앞서 클러스터 설정에 필요한 환경변수를 `.env` 파일에 작성합니다.
 
-Open five terminal windows on the NUC. Each terminal will attach to one Docker container.
-
-```bash
-# Terminal #1
-sudo docker run -it --net=host --name zookeeper ubuntu-kafka
-# Terminal #2
-sudo docker run -it --net=host --name broker0 ubuntu-kafka
-# Terminal #3
-sudo docker run -it --net=host --name broker1 ubuntu-kafka
-# Terminal #4
-sudo docker run -it --net=host --name broker2 ubuntu-kafka
-# Terminal #5
-sudo docker run -it --net=host --name consumer ubuntu-kafka
-```
-
-### 2-4-4. (NUC - `zookeeper` Container) Configure Zookeeper
-
-First, access the `zookeeper` container to configure it.  
-Use the following command to check the `zookeeper.properties` file:
+먼저 클러스터 전체를 식별하는 `CLUSTER_ID`를 생성합니다.
 
 ```bash
-sudo vim config/zookeeper.properties
+sudo docker run --rm ubuntu-kafka bin/kafka-storage.sh random-uuid
+# 출력 예시: MkU3OEVBNTcwNTJENDM2Qg
 ```
 
-Ensure that the Client Port is set to `2181`. If not, modify the file to reflect this value:
-
-Next, start the Zookeeper service using the command below:
+다음으로, Controller 각각을 식별하는 Voter UUID도 3개 생성합니다.
 
 ```bash
-bin/zookeeper-server-start.sh config/zookeeper.properties
+sudo docker run --rm ubuntu-kafka bin/kafka-storage.sh random-uuid  # CONTROLLER0_UUID
+sudo docker run --rm ubuntu-kafka bin/kafka-storage.sh random-uuid  # CONTROLLER1_UUID
+sudo docker run --rm ubuntu-kafka bin/kafka-storage.sh random-uuid  # CONTROLLER2_UUID
 ```
 
-> [!warning]
+> [!note]
 >
-> Zookeeper must always be started before Kafka brokers. Ensure this order is maintained when reconfiguring the environment.
+> `CLUSTER_ID`는 클러스터 전체를 식별하는 값이며, Voter UUID는 각 Controller 노드를 식별하는 값입니다. 두 가지 모두 고유해야 하며, 한 번 포맷된 이후에는 변경할 수 없습니다.
 
-### 2-4-5. (NUC - `brokerN` Container) Broker Configuration
-
-Next, access each broker container to configure them. Open the configuration file using the following command:
+생성한 값을 이용하여 `.env` 파일을 작성합니다. `.env.example` 파일을 참고하여 작성하면 됩니다.
 
 ```bash
-sudo vim config/server.properties
+cp .env.example .env
+vim .env
 ```
 
-Refer to the table below and ensure each broker is set with unique values for Broker ID and Listening Port:
+```text
+CLUSTER_ID=<위에서 생성한 CLUSTER_ID>
+CONTROLLER0_UUID=<위에서 생성한 CONTROLLER0_UUID>
+CONTROLLER1_UUID=<위에서 생성한 CONTROLLER1_UUID>
+CONTROLLER2_UUID=<위에서 생성한 CONTROLLER2_UUID>
+HOST_HOSTNAME=<NUC의 hostname>
+```
 
-| Function(container) Name | IP Address | Broker ID | Listening Port |
-| :----------------------: | :--------: | :-------: | :------------: |
-|         broker0          | Host's IP  |     0     |      9090      |
-|         broker1          | Host's IP  |     1     |      9091      |
-|         broker2          | Host's IP  |     2     |      9092      |
-
-![broker setting](./img/broker%20setting.png)
-
-After configuring each broker, start the Kafka brokers using the following command in their respective containers:
+`<NUC의 hostname>`은 다음 명령어로 확인할 수 있습니다.
 
 ```bash
-bin/kafka-server-start.sh config/server.properties
+hostname
 ```
 
-### 2-4-6. (NUC - `consumer` Container) Consumer Topic Setup
+### 2-4-4. (NUC) Docker Compose로 클러스터 실행
 
-Access the `consumer` container to create a resource topic in Kafka.  
-Use the following command to create the topic:
+다음의 명령어를 입력하여 Kafka 클러스터를 실행합니다.
 
 ```bash
-bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 3 --topic resource
+sudo docker compose up -d
 ```
 
-To verify that the topic has been successfully created, run:
+모든 컨테이너가 정상적으로 실행되었는지 확인합니다.
 
 ```bash
-bin/kafka-topics.sh --list --zookeeper localhost:2181 # list all topic of zookeeper in localhost:2181
-bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic resource # Check existence of topic `resource` of zookeeper in localhost:2181
+sudo docker ps
 ```
 
-## 2-5. (PI) Flume on Raspberry PI
+> [!note]
+>
+> **`start-kafka.sh`의 역할**
+>
+> `docker-compose.yml`에 작성된 환경변수 설정들을 컨테이너 내부에 주입하고, 각 노드의 역할(Controller/Broker)에 맞는 설정 파일을 자동으로 생성한 뒤 Kafka를 시작합니다.
 
-### 2-5-1. (PI) Install Net-SNMP installation
+<!-- -->
 
-Return to the Pi and install the `Net-SNMP` package using the following command:
+> [!tip]
+>
+> 실습을 재시작할 경우, 이전 실행에서 남은 로그 디렉토리를 삭제해야 정상적으로 재포맷됩니다.
+>
+> ```bash
+> sudo rm -rf /tmp/kraft-controller*-logs /tmp/kraft-broker*-logs
+> sudo docker compose up -d
+> ```
+
+### 2-4-5. (NUC) Topic 생성 및 확인
+
+Kafka 클러스터가 정상적으로 실행된 이후, `resource`라는 Topic을 생성합니다. Topic 생성은 실행 중인 `broker0` 컨테이너를 통해 수행합니다.
+
+```bash
+sudo docker exec broker0 /kafka/bin/kafka-topics.sh --create \
+  --bootstrap-server localhost:9090 \
+  --replication-factor 3 \
+  --partitions 3 \
+  --topic resource
+```
+
+Topic이 정상적으로 생성되었는지 확인합니다.
+
+```bash
+sudo docker exec broker0 /kafka/bin/kafka-topics.sh --list \
+  --bootstrap-server localhost:9090
+```
+
+## 2-5. (PI) Fluentd on Raspberry PI
+
+### 2-5-1. (PI) Net-SNMP 설치
+
+이제 Pi로 돌아가 다음의 명령어를 입력해 `Net-SNMP` 패키지를 설치해주십시오.
 
 ```bash
 sudo apt update
-sudo apt install -y snmp snmpd snmp-mibs-downloader openjdk-8-jdk
+sudo apt install -y snmp snmpd snmp-mibs-downloader
 ```
 
 <details>
@@ -858,105 +875,87 @@ sudo apt install -y snmp snmpd snmp-mibs-downloader openjdk-8-jdk
 |         snmp         | 5.7.3+dfsg-5+deb10u4 |
 |        snmpd         | 5.7.3+dfsg-5+deb10u4 |
 | snmp-mibs-downloader |         1.2          |
-|    openjdk-8-jdk     |  8u312-b07-1~deb9u1  |
 
 </details>
 
-Next, open the SNMP daemon configuration file, find `#rocommunity public localhost`, and remove `#`.
+이제 설정파일을 수정하겠습니다. 편집기로 파일을 열어 `#rocommunity public localhost`를 찾고, `#`을 제거해주십시오.
 
 ```bash
 sudo vim /etc/snmp/snmpd.conf
 ```
 
-Restart the `snmpd.service` to apply the changes:
+설정파일이 반영되도록 `snmpd.service`를 다음의 명령어를 통해 재시작하겠습니다.
 
 ```bash
 sudo systemctl restart snmpd.service
 ```
 
-### 2-5-2. (PI) Clone repository from GitHub
+### 2-5-2. (NUC) Fluentd 이미지 크로스빌드
 
-Clone the `SmartX-mini` repository on the Pi:
+Fluentd 이미지는 용량이 크고 빌드에 시간이 오래 걸리기 때문에, Pi에서 직접 빌드하는 대신 NUC에서 크로스빌드한 뒤 Pi로 전송합니다.
 
-```bash
-cd ~
-git clone https://github.com/SmartX-Labs/SmartX-Mini.git
-```
-
-Navigate to the `raspbian-flume` directory where we will deploy Flume:
+Pi(ARMv7)와 NUC(x86_64)는 아키텍처가 다르므로, NUC에서 ARM 바이너리를 실행할 수 있도록 QEMU를 먼저 설치합니다. (최초 1회만 수행합니다.)
 
 ```bash
-cd ~/SmartX-Mini/SmartX-Box/raspbian-flume
+sudo apt-get install -y qemu-user-static
+sudo docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 ```
 
-### 2-5-3. Check Dockerfile
-
-Open the `Dockerfile` and ensure the contents match the following configuration:
-
-> [!caution]
->
-> Ensure the base image is set to `FROM balenalib/rpi-raspbian:buster`, not `stretch`.
->
-> If base image is `stretch`, you may encounter the build failure.
-
-```dockerfile
-FROM balenalib/rpi-raspbian:buster
-LABEL "maintainer"="Seungryong Kim <srkim@nm.gist.ac.kr>"
-
-RUN sed -i 's@archive.raspbian.org@legacy.raspbian.org@g' /etc/apt/sources.list
-
-#Update & Install wget, vim
-RUN sudo apt update
-RUN sudo apt install -y wget vim iputils-ping net-tools iproute2 dnsutils openjdk-8-jdk
-
-#Timezone
-RUN sudo cp /usr/share/zoneinfo/Asia/Seoul /etc/localtime
-
-#Install Flume
-RUN sudo wget --no-check-certificate http://archive.apache.org/dist/flume/1.6.0/apache-flume-1.6.0-bin.tar.gz -O - | tar -zxv
-RUN mv apache-flume-1.6.0-bin /flume
-ADD plugins.d /flume/plugins.d
-ADD flume-conf.properties /flume/conf/
-
-#Working directory
-WORKDIR /flume
-```
-
-### 2-5-4. (PI) Build docker image
-
-Once the configuration is complete, build the Docker image for Flume. Note that this process will take longer than on the NUC:
+다음으로, Fluentd 디렉토리로 이동한 뒤 `fluent.conf`에서 NUC의 hostname을 수정합니다.
 
 ```bash
-sudo docker build --tag raspbian-flume .
+cd ~/SmartX-Mini/SmartX-Mini-2026/Experiment/'Lab-2. InterConnect'/deploy/fluentd
+vim fluent.conf
 ```
 
-### 2-5-5. Run flume on container
-
-After successfully building the Docker image, create and run the `flume` container.
-
-```bash
-sudo docker run -it --net=host --name flume raspbian-flume
-```
-
-First, open the `flume` configuration file:
-
-```bash
-sudo vim conf/flume-conf.properties
-```
-
-Locate the `brokerList` entry and update the hostname to the value you used for the NUC in the Pi's `/etc/hosts` file.
+파일 내에서 `<YOUR_NUC_HOSTNAME>`을 Pi의 `/etc/hosts`에 기록한 NUC Hostname으로 수정해주십시오.
 
 ```text
 ...
-agent.sinks.sink1.brokerList = <Your NUC hostname>:9090,<Your NUC hostname>:9091,<Your NUC hostname>:9092
+brokers <Your NUC hostname>:9090,<Your NUC hostname>:9091,<Your NUC hostname>:9092
 ...
 ```
 
-Start the Flume agent using the following command:
+`buildx`를 이용하여 arm/v7용 이미지를 빌드합니다.
 
 ```bash
-bin/flume-ng agent --conf conf --conf-file conf/flume-conf.properties --name agent -Dflume.root.logger=INFO,console
+sudo docker buildx build \
+  --platform linux/arm/v7 \
+  --tag pi-fluentd \
+  --output type=docker \
+  .
 ```
+
+빌드된 이미지를 tar 파일로 저장한 뒤 Pi로 전송합니다.
+
+```bash
+sudo docker save pi-fluentd | gzip > pi-fluentd.tar.gz
+scp pi-fluentd.tar.gz pi@<PI_IP>:~/
+```
+
+### 2-5-3. (PI) 이미지 로드 및 Fluentd 실행
+
+Pi에서 전송받은 이미지를 로드합니다.
+
+```bash
+sudo docker load < ~/pi-fluentd.tar.gz
+```
+
+다음의 명령어를 통해 Fluentd 컨테이너를 실행합니다.
+
+```bash
+sudo docker run -it --rm \
+  --net=host \
+  --security-opt seccomp=unconfined \
+  --name fluentd \
+  pi-fluentd
+```
+
+> [!note]
+>
+> `--security-opt seccomp=unconfined` 옵션은 HypriotOS의 커널(4.19)에서 seccomp 정책이 일부 시스템 콜을 차단하는 문제를 우회하기 위해 필요합니다.
+
+<!-- -->
 
 > [!note]
 >
@@ -971,30 +970,19 @@ bin/flume-ng agent --conf conf --conf-file conf/flume-conf.properties --name age
 Run the following script to check whether the Consumer container can receive messages sent by the Producer.
 
 ```bash
-bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic resource --from-beginning
+sudo docker run -it --rm \
+  --network host \
+  --name consumer \
+  ubuntu-kafka \
+  /kafka/bin/kafka-console-consumer.sh \
+    --bootstrap-server localhost:9090 \
+    --topic resource \
+    --from-beginning
 ```
 
 If everything is configured correctly, you should see the message displayed in the `consumer` container.
 
 ![consumer result](./img/consumer%20result.png)
-
-> [!note]
->
-> If `snmpd` is well-configured, and no error is shown on `producer`, but you can see any logs on `consumer`, Please remove and re-build the image `raspbian-flume` in Pi. Sometimes docker reports build process completed without error, yet unknown error has occurred on build process.
->
-> To remove and rebuild the image, enter commands below on the Pi:
->
-> ```bash
-> sudo docker ps -a # list every created containers.
->
-> # If there are some containers built using `raspbian-flume` image, then stop and remove them.
-> sudo docker stop <flume-container> # stop container
-> sudo docker rm <flume-container>   # remove container
->
-> sudo docker rmi raspbian-flume     # remove image
-> cd ~/SmartX-Mini/SmartX-Box/raspbian-flume    # move to `raspbian-flume` dir.
-> sudo docker build --tag raspbian-flume .   # build `raspbian-flume` image
-> ```
 
 # 3. Review
 
