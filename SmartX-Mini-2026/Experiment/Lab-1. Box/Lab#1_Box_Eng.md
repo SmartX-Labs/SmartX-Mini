@@ -250,6 +250,12 @@ If an issue related to booting occurs, follow these steps.
 5. Change default network manager (Ubuntu 24.04)
    - In Ubuntu 24.04, disable the default network managers first to avoid conflicts with OVS + ifupdown manual settings.
    - These commands may temporarily disconnect networking, so run them on the **local console (directly on the NUC screen)**.
+  
+> [!CAUTION]
+> **Internet Disconnection Point**
+> The moment you execute the following commands, your internet connection will be terminated. If you are currently connected via SSH, your session will drop. Therefore, you must proceed using the **NUC’s local console (monitor and keyboard connected directly to the device)**.
+> Since you will need to reference this guide for the subsequent steps, **open this GitHub page in your browser right now before proceeding.**
+> The **Internet Reconnection Point** is located at the end of section `2-2`.
 
 ```bash
 sudo systemctl stop systemd-networkd.socket systemd-networkd networkd-dispatcher systemd-networkd-wait-online
@@ -316,8 +322,8 @@ iface br0 inet static
     gateway <gateway ip>
     dns-nameservers 203.237.32.100
 
-auto eno1
-iface eno1 inet manual
+auto <your NIC name>
+iface <your NIC name> inet manual
 
 auto vport_vFunction
 iface vport_vFunction inet manual
@@ -351,11 +357,11 @@ iface vport_vFunction inet manual
 >   ```
 >
 > - Physical Interface Configuration
->   Configure the eno1 (physical Ethernet interface) to activate automatically at boot. Instead of assigning an IP address directly to eno1, it will be treated as a member of br0.
+>   Automatically enable `<your NIC name>` (`eno1`, `enp88s0`, `enp89s0`, etc.; the physical Ethernet interface) at boot. You will not assign an IP address directly to the `<your NIC name>` connected to the Internet; instead, it will be treated as a member of the br0 bridge.
 >
 >   ```text
->   auto eno1
->   iface eno1 inet manual
+>   auto <your NIC name>
+>   iface <your NIC name> inet manual
 >   ```
 >
 > - TAP Interface Configuration
@@ -377,7 +383,7 @@ iface vport_vFunction inet manual
 
 ```bash
 sudo systemctl restart systemd-resolved.service
-sudo ifup eno1  #change this if you are using two-port NUC
+sudo ifup <your NIC name>  #change this `<your NIC name>` what you are using.
 ```
 
 Restart the whole interfaces.
@@ -397,7 +403,7 @@ Add the ports 'eno1' and 'vport_vFunction' to 'br0'.
 > **If the NUC has two Ethernet ports, the `eno1` interface will not be available. Therefore, in the block below, replace `eno1` with the interface you selected earlier (`enp88s0` or `enp89s0`), choosing the one currently in use.**
 
 ```bash
-sudo ovs-vsctl add-port br0 eno1   #change this if you are using two-port NUC
+sudo ovs-vsctl add-port br0 <your NIC name>  #change this `<your NIC name>` what you are using.
 sudo ovs-vsctl add-port br0 vport_vFunction
 sudo ovs-vsctl show
 ```

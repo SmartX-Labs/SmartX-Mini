@@ -2,7 +2,7 @@
 
 # 0. Objective
 
-![overall objective](https://user-images.githubusercontent.com/82452337/160807997-9caadb51-b363-4e82-bbb2-e1f5888b08b3.png)
+![overall objective](./img/lab4_slide.png)
 
 **The goal of this Lab is to build a Tower (monitoring system) that monitors system status and visualizes collected data.**
 
@@ -281,29 +281,14 @@ sudo docker run -it --rm \
 
 `broker_to_influxdb.py` acts as a Kafka consumer that receives messages from Kafka brokers and writes them to InfluxDB.
 
-### 1-6-1. Edit `broker_to_influxdb.py`
+### 1-6-1. Check `broker_to_influxdb.py`
 
-> [!NOTE]
->
-> Open a new terminal first.
+Check the code before you run. (No edits required)
+
+`broker_to_infulxdb.py` receives messages from broker as a Kafka consumer, and stores the data in InfluxDB.
 
 ```bash
-vim ~/SmartX-Mini/SmartX-Box/ubuntu-kafkatodb/broker_to_influxdb.py
-```
-
-```python
-# before
-consumer = KafkaConsumer('resource',bootstrap_servers=['<NUC_IP>:9091'])
-consumer = KafkaConsumer('resource', bootstrap_servers=['<NUC_IP>:9091'])
-cmd = "curl -XPOST 'http://localhost:8086/query' --data-urlencode 'q=CREATE DATABASE Labs'"
-cmd = "curl -i -XPOST 'http://localhost:8086/write?db=Labs' --data-binary '...'"
-
-# after
-consumer = KafkaConsumer('resource',bootstrap_servers=['localhost:9090'])
-consumer = KafkaConsumer('resource', bootstrap_servers=['localhost:9090'])
-# Labs bucket is already created in step 1-1, so remove (or comment out) CREATE DATABASE.
-# Handle write URL auth (u/p) via env vars INFLUXDB_V1_USER and INFLUXDB_V1_PASSWORD.
-cmd = "curl -sS -XPOST 'http://localhost:8086/write?db=Labs&u=<INFLUXDB_V1_USER>&p=<INFLUXDB_V1_PASSWORD>' --data-binary '...'"
+vim ~/SmartX-Mini/SmartX-Mini-2026/Experiment/'Lab-4. Tower'/deploy/ubuntu-kafkatodb/broker_to_influxdb.py
 ```
 
 ![broker_to_influxdb python file](https://user-images.githubusercontent.com/82452337/160814546-da543a58-e6b6-49cb-bdb1-19aa2de9c1fb.png)
@@ -315,13 +300,15 @@ Run the script with file-descriptor settings.
 ```bash
 sudo sysctl -w fs.file-max=100000
 ulimit -S -n 2048
-source ~/.venv/bin/activate
+# optional: if (venv) doesn't appear on left side of CLI; case when venv is not executed
+# source ~/.venv/bin/activate
 
 # optional: verify v1 auth / DBRP mapping
-curl -sS -XPOST "http://localhost:8086/query?u=${INFLUXDB_V1_USER}&p=${INFLUXDB_V1_PASSWORD}&db=Labs" \
+curl -sS -XPOST "http://localhost:8086/query?
+u=${INFLUXDB_V1_USER}&p=${INFLUXDB_V1_PASSWORD}&db=Labs" \
   --data-urlencode "q=SHOW MEASUREMENTS"
 
-python ~/SmartX-Mini/SmartX-Box/ubuntu-kafkatodb/broker_to_influxdb.py
+python ~/SmartX-Mini/SmartX-Mini-2026/Experiment/'Lab-4. Tower'/deploy/ubuntu-kafkatodb/broker_to_influxdb.py
 ```
 
 ## 1-7. Chronograf Dashboard ( in NUC )
@@ -342,6 +329,12 @@ Go to `Configuration -> Connections` and click the default connection.
 ![chronograf-config-1](./img/chronograf-config-1.png)
 
 Enter `INFLUXDB_V1_USER` and `INFLUXDB_V1_PASSWORD` into the username/password fields.
+You can check these values with following codes:
+
+```bash
+echo "Username: $INFLUXDB_V1_USER"
+echo "Password: $INFLUXDB_V1_PASSWORD"
+```
 
 ![chronograf-config-2](./img/chronograf-config-2.png)
 
@@ -409,13 +402,18 @@ First, change the field in Chronograf Dashboard to `CPU_Usage`.
 Then run the command below on the PI.
 
 ```bash
-docker run --rm -it busybox sh -c "while true; do :; done"
+sudo docker run -d --name busybox_stress1 busybox sh -c "while true; do :; done"
+sudo docker run -d --name busybox_stress2 busybox sh -c "while true; do :; done"
+sudo docker run -d --name busybox_stress3 busybox sh -c "while true; do :; done"
+sudo docker run -d --name busybox_stress4 busybox sh -c "while true; do :; done"
 ```
 
 While refreshing the browser, you should see the dashboard graph move upward.
 
-After confirmation, press `Ctrl + C` to stop the load ( in PI ).
-
+After confirmation, stop the load on CPU ( in PI ).
+```bash
+sudo docker rm -f busybox_stress1 busybox_stress2 busybox_stress3 busybox_stress4
+```
 # 2. Lab Summary
 
 The goal of this Lab is to build a Tower system for system monitoring and data visualization.
