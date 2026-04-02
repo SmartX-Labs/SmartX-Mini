@@ -1,10 +1,10 @@
 network:
   version: 2
   ethernets:
-    <your NIC name>:  
+    <VM NIC name>:  
       dhcp4: false
       addresses:
-      - <your NUC IP>/24
+      - <your extra IP>/24
       routes:
       - to: default
         via: 172.29.0.254
