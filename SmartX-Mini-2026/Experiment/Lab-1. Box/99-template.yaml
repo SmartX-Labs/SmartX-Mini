@@ -1,0 +1,14 @@
+network:
+  version: 2
+  ethernets:
+    <your NIC name>:  
+      dhcp4: false
+      addresses:
+      - <your NUC IP>/24
+      routes:
+      - to: default
+        via: 172.29.0.254
+      nameservers:
+        addresses:
+        - 203.237.32.100
+        - 203.237.32.101
