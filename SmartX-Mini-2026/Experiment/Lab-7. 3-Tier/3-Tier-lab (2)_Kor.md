@@ -174,7 +174,7 @@ sudo systemctl restart docker
 sudo vim /etc/containerd/config.toml
 ```
 
-파일의 내용 중 `[plugins."io.containerd.grpc.v1.cri".registry.mirrors]`라는 필드를 찾고, 다음과 같이 수정합니다.
+파일의 내용 중 `[plugins."io.containerd.grpc.v1.cri".registry]`라는 필드를 찾고, 다음과 같이 수정합니다.
 
 > [!WARNING]
 > 예시에 나와있는 `...`은 제외하고 내용을 입력하여 주시기 바랍니다. **들여쓰기에 주의해주시기 바랍니다.** 나머지 부분은 수정하지 않습니다.
@@ -184,17 +184,50 @@ sudo vim /etc/containerd/config.toml
 ...
 ...
 
-[plugins."io.containerd.grpc.v1.cri".registry.mirrors]
-  [plugins."io.containerd.grpc.v1.cri".registry.mirrors."nuc01:5000"]
-    endpoint = ["http://nuc01:5000"]
-  [plugins."io.containerd.grpc.v1.cri".registry.mirrors."nuc02:5000"]
-    endpoint = ["http://nuc02:5000"]
-  [plugins."io.containerd.grpc.v1.cri".registry.mirrors."nuc03:5000"]
-    endpoint = ["http://nuc03:5000"]
+[plugins."io.containerd.grpc.v1.cri".registry]
+  config_path = "/etc/containerd/certs.d"
 
 ...
 ...
 ...
+```
+
+각 NUC의 정보를 추가하기 위해서 파일을 수정합니다
+
+```shell
+sudo vim /etc/containerd/certs.d/nuc01:5000/hosts.toml
+```
+
+```toml
+server = "http://nuc01:5000"
+[host."http://nuc01:5000"]
+  capabilities = ["pull", "resolve", "push"]
+  skip_verify = true
+  plain_http = true
+```
+
+```shell
+sudo vim /etc/containerd/certs.d/nuc02:5000/hosts.toml
+```
+
+```toml
+server = "http://nuc02:5000"
+[host."http://nuc02:5000"]
+  capabilities = ["pull", "resolve", "push"]
+  skip_verify = true
+  plain_http = true
+```
+
+```shell
+sudo vim /etc/containerd/certs.d/nuc03:5000/hosts.toml
+```
+
+```toml
+server = "http://nuc03:5000"
+[host."http://nuc03:5000"]
+  capabilities = ["pull", "resolve", "push"]
+  skip_verify = true
+  plain_http = true
 ```
 
 모두 수정했다면, 아래의 명령어를 입력하여 containerd를 재시작합니다.
