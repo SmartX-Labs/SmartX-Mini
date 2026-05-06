@@ -4,13 +4,13 @@
 
 이전 Tower Lab에서는 SNMP, Flume, Kafka 등을 이용해서 라즈베리파이의 자원 상태를 InfluxDB에 저장하고, 이를 Chronograf의 대시보드를 통해 시각화 및 모니터링하는 실습을 진행했습니다.
 
-이번 실습에서는 쿠버네티스 대시보드를 활용하여 클러스터에서 실행 중인 Pod, Deployment, Service 등의 상태를 확인하고 직접 조작하는 방법을 학습합니다.
+이번 실습에서는 Headlamp를 활용하여 클러스터에서 실행 중인 Pod, Deployment, Service 등의 상태를 확인하고 직접 조작하는 방법을 학습합니다.
 
-## kubectl과 Kubernetes Dashboard의 차이점
+## kubectl과 Headlamp의 차이점
 
-쿠버네티스 클러스터는 `kubectl` 명령어를 사용하여 직접 조작할 수 있지만, 대시보드를 활용하면 시각적인 인터페이스를 통해 클러스터의 상태를 직관적으로 파악하고 조작할 수 있는 장점이 있습니다.
+쿠버네티스 클러스터는 `kubectl` 명령어를 사용하여 직접 조작할 수 있지만, UI기반 대시보드를 활용하면 시각적인 인터페이스를 통해 클러스터의 상태를 직관적으로 파악하고 조작할 수 있는 장점이 있습니다.
 
-특히, 다음과 같은 이유로 웹 기반 대시보드 사용이 유용합니다:
+특히, 다음과 같은 이유로 웹UI 기반 대시보드 사용이 유용합니다:
 
 1. 실시간 클러스터 모니터링: 대시보드를 통해 리소스 사용량과 상태를 한눈에 확인
 2. 관리 및 디버깅 용이: 명령어 입력 없이 클릭 몇 번으로 리소스를 생성, 수정, 삭제 가능
@@ -18,13 +18,13 @@
 
 # 1. Concept
 
-쿠버네티스 대시보드는 웹 기반의 쿠버네티스 사용자 인터페이스입니다.
+Headlamp는 웹 UI 기반의 쿠버네티스 사용자 인터페이스입니다.
 
-대시보드를 사용하면 컨테이너화된 애플리케이션을 쿠버네티스 클러스터에 배포하고, 애플리케이션을 디버깅하며, 클러스터 리소스 관리하는 과정을 보다 쉽게 수행할 수 있습니다.
+Headlamp를 사용하면 컨테이너화된 애플리케이션을 쿠버네티스 클러스터에 배포하고, 애플리케이션을 디버깅하며, 클러스터 리소스 관리하는 과정을 보다 쉽게 수행할 수 있습니다.
 
 예를 들어, `Deployment의 Scaling`, `Rolling update`, `Pod restart`, `새로운 애플리케이션 배포` 등을 수행할 수 있습니다.
 
-또한, 대시보드는 클러스터 내 쿠버네티스 리소스의 상태 및 발생한 오류에 대한 정보를 제공하므로, 쿠버네티스 클러스터의 상태를 효과적으로 모니터링하고 관리할 수 있습니다.
+또한, Headlamp는 클러스터 내 쿠버네티스 리소스의 상태 및 발생한 오류에 대한 정보를 제공하므로, 쿠버네티스 클러스터의 상태를 효과적으로 모니터링하고 관리할 수 있습니다.
 
 &nbsp;
 
@@ -44,105 +44,83 @@ kubectl get po -n kube-system -o wide
 위 명령어 입력 시, 아래 사진과 같이 모든 **노드**가 `Ready` 상태이며, 모든 **kube-system**의 Pod가 `Running` 상태여야 합니다.
 ![cluster status](img/1-cluster-status.png)
 
-## 2-1. 쿠버네티스 대시보드 설치
+## 2-2. Headlamp 설치
 
-아래 명령어를 입력하여 쿠버네티스 대시보드를 설치하고, 임시 Proxy 서버를 실행하세요.
+아래 명령어를 입력하여 Headlamp를 설치하고,
+port-forward를 통해서 Headlamp에 접근할 수 있도록 합니다.
 
 ```shell
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.6.1/aio/deploy/recommended.yaml
-kubectl proxy
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/headlamp/main/kubernetes-headlamp.yaml
+kubectl port-forward -n kube-system service/headlamp 8080:80
 ```
-
-&nbsp;
 
 > [!note]
 >
-> **`kubectl proxy`?**
+> **`kubectl port-forward`?**
 >
-> **kubectl proxy**는 로컬 머신에서 **Kubernetes API 서버**로 안전하게 요청을 전달하는 **프록시** 역할을 합니다.
+> **port-forward**는 로컬 머신에서 클러스터 내부의 서비스에 접근할 수 있도록 합니다.
 >
-> Kubernetes Dashboard는 기본적으로 **클러스터 내부에서 실행되므로, 외부에서 직접 접근할 수 없습니다.**
+> Headlamp는 기본적으로 **클러스터 내부에서 실행되므로, 외부에서 직접 접근할 수 없습니다.**
 >
-> kubectl proxy를 실행하면 로컬 브라우저에서 대시보드에 안전하게 접속할 수 있도록 **API 서버와의 인증을 자동 처리**하며, **추가적인 네트워크 설정 없이 내부 서비스에 접근**할 수 있습니다.
+> kubectl port-forward를 실행하면 로컬 브라우저에서 **추가적인 네트워크 설정 없이 내부 서비스에 접근**할 수 있습니다.
 
-kubectl proxy 명령어 입력 후 proxy가 실행되면, 새로운 터미널에서 작업을 이어갑니다. 새로운 터미널을 열어주세요!
+kubectl port-forward 명령어 입력 후 port-forward가 실행되면, 새로운 터미널에서 작업을 이어갑니다. 새로운 터미널을 열어주세요!
 
 > [!tip]
 >
 > **새로운 터미널 열기 단축키 `Ctrl + Shift + T`**
 
-## 2-2. 대시보드 접근을 위한 토큰 발급
+## 2-3. Headlamp 접근을 위한 토큰 발급
 
-Kubernetes Dashboard에 로그인하려면 인증이 필요하며, 이를 위해 `Service Account`와 `ClusterRoleBinding`을 생성하여 **관리 권한을 부여하고, 해당 계정의 토큰**을 발급해야 합니다.
+Headlamp에 로그인하려면 인증이 필요하며, 이를 위해 `Service Account`와 `ClusterRoleBinding`을 생성하여 **관리 권한을 부여하고, 해당 계정의 토큰**을 발급해야 합니다.
 
-아래 명령어를 실행하여 **admin-user**라는 서비스 계정을 만들고, 이를 **클러스터 관리자(admin) 역할**과 바인딩한 후, 로그인에 사용할 토큰을 생성합니다.
+아래 명령어를 실행하여 **headlamp-admin**라는 서비스 계정을 만들고, 이를 **클러스터 관리자(admin) 역할**과 바인딩한 후, 로그인에 사용할 토큰을 생성합니다.
 
-### Cluster role binding
+### Service Account
+
+```shell
+kubectl -n kube-system create serviceaccount headlamp-admin
+```
+
+### ClusterRoleBinding
 
 admin-user 서비스 계정이 클러스터 관리자(admin) 권한을 가지도록 설정합니다.
 
 ```shell
-cat <<EOF | kubectl create -f -
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: admin-user
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: admin
-subjects:
-- kind: ServiceAccount
-  name: admin-user
-  namespace: kubernetes-dashboard
-EOF
-```
-
-### Service account
-
-Kubernetes Dashboard에서 사용할 admin-user 서비스 계정을 생성합니다.
-
-```shell
-cat <<EOF | kubectl create -f -
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: admin-user
-  namespace: kubernetes-dashboard
-EOF
+kubectl create clusterrolebinding headlamp-admin --serviceaccount=kube-system:headlamp-admin --clusterrole=admin
 ```
 
 ### 로그인 토큰 발급
 
-위에서 생성한 admin-user 계정의 인증 토큰을 발급합니다. 이 토큰을 사용하여 대시보드에 로그인할 수 있습니다.
+위에서 생성한 headlamp-admin 계정의 인증 토큰을 발급합니다. 이 토큰을 사용하여 Headlamp에 로그인할 수 있습니다.
 
 ```shell
-kubectl -n kubernetes-dashboard create token admin-user
+kubectl create token headlamp-admin -n kube-system
 ```
 
-토큰 발급이 성공적으로 이뤄지면, 아래 사진과 같이 터미널에 해당 토큰이 출력됩니다. 이 토큰은 쿠버네티스 로그인 화면에서 사용하게 됩니다.
+토큰 발급이 성공적으로 이뤄지면, 아래 사진과 같이 터미널에 해당 토큰이 출력됩니다. 이 토큰은 Headlamp 로그인 화면에서 사용하게 됩니다.
 
 ![token](img/2-dashboard-token.png)
 
-## 2-3. 쿠버네티스 대시보드 접근
+## 2-3. Headlamp 접근
 
-이제 쿠버네티스 대시보드에 접근해봅시다. 아래 주소를 브라우저에 입력해 쿠버네티스 대시보드에 접근해보세요!
+이제 Headlamp에 접근해봅시다. 아래 주소를 브라우저에 입력해 Headlamp에 접근해보세요!
 
-<http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/>
+<http://localhost:8080/>
 
 > [!warning]
 >
-> ⚠️ **오류 발생 시, `kubectl proxy` 명령어가 제대로 실행됐는지 확인해주세요!**
+> ⚠️ **오류 발생 시, `kubectl port-forward` 명령어가 제대로 실행됐는지 확인해주세요!**
 
 &nbsp;
 
-실습과정을 정상적으로 수행했을 경우, 아래와 같이 로그인 화면을 볼 수 있습니다. 방금 전 발급 받은 토큰을 입력하고 `Sign in` 버튼을 클릭하여 로그인합니다.
+실습과정을 정상적으로 수행했을 경우, 아래와 같이 로그인 화면을 볼 수 있습니다. 방금 전 발급 받은 토큰을 입력하고 `Authenticate` 버튼을 클릭하여 로그인합니다.
 
 ![signin](img/3-dashboard-login.png)
 
 &nbsp;
 
-로그인 성공 시, 아래 사진과 같이 쿠버네티스 대시보드에 접근할 수 있습니다.
+로그인 성공 시, 아래 사진과 같이 Headlamp에 접근할 수 있습니다.
 
 ![ui](img/3-dashboard-enter.png)
 
@@ -152,15 +130,15 @@ kubectl -n kubernetes-dashboard create token admin-user
 >
 > ⚠️ **오류 발생 시** 아래 공식 문서 참고
 >
-> <https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/>
+> <https://headlamp.dev/docs/latest/installation/in-cluster/>
 
-## 2-4. 쿠버네티스 대시보드에서 Pod 삭제
+## 2-4. Headlamp에서 Pod 삭제
 
 이제 대시보드에서 현재 실행 중인 Pod를 삭제하겠습니다. 아래 사진과 같이 진행 후 `새로고침`을 눌러주세요!
 
 ![pod delete](img/4-pod-delete.png)
 
-아래 사진을 보면 알 수 있듯이, `Delete`한 Pod는 현재 `Terminating` 상태입니다.
+아래 사진을 보면 알 수 있듯이, `Evict`한 Pod는 현재 `Terminating` 상태입니다.
 
 또한 새로운 Pod가 생성된 것을 알 수 있는데요, 현재 대시보드를 통해 보고있는 Pod들은 `Deployment`에 의해 배포되었기 때문에 `replica` 수 유지를 위해 새로운 Pod가 생성된 것입니다.
 
@@ -176,7 +154,7 @@ kubectl get pod
 
 ![pod delete terminal](img/4-pod-delete-result-terminal.png)
 
-## 2-5. 쿠버네티스 대시보드에서 Deployment Scaling
+## 2-5. Headlamp에서 Deployment Scaling
 
 이번에는 지난 Cluster Lab에서 수행한 Deployment Scaling을 해보겠습니다.
 
@@ -216,9 +194,9 @@ kubectl get pod
 
 ![deployment - 5](img/5-deploy-6.png)
 
-## 2-6. 쿠버네티스 대시보드에서 클러스터 이벤트 확인하기
+## 2-6. Headlamp에서 클러스터 이벤트 확인하기
 
-쿠버네티스 대시보드에서는 클러스터 내에서 발생하는 다양한 이벤트를 실시간으로 확인할 수 있습니다.
+Headlamp에서는 클러스터 내에서 발생하는 다양한 이벤트를 실시간으로 확인할 수 있습니다.
 
 이벤트는 Pod, Deployment, Service, Node 등의 리소스에서 발생하는 상태 변화나 경고 메시지를 포함하며, 예를 들어 다음과 같은 내용을 확인할 수 있습니다:
 
@@ -232,15 +210,13 @@ kubectl get pod
 
 &nbsp;
 
-이제 `Events` 탭으로 이동해서 여러 페이지를 둘러봅니다.
+이제 `Clusters` 탭으로 이동해서 여러 페이지를 둘러봅니다.
 
 ![event - 1](img/6-events-1.png)
 
 대시보드를 통해 오류가 발생한 이벤트도 확인할 수 있으며, 아래와 같이 오류 메시지를 확인하여 원인을 분석할 수 있습니다.
 
-![event - 2](img/6-events-2.png)
-
-## 2-7. 쿠버네티스 대시보드에서 노드 정보 접근
+## 2-7. Headlamp에서 노드 정보 접근
 
 이번에는 노드(Node) 정보에 접근해보겠습니다.
 
@@ -275,7 +251,7 @@ at the cluster scope
 
 ## Lab Summary
 
-이번 실습에서는 쿠버네티스 대시보드를 활용하여 클러스터 내 리소스 상태를 시각적으로 모니터링하고 조작하는 방법을 학습했습니다.
+이번 실습에서는 Headlamp를 활용하여 클러스터 내 리소스 상태를 시각적으로 모니터링하고 조작하는 방법을 학습했습니다.
 
 특히, Pod, Deployment, Service 등의 리소스를 관리하는 방법과 함께, 대시보드를 통해 이벤트 로그를 확인하는 과정을 실습했습니다.
 
@@ -303,7 +279,7 @@ at the cluster scope
 
 이번 실습에서 수행한 주요 과정은 다음과 같습니다:
 
-1. 쿠버네티스 대시보드 설치 및 접근
+1. Headlamp 설치 및 접근
    - kubectl apply를 이용해 대시보드를 설치하고, kubectl proxy를 실행하여 웹 대시보드에 접근.
 
 2. 대시보드 로그인 및 인증 토큰 발급
