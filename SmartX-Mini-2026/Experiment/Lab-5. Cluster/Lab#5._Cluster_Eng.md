@@ -377,6 +377,11 @@ sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 > sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 > ```
 
+<!-- -->
+
+> [!note]
+> If the installation does not proceed normally, please check the `SystemdCgroup` setting, swapoff status, and `br_netfilter` setting again.
+
 If the `kubeadm` command runs successfully, it will generate a command including a token to allow other nodes to join the cluster. Save this command in a text file or somewhere secure so it doesn't get lost.
 
 ![kubeadm init](img/kubeadm-init.png)

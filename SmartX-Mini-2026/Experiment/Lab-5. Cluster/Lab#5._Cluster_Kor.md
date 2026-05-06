@@ -375,6 +375,12 @@ sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 > sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 > ```
 
+<!-- -->
+
+> [!note]
+> 만일 정상적으로 진행되지 않는다면 `SystemdCgroup` 설정, swapoff 여부, `br_netfilter` 설정을
+> 다시 확인해주세요.
+
 kubeadm 명령어가 정상적으로 실행됐다면, 아래 사진과 같이 쿠버네티스 클러스터에 Join할 수 있는 토큰을 포함한 명령어가 생성됩니다. 해당 명령어를 별도의 텍스트 파일로 저장하거나, 사라지지 않도록 해주시기 바랍니다.
 
 ![kubeadm init](img/kubeadm-init.png)
