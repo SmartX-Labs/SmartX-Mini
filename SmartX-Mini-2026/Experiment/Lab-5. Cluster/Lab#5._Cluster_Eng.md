@@ -286,10 +286,11 @@ In the contents of the file, look for a line with the following format and add a
 
 > [!CAUTION]
 >
-> Be very careful not to modify anything other than the line related to swap memory, as making a mistake here can lead to critical system errors.
+> Be very careful not to modify anything other than the line related to swap memory, as making a mistake here can lead to critical system errors.  
+> Please add a `#` symbol at the beginning of the line, not add a new line.
 
 ```text
-# /swapfile      none   swap  sw    0  0 # As shown in this example, please add a `#` symbol at the beginning of the line.
+# /swap.img      none   swap  sw    0  0 # As shown in this example, please add a `#` symbol at the beginning of the line.
 ```
 
 ### 2-3-2. Install Kubernetes
@@ -300,15 +301,15 @@ In the contents of the file, look for a line with the following format and add a
 
 ```shell
 # At All NUCs
-sudo apt-get update && sudo apt-get install -y apt-transport-https curl ipvsadm wget
+sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gpg
 
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.34/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 sudo apt update
 
-sudo apt install -y kubeadm=1.28.1-1.1 kubelet=1.28.1-1.1 kubectl=1.28.1-1.1
+sudo apt install -y kubeadm=1.34.6-1.1 kubelet=1.34.6-1.1 kubectl=1.34.6-1.1
 ```
 
 Please execute the following command to open the file.
