@@ -283,10 +283,11 @@ sudo vim /etc/fstab
 > [!CAUTION]
 >
 > swap memory와 관련된 부분이 아닌, 다른 부분을 잘못 수정하면 치명적인 오류가 발생할 수 있습니다.  
-> 주의하여 진행해주시기 바랍니다.
+> 주의하여 진행해주시기 바랍니다.  
+> 아래 예시의 줄을 추가로 작성하는 것이 아니라 해당 줄을 **주석처리** 하여야 합니다.
 
 ```text
-# /swapfile      none   swap  sw    0  0 # 이 예시와 같이, line의 맨 앞에 # 기호를 붙여주시기 바랍니다.
+# /swap.img      none   swap  sw    0  0 # 이 예시와 같이, line의 맨 앞에 # 기호를 붙여주시기 바랍니다.
 ```
 
 ### 2-3-2. Install Kubernetes
@@ -297,15 +298,15 @@ sudo vim /etc/fstab
 
 ```shell
 # At All NUCs
-sudo apt-get update && sudo apt-get install -y apt-transport-https curl ipvsadm wget
+sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gpg
 
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.34/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.34/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 sudo apt update
 
-sudo apt install -y kubeadm=1.28.1-1.1 kubelet=1.28.1-1.1 kubectl=1.28.1-1.1
+sudo apt install -y kubeadm=1.34.6-1.1 kubelet=1.34.6-1.1 kubectl=1.34.6-1.1
 ```
 
 다음의 명령어를 실행하여 파일을 열어주시기 바랍니다.  
@@ -373,6 +374,12 @@ sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 > # kubeadm을 다시 한 번 실행
 > sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 > ```
+
+<!-- -->
+
+> [!note]
+> 만일 정상적으로 진행되지 않는다면 `SystemdCgroup` 설정, swapoff 여부, `br_netfilter` 설정을
+> 다시 확인해주세요.
 
 kubeadm 명령어가 정상적으로 실행됐다면, 아래 사진과 같이 쿠버네티스 클러스터에 Join할 수 있는 토큰을 포함한 명령어가 생성됩니다. 해당 명령어를 별도의 텍스트 파일로 저장하거나, 사라지지 않도록 해주시기 바랍니다.
 

@@ -176,7 +176,7 @@ Enter the command below to open the file:
 sudo vim /etc/containerd/config.toml
 ```
 
-Find the field `[plugins."io.containerd.grpc.v1.cri".registry.mirrors]` in the file content and modify it as follows:
+Find the field `[plugins."io.containerd.grpc.v1.cri".registry]` in the file content and modify it as follows:
 
 > [!WARNING]
 > Please enter the content excluding the `...` shown in the example. Pay attention to indentation. Do not modify other parts.
@@ -186,17 +186,50 @@ Find the field `[plugins."io.containerd.grpc.v1.cri".registry.mirrors]` in the f
 ...
 ...
 
-[plugins."io.containerd.grpc.v1.cri".registry.mirrors]
-  [plugins."io.containerd.grpc.v1.cri".registry.mirrors."nuc01:5000"]
-    endpoint = ["http://nuc01:5000"]
-  [plugins."io.containerd.grpc.v1.cri".registry.mirrors."nuc02:5000"]
-    endpoint = ["http://nuc02:5000"]
-  [plugins."io.containerd.grpc.v1.cri".registry.mirrors."nuc03:5000"]
-    endpoint = ["http://nuc03:5000"]
+[plugins."io.containerd.grpc.v1.cri".registry]
+  config_path = "/etc/containerd/certs.d"
 
 ...
 ...
 ...
+```
+
+To add information for each NUC, modify the file as follows:
+
+```shell
+sudo vim /etc/containerd/certs.d/nuc01:5000/hosts.toml
+```
+
+```toml
+server = "http://nuc01:5000"
+[host."http://nuc01:5000"]
+  capabilities = ["pull", "resolve", "push"]
+  skip_verify = true
+  plain_http = true
+```
+
+```shell
+sudo vim /etc/containerd/certs.d/nuc02:5000/hosts.toml
+```
+
+```toml
+server = "http://nuc02:5000"
+[host."http://nuc02:5000"]
+  capabilities = ["pull", "resolve", "push"]
+  skip_verify = true
+  plain_http = true
+```
+
+```shell
+sudo vim /etc/containerd/certs.d/nuc03:5000/hosts.toml
+```
+
+```toml
+server = "http://nuc03:5000"
+[host."http://nuc03:5000"]
+  capabilities = ["pull", "resolve", "push"]
+  skip_verify = true
+  plain_http = true
 ```
 
 After modifying everything, enter the command below to restart containerd:

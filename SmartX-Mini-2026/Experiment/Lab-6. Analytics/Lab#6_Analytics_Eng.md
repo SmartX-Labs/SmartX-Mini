@@ -4,13 +4,13 @@
 
 In the Lab#4 Tower Lab, we stored the resource status of Raspberry Pi devices into InfluxDB using SNMP, Flume, and Kafka, then visualized and monitored that data using Chronograf dashboards.
 
-In this lab, we will learn how to check and manage the status of Pods, Deployments, Services, and other Kubernetes resources using the Kubernetes Dashboard.
+In this lab, we will learn how to check and manage the status of Pods, Deployments, Services, and other Kubernetes resources using Headlamp.
 
-## Difference Between `kubectl` and Kubernetes Dashboard
+## Difference Between `kubectl` and Headlamp
 
-Although Kubernetes clusters can be operated using `kubectl` commands, the dashboard offers a visual interface that makes cluster monitoring and management more intuitive.
+Although Kubernetes clusters can be operated using `kubectl` commands, Headlamp offers a visual interface that makes cluster monitoring and management more intuitive.
 
-The web-based dashboard is particularly useful for the following reasons:
+The web-based Headlamp is particularly useful for the following reasons:
 
 1. Real-time cluster monitoring: View resource usage and status at a glance.
 2. Easy management and debugging: Create, edit, and delete resources with just a few clicks.
@@ -18,13 +18,13 @@ The web-based dashboard is particularly useful for the following reasons:
 
 # 1. Concept
 
-Kubernetes Dashboard is a web-based user interface for Kubernetes.
+Headlamp is a web-based user interface for Kubernetes.
 
 It simplifies the deployment of containerized applications, debugging, and management of cluster resources.
 
 Examples of actions you can perform include: `Scaling of Deployment`, `Rolling Updates`, `Pod Restarts`, and `Deploying a New Application`.
 
-The dashboard also provides detailed information on resource status and errors, making it an effective tool for cluster monitoring and maintenance.
+The Headlamp also provides detailed information on resource status and errors, making it an effective tool for cluster monitoring and maintenance.
 
 &nbsp;
 
@@ -45,28 +45,28 @@ When you run the above commands, you should see all **nodes** in a `Ready` state
 
 ![cluster status](img/1-cluster-status.png)
 
-# 2-2. Install the Kubernetes Dashboard
+# 2-2. Install the Headlamp
 
-Run the following commands to install the Kubernetes Dashboard and start a temporary proxy server.
+Run the following commands to install the Headlamp and start a temporary proxy server.
 
 ```shell
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.6.1/aio/deploy/recommended.yaml
-kubectl proxy
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/headlamp/main/kubernetes-headlamp.yaml
+kubectl port-forward -n kube-system service/headlamp 8080:80
 ```
 
 &nbsp;
 
 > [!note]
 >
-> **What is `kubectl proxy`?**
+> **What is `kubectl port-forward`?**
 >
-> `kubectl proxy` acts as a **proxy** that securely forwards requests from your local machine to the **Kubernetes API server**.
+> `kubectl port-forward` lets you access the service inside the cluster from your local machine.
 >
-> Since the Kubernetes Dashboard runs **inside the cluster**, it is not directly accessible from outside.
+> Since the Headlamp runs **inside the cluster**, it is not directly accessible from outside.
 >
-> Running `kubectl proxy` allows you to securely access the dashboard via your browser with **automatic authentication**, and **without extra network configuration**.
+> Running `kubectl port-forward` allows you to securely access the Headlamp via your browser with **without extra network configuration**.
 
-Once the proxy is running, open a **new terminal** to continue the next steps.
+Once the port-forward is running, open a **new terminal** to continue the next steps.
 
 > [!tip]
 >
@@ -74,76 +74,55 @@ Once the proxy is running, open a **new terminal** to continue the next steps.
 
 ## 2-3. Issue a Token to Access the Dashboard
 
-To log in to the Kubernetes Dashboard, you need authentication. This involves creating a `Service Account`, binding it to a `ClusterRole`, and generating a **token**.
+To log in to the Headlamp, you need authentication. This involves creating a `Service Account`, binding it to a `ClusterRole`, and generating a **token**.
 
-The following commands create a `ServiceAccount` named `admin-user`, bind it to the **cluster-admin role**, and generate a token for login.
+The following commands create a `ServiceAccount` named `headlamp-admin`, bind it to the **cluster-admin role**, and generate a token for login.
 
-### Cluster Role Binding
-
-This grants the `admin-user` ServiceAccount cluster-admin privileges.
+### Service Account
 
 ```shell
-cat <<EOF | kubectl create -f -
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: admin-user
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: admin
-subjects:
-- kind: ServiceAccount
-  name: admin-user
-  namespace: kubernetes-dashboard
-EOF
+kubectl -n kube-system create serviceaccount headlamp-admin
 ```
 
-### Service account
+### ClusterRoleBinding
 
-Create the `admin-user` ServiceAccount for the Kubernetes Dashboard.
+This grants the `headlamp-admin` ServiceAccount admin privileges.
 
 ```shell
-cat <<EOF | kubectl create -f -
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: admin-user
-  namespace: kubernetes-dashboard
-EOF
+kubectl create clusterrolebinding headlamp-admin --serviceaccount=kube-system:headlamp-admin --clusterrole=admin
 ```
 
 ### Generate Login Token
 
-Now issue a token for the `admin-user` account. You will use this token to log in to the dashboard.
+Now issue a token for the `headlamp-admin` account. You will use this token to log in to the dashboard.
 
 ```shell
-kubectl -n kubernetes-dashboard create token admin-user
+kubectl create token headlamp-admin -n kube-system
 ```
 
 If successful, you will see a token output in the terminal like the screenshot below. Copy this token for use in the dashboard login.
 
 ![token](img/2-dashboard-token.png)
 
-## 2-4. Access the Kubernetes Dashboard
+## 2-4. Access the Headlamp
 
-Now, access the Kubernetes Dashboard using the following address in your browser:
+Now, access the Headlamp using the following address in your browser:
 
-<http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/>
+<http://localhost:8080/>
 
 > [!warning]
 >
-> ⚠️ If you encounter any issues, make sure `kubectl proxy` is still running!
+> ⚠️ If you encounter any issues, make sure `kubectl port-forward` is still running!
 
 &nbsp;
 
-If everything is working correctly, you should see a login screen like the one below. Paste the token you received earlier and click `Sign in`.
+If everything is working correctly, you should see a login screen like the one below. Paste the token you received earlier and click `Authenticate`.
 
 ![signin](img/3-dashboard-login.png)
 
 &nbsp;
 
-Upon successful login, you will see the Kubernetes Dashboard interface as shown below.
+Upon successful login, you will see the Headlamp interface as shown below.
 
 ![ui](img/3-dashboard-enter.png)
 
@@ -153,15 +132,15 @@ Upon successful login, you will see the Kubernetes Dashboard interface as shown 
 >
 > ⚠️ If you run into errors, refer to the official documentation:
 >
-> <https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/>
+> <https://headlamp.dev/docs/latest/installation/in-cluster/>
 
-## 2-4. Delete a Pod from the Kubernetes Dashboard
+## 2-4. Delete a Pod from the Headlamp
 
 Now let’s delete a currently running Pod using the dashboard. Follow the steps shown in the screenshot below and refresh the browser.
 
 ![pod delete](img/4-pod-delete.png)
 
-As shown in the next screenshot, the Pod that was deleted is now in the `Terminating` state.
+As shown in the next screenshot, the Pod that was evicted is now in the `Terminating` state.
 
 You will also notice that a new Pod has been created. Since these Pods are managed by a `Deployment`, Kubernetes maintains the desired number of `replicas` by automatically creating new Pods.
 
@@ -177,7 +156,7 @@ kubectl get pod
 
 ![pod delete terminal](img/4-pod-delete-result-terminal.png)
 
-## 2-5. Scale a Deployment from the Kubernetes Dashboard
+## 2-5. Scale a Deployment from the Headlamp
 
 Now let’s perform Deployment scaling just like in the Cluster Lab.
 
@@ -219,7 +198,7 @@ kubectl get pod
 
 ## 2-6. Check Cluster Events via the Dashboard
 
-The Kubernetes Dashboard provides real-time visibility into cluster-wide events.
+The Headlamp provides real-time visibility into cluster-wide events.
 
 Events include state changes and warnings related to resources like Pods, Deployments, Services, and Nodes. Examples:
 
@@ -233,13 +212,11 @@ These logs are extremely helpful for identifying and debugging issues in your cl
 
 &nbsp;
 
-Now go to the `Events` tab and browse through the pages.
+Now go to the `Clusters` tab and browse through the pages.
 
 ![event - 1](img/6-events-1.png)
 
 You can also view error-related events and analyze the cause directly through the dashboard.
-
-![event - 2](img/6-events-2.png)
 
 ## 2-7. Access Node Information via the Dashboard
 
@@ -276,7 +253,7 @@ To view node information, you must configure additional RoleBinding or ClusterRo
 
 ## Lab Summary
 
-In this lab, you learned how to visually monitor and manage cluster resources using the Kubernetes Dashboard.
+In this lab, you learned how to visually monitor and manage cluster resources using the Headlamp.
 
 You practiced managing Pods, Deployments, and Services through the GUI and explored how to view cluster event logs.
 
@@ -303,7 +280,7 @@ In short, the dashboard is a **critical tool** for enhancing Kubernetes cluster 
 
 ## Key Activities Summary
 
-1. Installed and Accessed the Kubernetes Dashboard
+1. Installed and Accessed the Headlamp
    - Used `kubectl apply` to deploy the dashboard, then accessed it via `kubectl proxy`.
 
 2. Logged into the Dashboard with an Auth Token
