@@ -165,7 +165,16 @@ sudo systemctl restart docker
 ## For All NUCs
 
 > [!WARNING] > **Containerd에 대한 설정은 모든 NUC에서 진행합니다.**  
-> **실습자들은 ssh로 접속한 NUC01이 아니라, 각자 NUC에서 터미널을 열고 Containerd 설정을 진행합니다.**
+> **실습자들은 각 NUC에 ssh로 접속하여 자신의 registry 등록을 진행합니다.**
+
+```shell
+ssh gist@nuc01
+# 설정 진행...
+ssh gist@nuc02
+# 설정 진행...
+ssh gist@nuc03
+# 설정 진행...
+```
 
 이제는 Containerd에 대한 설정을 진행하겠습니다.  
 아래의 명령어를 입력하여 파일을 열어줍니다.
@@ -174,7 +183,7 @@ sudo systemctl restart docker
 sudo vim /etc/containerd/config.toml
 ```
 
-파일의 내용 중 `[plugins."io.containerd.grpc.v1.cri".registry]`라는 필드를 찾고, 다음과 같이 수정합니다.
+파일의 내용 중 `[plugins.'io.containerd.cri.v1.images'.registry]`라는 필드를 찾고, 다음과 같이 수정합니다.
 
 > [!WARNING]
 > 예시에 나와있는 `...`은 제외하고 내용을 입력하여 주시기 바랍니다. **들여쓰기에 주의해주시기 바랍니다.** 나머지 부분은 수정하지 않습니다.
@@ -184,7 +193,7 @@ sudo vim /etc/containerd/config.toml
 ...
 ...
 
-[plugins."io.containerd.grpc.v1.cri".registry]
+[plugins.'io.containerd.cri.v1.images'.registry]
   config_path = "/etc/containerd/certs.d"
 
 ...
@@ -192,39 +201,16 @@ sudo vim /etc/containerd/config.toml
 ...
 ```
 
-각 NUC의 정보를 추가하기 위해서 파일을 수정합니다
+자신의 NUC의 정보를 추가하기 위해서 파일을 수정합니다
 
 ```shell
-sudo vim /etc/containerd/certs.d/nuc01:5000/hosts.toml
+sudo mkdir -p /etc/containerd/certs.d/<your_hostname>:5000
+sudo vim /etc/containerd/certs.d/<your_hostname>:5000/hosts.toml
 ```
 
 ```toml
-server = "http://nuc01:5000"
-[host."http://nuc01:5000"]
-  capabilities = ["pull", "resolve", "push"]
-  skip_verify = true
-  plain_http = true
-```
-
-```shell
-sudo vim /etc/containerd/certs.d/nuc02:5000/hosts.toml
-```
-
-```toml
-server = "http://nuc02:5000"
-[host."http://nuc02:5000"]
-  capabilities = ["pull", "resolve", "push"]
-  skip_verify = true
-  plain_http = true
-```
-
-```shell
-sudo vim /etc/containerd/certs.d/nuc03:5000/hosts.toml
-```
-
-```toml
-server = "http://nuc03:5000"
-[host."http://nuc03:5000"]
+server = "http://<your_hostname>:5000"
+[host."http://<your_hostname>:5000"]
   capabilities = ["pull", "resolve", "push"]
   skip_verify = true
   plain_http = true
@@ -233,10 +219,11 @@ server = "http://nuc03:5000"
 모두 수정했다면, 아래의 명령어를 입력하여 containerd를 재시작합니다.
 
 ```shell
+sudo systemctl daemon-reload
 sudo systemctl restart containerd
 ```
 
-## 이제부터 NUC02, NUC03 사용자는 다시 ssh로 접속한 NUC01에서 실습을 진행합니다
+## 이제부터 다시 ssh로 접속한 NUC01에서 실습을 진행합니다
 
 ## 2.2 Persistent Volume(PV) 생성
 
