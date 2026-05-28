@@ -348,7 +348,7 @@ Run the following command to clone the prepared repository:
 
 ```bash
 git clone https://github.com/SmartX-Labs/SmartX-Mini.git
-cp -r SmartX-Mini/SmartX-Mini-2025/Experiment/Lab-7.\ 3-Tier/* ./
+cp -r SmartX-Mini/SmartX-Mini-2026/Experiment/Lab-7.\ 3-Tier/* ./
 
 # Check the templates
 ls
@@ -414,9 +414,9 @@ vim postgres-pv.yaml
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: postgres-pv-<your_namespace>
+  name: postgres-pv-<your_namespace> # Edit to match your own namespace
   labels:
-    volume: postgres-pv-<your_namespace>
+    volume: postgres-pv-<your_namespace> # Edit to match your own namespace
 spec:
   capacity:
     storage: 5Gi
@@ -424,7 +424,7 @@ spec:
     - ReadWriteOnce
   storageClassName: standard
   hostPath:
-    path: /mnt/data/<your_namespace>/postgres
+    path: /mnt/data/<your_namespace>/postgres # Edit to match your own namespace
   persistentVolumeReclaimPolicy: Retain
 ```
 

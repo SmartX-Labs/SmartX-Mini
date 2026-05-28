@@ -167,7 +167,16 @@ sudo systemctl restart docker
 
 > [!WARNING]
 > **Containerd configuration must be done on all NUCs.**  
-> **Participants should open a terminal on each of their respective NUCs, not on NUC01 accessed via ssh, and proceed with the Containerd configuration.**
+> **Participants should ssh to each of their respective NUCs and proceed with the Containerd configuration.**
+
+```shell
+ssh gist@nuc01
+# Configure...
+ssh gist@nuc02
+# Configure...
+ssh gist@nuc03
+# Configure...
+```
 
 Now, let's configure Containerd.  
 Enter the command below to open the file:
@@ -176,7 +185,7 @@ Enter the command below to open the file:
 sudo vim /etc/containerd/config.toml
 ```
 
-Find the field `[plugins."io.containerd.grpc.v1.cri".registry]` in the file content and modify it as follows:
+Find the field `[plugins.'io.containerd.cri.v1.images'.registry]` in the file content and modify it as follows:
 
 > [!WARNING]
 > Please enter the content excluding the `...` shown in the example. Pay attention to indentation. Do not modify other parts.
@@ -186,7 +195,7 @@ Find the field `[plugins."io.containerd.grpc.v1.cri".registry]` in the file cont
 ...
 ...
 
-[plugins."io.containerd.grpc.v1.cri".registry]
+[plugins.'io.containerd.cri.v1.images'.registry]
   config_path = "/etc/containerd/certs.d"
 
 ...
@@ -194,39 +203,16 @@ Find the field `[plugins."io.containerd.grpc.v1.cri".registry]` in the file cont
 ...
 ```
 
-To add information for each NUC, modify the file as follows:
+To add information for your own NUC, modify the file as follows:
 
 ```shell
-sudo vim /etc/containerd/certs.d/nuc01:5000/hosts.toml
+sudo mkdir -p /etc/containerd/certs.d/<your_hostname>:5000
+sudo vim /etc/containerd/certs.d/<your_hostname>:5000/hosts.toml
 ```
 
 ```toml
-server = "http://nuc01:5000"
-[host."http://nuc01:5000"]
-  capabilities = ["pull", "resolve", "push"]
-  skip_verify = true
-  plain_http = true
-```
-
-```shell
-sudo vim /etc/containerd/certs.d/nuc02:5000/hosts.toml
-```
-
-```toml
-server = "http://nuc02:5000"
-[host."http://nuc02:5000"]
-  capabilities = ["pull", "resolve", "push"]
-  skip_verify = true
-  plain_http = true
-```
-
-```shell
-sudo vim /etc/containerd/certs.d/nuc03:5000/hosts.toml
-```
-
-```toml
-server = "http://nuc03:5000"
-[host."http://nuc03:5000"]
+server = "http://<your_hostname>:5000"
+[host."http://<your_hostname>:5000"]
   capabilities = ["pull", "resolve", "push"]
   skip_verify = true
   plain_http = true
@@ -235,10 +221,11 @@ server = "http://nuc03:5000"
 After modifying everything, enter the command below to restart containerd:
 
 ```shell
+sudo systemctl daemon-reload
 sudo systemctl restart containerd
 ```
 
-## From now on, NUC02 and NUC03 users will continue the lab on NUC01 accessed via ssh
+## From now on, continue the lab on NUC01 accessed via ssh
 
 ## 2.2 Creating a Persistent Volume(PV)
 

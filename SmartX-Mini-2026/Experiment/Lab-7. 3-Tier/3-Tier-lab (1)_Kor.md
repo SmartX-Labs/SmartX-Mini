@@ -344,7 +344,7 @@ cd <your_directory>
 
 ```bash
 git clone https://github.com/SmartX-Labs/SmartX-Mini.git
-cp -r SmartX-Mini/SmartX-Mini-2025/Experiment/Lab-7.\ 3-Tier/* ./
+cp -r SmartX-Mini/SmartX-Mini-2026/Experiment/Lab-7.\ 3-Tier/* ./
 
 # 실습 템플릿 확인
 ls
@@ -410,9 +410,9 @@ vim postgres-pv.yaml
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: postgres-pv-<your_namespace>
+  name: postgres-pv-<your_namespace> # 각자 사용하는 namespace에 맞게 수정
   labels:
-    volume: postgres-pv-<your_namespace>
+    volume: postgres-pv-<your_namespace> # 각자 사용하는 namespace에 맞게 수정
 spec:
   capacity:
     storage: 5Gi
@@ -420,7 +420,7 @@ spec:
     - ReadWriteOnce
   storageClassName: standard
   hostPath:
-    path: /mnt/data/<your_namespace>/postgres
+    path: /mnt/data/<your_namespace>/postgres # 각자 사용하는 namespace에 맞게 수정
   persistentVolumeReclaimPolicy: Retain
 ```
 
